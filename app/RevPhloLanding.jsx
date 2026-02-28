@@ -152,7 +152,7 @@ function Nav() {
     >
       <div style={{ maxWidth: 1140, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="#"><img src={LOGO_SRC} alt="RevPhlo" style={{ height: 36 }} /></a>
-        <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+        <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: 32 }}>
           {["Features", "How It Works", "FAQ"].map((t) => (
             <a
               key={t}
@@ -253,7 +253,7 @@ function BeforeAfter() {
             The Old Way vs. The New Way with RevPhlo
           </p>
         </Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 60px 1fr", alignItems: "stretch" }}>
+        <div className="ba-grid" style={{ display: "grid", gridTemplateColumns: "1fr 60px 1fr", alignItems: "stretch" }}>
           {/* BEFORE - Messy Paper */}
           <Reveal delay={0.1}>
             <div
@@ -309,7 +309,7 @@ function BeforeAfter() {
           </Reveal>
 
           {/* Arrow */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div className="ba-arrow" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Reveal delay={0.3}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14m0 0l-6-6m6 6l-6 6" />
@@ -479,6 +479,7 @@ function FeatureBlock({ tag, title, desc, bullets, visual, reversed, paperNote, 
   return (
     <div
       ref={ref}
+      className="feature-grid"
       style={{
         display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48,
         alignItems: "center", marginBottom: 100,
@@ -967,7 +968,7 @@ function HowItWorks() {
           <h2 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(32px,4vw,50px)", lineHeight: 1.12, letterSpacing: -1, marginBottom: 18 }}>Live in 48 hours, not 48 days</h2>
           <p style={{ fontSize: 17, color: T.text2, maxWidth: 560, margin: "0 auto 56px", lineHeight: 1.65 }}>Connect your stack. Map your sources. See everything.</p>
         </Reveal>
-        <StaggerChildren stagger={0.12} style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        <StaggerChildren stagger={0.12} className="hiw-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {steps.map((s) => (
             <div key={s.num} className="hover-card" style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 18, padding: "36px 28px", textAlign: "left", transition: "all 0.3s" }}>
               <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 52, color: T.blue, opacity: 0.12, lineHeight: 1, marginBottom: 16 }}>{s.num}</div>
@@ -1120,6 +1121,44 @@ export default function RevPhloLanding() {
         }
         .btn-ghost:hover { border-color: ${T.borderHover}; background: ${T.white}; transform: translateY(-2px); }
         .hover-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+
+        /* ── MOBILE RESPONSIVE ── */
+        @media (max-width: 768px) {
+          /* Nav: hide text links, keep CTA */
+          .nav-links a:not(:last-child) { display: none !important; }
+          .nav-links { gap: 0 !important; }
+
+          /* Reduce section padding globally */
+          section { padding-left: 20px !important; padding-right: 20px !important; }
+
+          /* Before/After: stack vertically */
+          .ba-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .ba-arrow svg { transform: rotate(90deg); }
+
+          /* Feature blocks: single column, always LTR */
+          .feature-grid {
+            grid-template-columns: 1fr !important;
+            direction: ltr !important;
+            gap: 32px !important;
+            padding: 0 20px !important;
+            margin-bottom: 60px !important;
+          }
+          .feature-grid > div { direction: ltr !important; }
+
+          /* How It Works: single column */
+          .hiw-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+
+          /* Hero adjustments */
+          h1 { font-size: 36px !important; }
+
+          /* Integration pills: tighter */
+          .hover-card { padding: 10px 16px !important; font-size: 13px !important; }
+        }
+
+        @media (max-width: 480px) {
+          h1 { font-size: 30px !important; }
+          .btn-primary, .btn-ghost { padding: 12px 22px !important; font-size: 14px !important; }
+        }
       `}</style>
 
       <Nav />
