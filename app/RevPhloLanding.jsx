@@ -46,34 +46,11 @@ function useScrollReveal(threshold = 0.1) {
 function useScrollY() {
   const [y, setY] = useState(0);
   useEffect(() => {
-    let raf = null;
-    const h = () => {
-      if (raf) return;
-      raf = window.requestAnimationFrame(() => {
-        setY(window.scrollY);
-        raf = null;
-      });
-    };
-    h();
+    const h = () => setY(window.scrollY);
     window.addEventListener("scroll", h, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", h);
-      if (raf) window.cancelAnimationFrame(raf);
-    };
+    return () => window.removeEventListener("scroll", h);
   }, []);
   return y;
-}
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = () => setReduced(mq.matches);
-    onChange();
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-  return reduced;
 }
 
 function useCounter(end, duration = 2000, active = false) {
@@ -92,18 +69,42 @@ function useCounter(end, duration = 2000, active = false) {
   return val;
 }
 
+// Returns 0→1 as element scrolls through viewport
+// 0 = element just entered bottom, 1 = element reached center
+function useScrollProgress(offset = 0.3) {
+  const ref = useRef(null);
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const handle = () => {
+      const rect = el.getBoundingClientRect();
+      const windowH = window.innerHeight;
+      // Start when element enters viewport, complete when it hits center
+      const start = windowH; // bottom of viewport
+      const end = windowH * offset; // upper portion
+      const current = rect.top;
+      const p = Math.max(0, Math.min(1, (start - current) / (start - end)));
+      setProgress(p);
+    };
+    window.addEventListener("scroll", handle, { passive: true });
+    handle(); // initial check
+    return () => window.removeEventListener("scroll", handle);
+  }, [offset]);
+  return [ref, progress];
+}
+
 // ── REVEAL WRAPPER ──
 function Reveal({ children, delay = 0, className = "", style = {} }) {
   const [ref, visible] = useScrollReveal();
-  const reducedMotion = usePrefersReducedMotion();
   return (
     <div
       ref={ref}
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: reducedMotion || visible ? "translateY(0)" : "translateY(28px)",
-        transition: reducedMotion ? "none" : `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
+        transform: visible ? "translateY(0)" : "translateY(28px)",
+        transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
         ...style,
       }}
     >
@@ -114,7 +115,6 @@ function Reveal({ children, delay = 0, className = "", style = {} }) {
 
 function StaggerChildren({ children, baseDelay = 0, stagger = 0.08, className = "", style = {} }) {
   const [ref, visible] = useScrollReveal();
-  const reducedMotion = usePrefersReducedMotion();
   return (
     <div ref={ref} className={className} style={style}>
       {Array.isArray(children)
@@ -123,8 +123,8 @@ function StaggerChildren({ children, baseDelay = 0, stagger = 0.08, className = 
               key={i}
               style={{
                 opacity: visible ? 1 : 0,
-                transform: reducedMotion || visible ? "translateY(0)" : "translateY(24px)",
-                transition: reducedMotion ? "none" : `opacity 0.5s ease ${baseDelay + i * stagger}s, transform 0.5s ease ${baseDelay + i * stagger}s`,
+                transform: visible ? "translateY(0)" : "translateY(24px)",
+                transition: `opacity 0.5s ease ${baseDelay + i * stagger}s, transform 0.5s ease ${baseDelay + i * stagger}s`,
               }}
             >
               {child}
@@ -157,8 +157,9 @@ function Nav() {
             <a
               key={t}
               href={`#${t.toLowerCase().replace(/\s/g, "")}`}
-              className="nav-link"
               style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}
+              onMouseOver={(e) => (e.target.style.color = T.text)}
+              onMouseOut={(e) => (e.target.style.color = T.text2)}
             >
               {t}
             </a>
@@ -181,6 +182,7 @@ function Nav() {
 
 // ── HERO ──
 function Hero() {
+  const scrollY = useScrollY();
   return (
     <section style={{ padding: "160px 32px 80px", textAlign: "center", position: "relative", overflow: "hidden" }}>
       <div
@@ -326,16 +328,14 @@ function BeforeAfter() {
 
 // ── DASHBOARD COMPONENT ──
 function Dashboard({ scrollY }) {
-  const reducedMotion = usePrefersReducedMotion();
   const ref = useRef(null);
   const [offset, setOffset] = useState(0);
   useEffect(() => {
-    if (reducedMotion) return;
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const center = rect.top + rect.height / 2;
     setOffset((window.innerHeight / 2 - center) * 0.02);
-  }, [scrollY, reducedMotion]);
+  }, [scrollY]);
 
   const kpis = [
     [
@@ -361,8 +361,8 @@ function Dashboard({ scrollY }) {
       style={{
         background: T.dark, borderRadius: 16, overflow: "hidden",
         boxShadow: "0 20px 60px rgba(0,0,0,0.14)",
-        transform: reducedMotion ? "none" : `rotate(0.3deg) translateY(${offset}px)`,
-        transition: reducedMotion ? "none" : "transform 0.1s linear",
+        transform: `rotate(0.3deg) translateY(${offset}px)`,
+        transition: "transform 0.1s linear",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 14px", background: "rgba(0,0,0,0.3)" }}>
@@ -440,44 +440,162 @@ function VSL() {
   );
 }
 
+
 // ── FEATURE BLOCK ──
-function FeatureBlock({ tag, title, desc, bullets, visual, reversed, paperNote }) {
+function FeatureBlock({ tag, title, desc, bullets, visual, reversed, paperNote, sheetNote, formNote }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  const [swapped, setSwapped] = useState(false);
+  const triggered = useRef(false);
+
+  // Step 1: IntersectionObserver detects entry → show old way
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !triggered.current) {
+          triggered.current = true;
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Step 2: Once visible, wait 2s then swap to new way
+  useEffect(() => {
+    if (!visible) return;
+    const t = setTimeout(() => setSwapped(true), 2000);
+    return () => clearTimeout(t);
+  }, [visible]);
+
+  const noteContent = paperNote || sheetNote || formNote;
+
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", marginBottom: 100, direction: reversed ? "rtl" : "ltr" }}>
-      <Reveal style={{ direction: "ltr" }}>
-        <div style={{ direction: "ltr" }}>
-          <div style={{ display: "inline-flex", padding: "5px 14px", borderRadius: 8, background: T.blueBg, border: `1px solid ${T.blueBorder}`, fontSize: 12, fontWeight: 600, color: T.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 18 }}>{tag}</div>
-          <h3 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(26px,3vw,36px)", lineHeight: 1.15, letterSpacing: -0.5, marginBottom: 14 }}>{title}</h3>
-          <p style={{ color: T.text2, fontSize: 15.5, lineHeight: 1.65, marginBottom: 24 }}>{desc}</p>
-          <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
-            {bullets.map((b, i) => (
-              <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14.5, color: T.text2, lineHeight: 1.5 }}>
-                <span style={{ width: 20, height: 20, borderRadius: 6, background: T.blueBg, border: `1px solid ${T.blueBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: T.blue, fontSize: 11, fontWeight: 800 }}>✓</span>
-                {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Reveal>
-      <Reveal delay={0.15} style={{ direction: "ltr", position: "relative" }}>
-        <div style={{ direction: "ltr", position: "relative" }}>
-          {paperNote && (
-            <div style={{ position: "absolute", ...(reversed ? { bottom: -15, right: -15 } : { top: -20, left: -20 }), width: "50%", zIndex: 0, opacity: 0.45 }}>
-              <div style={{ background: "#FFFEF7", border: "1px solid #E8E4D4", borderRadius: 3, padding: 14, boxShadow: "2px 3px 0 rgba(0,0,0,0.03)", transform: reversed ? "rotate(1deg)" : "rotate(-1.5deg)", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(transparent, transparent 27px, #D4E0ED 27px, #D4E0ED 28px)", opacity: 0.25, pointerEvents: "none" }} />
+    <div
+      ref={ref}
+      style={{
+        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48,
+        alignItems: "center", marginBottom: 100,
+        direction: reversed ? "rtl" : "ltr",
+        maxWidth: 1140, margin: "0 auto 100px", padding: "0 32px",
+      }}
+    >
+      {/* Text side */}
+      <div
+        style={{
+          direction: "ltr",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(24px)",
+          transition: "opacity 0.6s ease, transform 0.6s ease",
+        }}
+      >
+        <div style={{ display: "inline-flex", padding: "5px 14px", borderRadius: 8, background: T.blueBg, border: `1px solid ${T.blueBorder}`, fontSize: 12, fontWeight: 600, color: T.blue, textTransform: "uppercase", letterSpacing: 1, marginBottom: 18 }}>{tag}</div>
+        <h3 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(24px,2.8vw,34px)", lineHeight: 1.15, letterSpacing: -0.5, marginBottom: 14 }}>{title}</h3>
+        <p style={{ color: T.text2, fontSize: 15, lineHeight: 1.65, marginBottom: 22 }}>{desc}</p>
+        <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
+          {bullets.map((b, i) => (
+            <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: T.text2, lineHeight: 1.5 }}>
+              <span style={{ width: 20, height: 20, borderRadius: 6, background: T.blueBg, border: `1px solid ${T.blueBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: T.blue, fontSize: 11, fontWeight: 800 }}>✓</span>
+              {b}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Visual side */}
+      <div style={{ direction: "ltr", position: "relative", minHeight: 340 }}>
+        {/* OLD WAY — starts visible, transitions out */}
+        {noteContent && (
+          <div
+            style={{
+              position: "absolute", top: "50%", left: "50%",
+              width: "100%", maxWidth: formNote ? 360 : 380,
+              zIndex: swapped ? 0 : 2,
+              opacity: visible && !swapped ? 1 : 0,
+              transform: `translate(-50%, -50%) scale(${swapped ? 0.88 : 1}) rotate(${swapped ? (reversed ? 3 : -3) : (reversed ? 0.5 : -0.5)}deg)`,
+              transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+              pointerEvents: swapped ? "none" : "auto",
+            }}
+          >
+            {formNote ? (
+              <FormsWrapper>{formNote}</FormsWrapper>
+            ) : sheetNote ? (
+              <SheetsWrapper>{sheetNote}</SheetsWrapper>
+            ) : (
+              <div style={{ background: "#FFFEF7", border: "1px solid #E8E4D4", borderRadius: 4, padding: "24px 20px", boxShadow: "3px 4px 0 rgba(0,0,0,0.05), 0 8px 30px rgba(0,0,0,0.08)", position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(transparent, transparent 27px, #D4E0ED 27px, #D4E0ED 28px)", opacity: 0.3, pointerEvents: "none" }} />
+                <div style={{ position: "absolute", left: 60, top: 0, bottom: 0, width: 1, background: "rgba(220,80,80,0.2)", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", top: 0, right: 0, width: 32, height: 32, background: `linear-gradient(225deg, ${T.bg} 50%, #F0EDE0 50%)`, zIndex: 3 }} />
+                <div style={{ position: "absolute", top: -3, left: "35%", width: 50, height: 16, background: "rgba(255,220,100,0.4)", border: "1px solid rgba(200,180,80,0.15)", borderRadius: 2, transform: "rotate(2deg)", zIndex: 3 }} />
                 {paperNote}
               </div>
-            </div>
-          )}
-          <div style={{ position: "relative", zIndex: 1, marginLeft: reversed ? 0 : 30 }}>
-            {visual}
+            )}
           </div>
+        )}
+
+        {/* NEW WAY — dashboard slides up after transition */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: swapped ? 2 : 0,
+            opacity: swapped ? 1 : 0,
+            transform: swapped ? "translateY(0) scale(1)" : "translateY(40px) scale(0.94)",
+            transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s",
+          }}
+        >
+          {visual}
         </div>
-      </Reveal>
+      </div>
+    </div>
+  );
+}
+// ── GOOGLE FORMS WRAPPER ──
+function FormsWrapper({ children }) {
+  return (
+    <div style={{ borderRadius: 8, overflow: "hidden", boxShadow: "0 8px 30px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #DADCE0" }}>
+      <div style={{ height: 8, background: "linear-gradient(90deg, #673AB7, #7B1FA2)" }} />
+      <div style={{ background: "#fff", padding: "14px 18px 10px", borderBottom: "3px solid #673AB7" }}>
+        <div style={{ fontSize: 16, fontWeight: 400, color: "#202124", marginBottom: 2 }}>End of Day Report</div>
+        <div style={{ fontSize: 10, color: "#70757A" }}>Submit your daily numbers by 6pm. Required *</div>
+      </div>
+      <div style={{ background: "#F0EBF8", padding: "10px 12px" }}>
+        {children}
+      </div>
     </div>
   );
 }
 
+function FormField({ label, required, value, error, radio }) {
+  return (
+    <div style={{ background: "#fff", border: "1px solid #DADCE0", borderRadius: 8, padding: "14px 18px", marginBottom: 8 }}>
+      <div style={{ fontSize: 12, color: "#202124", marginBottom: 8 }}>
+        {label} {required && <span style={{ color: "#D93025" }}>*</span>}
+      </div>
+      {radio ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {radio.map((opt, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 14, height: 14, borderRadius: "50%", border: `2px solid ${opt.selected ? "#673AB7" : "#80868B"}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {opt.selected && <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#673AB7" }} />}
+              </div>
+              <span style={{ fontSize: 11, color: "#202124" }}>{opt.label}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ borderBottom: `1.5px solid ${error ? "#D93025" : "#80868B"}`, paddingBottom: 4 }}>
+          <span style={{ fontSize: 12, color: value ? "#202124" : "#80868B" }}>{value || "Short answer text"}</span>
+        </div>
+      )}
+      {error && <div style={{ fontSize: 10, color: "#D93025", marginTop: 4 }}>⚠ {error}</div>}
+    </div>
+  );
+}
 // ── DARK VISUAL CARD ──
 function DarkVisual({ children }) {
   return (
@@ -488,11 +606,97 @@ function DarkVisual({ children }) {
   );
 }
 
+// ── GOOGLE SHEETS WRAPPER ──
+function SheetsWrapper({ children }) {
+  return (
+    <div style={{ borderRadius: 8, overflow: "hidden", boxShadow: "0 8px 30px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #C8C8C8" }}>
+      <div style={{ background: "#188038", padding: "7px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+        <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+          <rect x="0" y="0" width="16" height="20" rx="2" fill="#fff" />
+          <rect x="2" y="3" width="5" height="2" rx="0.5" fill="#188038" />
+          <rect x="9" y="3" width="5" height="2" rx="0.5" fill="#188038" />
+          <rect x="2" y="7" width="5" height="2" rx="0.5" fill="#188038" opacity="0.5" />
+          <rect x="9" y="7" width="5" height="2" rx="0.5" fill="#188038" opacity="0.5" />
+          <rect x="2" y="11" width="5" height="2" rx="0.5" fill="#188038" opacity="0.3" />
+          <rect x="9" y="11" width="5" height="2" rx="0.5" fill="#188038" opacity="0.3" />
+        </svg>
+        <span style={{ color: "#fff", fontSize: 12, fontWeight: 500, flex: 1 }}>Sales Tracker — Feb 2026.xlsx</span>
+        <div style={{ display: "flex", gap: 4 }}>
+          {["#FF5F57", "#FEBC2E", "#28C840"].map(c => (
+            <span key={c} style={{ width: 8, height: 8, borderRadius: "50%", background: c, opacity: 0.7 }} />
+          ))}
+        </div>
+      </div>
+      <div style={{ background: "#EEF0F2", padding: "4px 10px", display: "flex", alignItems: "center", gap: 8, borderBottom: "1px solid #D9DDE0" }}>
+        <span style={{ fontSize: 10, color: "#5F6368", fontWeight: 500 }}>D7</span>
+        <div style={{ width: 1, height: 14, background: "#D9DDE0" }} />
+        <span style={{ fontSize: 10, color: "#C53929", fontFamily: "monospace", fontStyle: "italic" }}>=SUMIF(B:B,"Meta",D:D)</span>
+      </div>
+      <div style={{ background: "#fff" }}>{children}</div>
+      <div style={{ background: "#EEF0F2", padding: "4px 10px", display: "flex", gap: 2, borderTop: "1px solid #D9DDE0" }}>
+        <span style={{ padding: "3px 12px", background: "#fff", borderRadius: "4px 4px 0 0", fontSize: 10, color: "#188038", fontWeight: 600, border: "1px solid #D9DDE0", borderBottom: "1px solid #fff" }}>Revenue</span>
+        <span style={{ padding: "3px 12px", fontSize: 10, color: "#80868B" }}>Closers</span>
+        <span style={{ padding: "3px 12px", fontSize: 10, color: "#80868B" }}>Payments ⚠️</span>
+      </div>
+    </div>
+  );
+}
+
+// ── SHEETS CELL GRID ──
+function SheetsGrid({ columns, rows, highlightErrors }) {
+  return (
+    <div style={{ overflow: "hidden" }}>
+      <div style={{ display: "grid", gridTemplateColumns: `32px ${columns.map(c => c.width || "1fr").join(" ")}`, borderBottom: "1px solid #E1E3E5" }}>
+        <div style={{ background: "#F8F9FA", padding: "4px 0", textAlign: "center", fontSize: 10, color: "#80868B", borderRight: "1px solid #E1E3E5" }} />
+        {columns.map((col, ci) => (
+          <div key={ci} style={{ background: "#F8F9FA", padding: "4px 6px", textAlign: "center", fontSize: 10, color: "#80868B", fontWeight: 500, borderRight: ci < columns.length - 1 ? "1px solid #E1E3E5" : "none" }}>
+            {String.fromCharCode(65 + ci)}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: `32px ${columns.map(c => c.width || "1fr").join(" ")}`, borderBottom: "2px solid #E1E3E5" }}>
+        <div style={{ background: "#F8F9FA", padding: "5px 0", textAlign: "center", fontSize: 10, color: "#80868B", borderRight: "1px solid #E1E3E5" }}>1</div>
+        {columns.map((col, ci) => (
+          <div key={ci} style={{ padding: "5px 8px", fontSize: 11, fontWeight: 700, color: "#202124", borderRight: ci < columns.length - 1 ? "1px solid #E1E3E5" : "none", background: "#fff" }}>
+            {col.label}
+          </div>
+        ))}
+      </div>
+      {rows.map((row, ri) => (
+        <div key={ri} style={{ display: "grid", gridTemplateColumns: `32px ${columns.map(c => c.width || "1fr").join(" ")}`, borderBottom: "1px solid #E1E3E5" }}>
+          <div style={{ background: "#F8F9FA", padding: "5px 0", textAlign: "center", fontSize: 10, color: "#80868B", borderRight: "1px solid #E1E3E5" }}>{ri + 2}</div>
+          {row.map((cell, ci) => {
+            const isError = highlightErrors && typeof cell === "string" && (cell.includes("#REF") || cell.includes("#N/A") || cell.includes("#VALUE") || cell.includes("#DIV/0"));
+            const isStrikethrough = typeof cell === "object" && cell.strike;
+            const cellValue = typeof cell === "object" ? cell.value : cell;
+            const cellColor = typeof cell === "object" && cell.color ? cell.color : (isError ? "#C53929" : "#202124");
+            const cellBg = typeof cell === "object" && cell.bg ? cell.bg : (isError ? "#FCE8E6" : "#fff");
+            return (
+              <div
+                key={ci}
+                style={{
+                  padding: "5px 8px", fontSize: 11, color: cellColor, background: cellBg,
+                  borderRight: ci < row.length - 1 ? "1px solid #E1E3E5" : "none",
+                  fontFamily: isError ? "monospace" : "inherit",
+                  textDecoration: isStrikethrough ? "line-through" : "none",
+                  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                }}
+              >
+                {cellValue}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── FEATURES SECTION ──
 function Features() {
   return (
-    <section style={{ padding: "120px 32px" }} id="features">
-      <div style={{ maxWidth: 1140, margin: "0 auto" }}>
+    <section id="features">
+      <div style={{ maxWidth: 1140, margin: "0 auto", padding: "120px 32px 0" }}>
         <Reveal>
           <div style={{ textAlign: "center", marginBottom: 80 }}>
             <div style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.blue, fontWeight: 600, marginBottom: 16 }}>Before → After</div>
@@ -501,21 +705,25 @@ function Features() {
             </h2>
           </div>
         </Reveal>
+      </div>
 
-        {/* Feature 1: AI Post-Call Notes */}
-        <FeatureBlock
+      {/* Feature 1: AI Post-Call Notes */}
+      <FeatureBlock
           tag="⚡ AI Post-Call Notes"
           title="From sloppy EODs to auto-generated post-call notes"
           desc="No more Slack messages at 11pm with guessed numbers. RevPhlo pulls from Fathom recordings and writes the report for your reps."
           bullets={["Captures outcome, objections, and next steps automatically", "One-click link to full recording for coaching", "Replaces manual EODs entirely"]}
-          paperNote={
-            <div style={{ fontFamily: "'Caveat',cursive", position: "relative", zIndex: 1 }}>
-              <div style={{ fontSize: 14, color: "#1a1a1a", fontWeight: 700, marginBottom: 6 }}>EOD — Marcus</div>
-              <div style={{ fontSize: 13, color: "#2c3e6b" }}>Calls: 7ish</div>
-              <div style={{ fontSize: 13, color: "#aaa", textDecoration: "line-through" }}>Close: $14k</div>
-              <div style={{ fontSize: 13, color: "#2c3e6b" }}>Close: $11.5k</div>
-              <div style={{ fontSize: 13, color: T.red, marginTop: 4 }}>Source: idk fb??</div>
-            </div>
+          formNote={
+            <>
+              <FormField label="How many calls did you take today?" required value="7... actually maybe 6?" error="Please enter a number" />
+              <FormField label="Total cash collected" required value="$14,000" error="Does not match Stripe ($11,500)" />
+              <FormField label="Lead source for your closes" required value="" error="This field is required" />
+              <FormField label="Call outcome" required radio={[
+                { label: "Closed — Full Pay", selected: false },
+                { label: "Closed — Payment Plan", selected: true },
+                { label: "Follow Up", selected: false },
+              ]} />
+            </>
           }
           visual={
             <DarkVisual>
@@ -553,14 +761,24 @@ function Features() {
           title='From "I think it was Facebook" to full revenue attribution'
           desc="Slice revenue by closer, traffic source, funnel, setter — any combination. Every dollar traced to where it actually came from."
           bullets={["Revenue by closer × source × funnel", "See which setters book highest-converting leads", "Source mapping from GHL tags, fields, UTMs"]}
-          paperNote={
-            <div style={{ fontFamily: "'Caveat',cursive", position: "relative", zIndex: 1 }}>
-              <div style={{ fontSize: 14, color: "#1a1a1a", fontWeight: 700 }}>Revenue by source??</div>
-              <div style={{ fontSize: 13, color: "#2c3e6b" }}>Phone sets: $300k???</div>
-              <div style={{ fontSize: 13, color: "#2c3e6b" }}>DM sets: no clue</div>
-              <div style={{ fontSize: 13, color: "#2c3e6b" }}>Direct: does anyone track this?</div>
-              <div style={{ fontSize: 13, color: T.red, marginTop: 6 }}>Which closers on which sources?! 🤦</div>
-            </div>
+          sheetNote={
+            <SheetsGrid
+              columns={[
+                { label: "Source", width: "80px" },
+                { label: "Closer", width: "70px" },
+                { label: "Revenue", width: "72px" },
+                { label: "% of Total", width: "68px" },
+              ]}
+              highlightErrors
+              rows={[
+                ["Meta", "Kyle", "$45,200", "=D2/SUM(D:D)"],
+                ["Meta", "Justin", "$31,000", "=D3/SUM(D:D)"],
+                ["Google", { value: "#REF!", color: "#C53929", bg: "#FCE8E6" }, { value: "#REF!", color: "#C53929", bg: "#FCE8E6" }, { value: "#REF!", color: "#C53929", bg: "#FCE8E6" }],
+                ["Organic", "Cami", "$18,500", { value: "#DIV/0!", color: "#C53929", bg: "#FCE8E6" }],
+                [{ value: "DM?? idk", color: "#80868B" }, { value: "???", color: "#80868B" }, { value: "$12,000", color: "#80868B" }, ""],
+                ["", "", { value: "=SUM(D2:D6)", color: "#C53929" }, { value: "#VALUE!", color: "#C53929", bg: "#FCE8E6" }],
+              ]}
+            />
           }
           visual={<AttributionVisual />}
         />
@@ -571,14 +789,25 @@ function Features() {
           title="From spreadsheet chaos to live leaderboards"
           desc="Kill the Google Sheet that breaks every month. Every rep gets their own portal with KPIs, tasks, and shareable wins."
           bullets={["Personal dashboard with pending PCNs", "Leaderboards by cash, closes, close rate", "Shareable wins — one-click to Slack or IG"]}
-          paperNote={
-            <div style={{ fontFamily: "'Caveat',cursive", position: "relative", zIndex: 1 }}>
-              <div style={{ fontSize: 14, color: "#1a1a1a", fontWeight: 700 }}>Leaderboard (Jan)</div>
-              <div style={{ fontSize: 13, color: "#2c3e6b" }}>1. Kyle — $78k?</div>
-              <div style={{ fontSize: 13, color: "#aaa", textDecoration: "line-through" }}>2. Cami — $62k</div>
-              <div style={{ fontSize: 13, color: "#2c3e6b" }}>2. Justin — $61k</div>
-              <div style={{ fontSize: 13, color: T.red, marginTop: 4 }}>wait need to recount...</div>
-            </div>
+          sheetNote={
+            <SheetsGrid
+              columns={[
+                { label: "Rank", width: "40px" },
+                { label: "Rep", width: "72px" },
+                { label: "Closes", width: "50px" },
+                { label: "Revenue", width: "72px" },
+                { label: "Rate", width: "52px" },
+              ]}
+              highlightErrors
+              rows={[
+                ["1", "Kyle M.", "14", "$78,200", "38%"],
+                [{ value: "2", strike: true }, { value: "Cami L.", strike: true }, { value: "11", strike: true }, { value: "$62,100", strike: true }, { value: "32%", strike: true }],
+                ["2", "Justin R.", "12", "$61,800", "35%"],
+                ["3", "Cami L.", { value: "11? 12?", color: "#80868B" }, { value: "$55,900", color: "#80868B" }, { value: "#N/A", color: "#C53929", bg: "#FCE8E6" }],
+                ["4", "Derek W.", "9", "$43,800", "29%"],
+                [{ value: "", color: "#80868B" }, { value: "^^ need to recount", color: "#C53929" }, "", { value: "=SUM(D2:D6)", color: "#C53929" }, ""],
+              ]}
+            />
           }
           visual={<LeaderboardVisual />}
         />
@@ -600,7 +829,6 @@ function Features() {
           }
           visual={<PaymentVisual />}
         />
-      </div>
     </section>
   );
 }
@@ -755,13 +983,13 @@ function HowItWorks() {
 // ── INTEGRATIONS ──
 function Integrations() {
   const items = [
-    { name: "GoHighLevel", color: "#22C55E", letter: "G" },
-    { name: "Zoom", color: "#2D8CFF", letter: "Z" },
-    { name: "Stripe", color: "#635BFF", letter: "S" },
-    { name: "Fathom", color: "#7C3AED", letter: "F" },
-    { name: "Zapier", color: "#FF6D00", letter: "Z" },
-    { name: "Slack", color: "#E01E5A", letter: "S" },
-    { name: "Whop", color: "#3B82F6", letter: "W" },
+    { name: "GoHighLevel", logo: "data:image/png;base64,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" },
+    { name: "Zoom", logo: "data:image/png;base64,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" },
+    { name: "Stripe", logo: "data:image/png;base64,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" },
+    { name: "Fathom", logo: "data:image/png;base64,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" },
+    { name: "Zapier", logo: "data:image/png;base64,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" },
+    { name: "Slack", logo: "data:image/png;base64,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" },
+    { name: "Whop", logo: "data:image/png;base64,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" },
   ];
   return (
     <section style={{ padding: "120px 32px", textAlign: "center" }}>
@@ -773,7 +1001,7 @@ function Integrations() {
         <StaggerChildren stagger={0.06} style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 48 }}>
           {items.map((it) => (
             <div key={it.name} className="hover-card" style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 22px", borderRadius: 14, background: T.white, border: `1px solid ${T.border}`, fontSize: 15, fontWeight: 500, transition: "all 0.25s" }}>
-              <span style={{ width: 30, height: 30, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "#fff", background: it.color }}>{it.letter}</span>
+              <img src={it.logo} alt={it.name} style={{ width: 30, height: 30, borderRadius: 8, objectFit: "cover" }} />
               {it.name}
             </div>
           ))}
@@ -782,6 +1010,7 @@ function Integrations() {
     </section>
   );
 }
+
 
 // ── FAQ ──
 function FAQ() {
@@ -807,8 +1036,9 @@ function FAQ() {
               <div key={i} style={{ borderBottom: `1px solid ${T.border}` }}>
                 <div
                   onClick={() => setOpen(open === i ? null : i)}
-                  className="faq-row"
                   style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "22px 0", cursor: "pointer", fontSize: 16, fontWeight: 600, color: T.text, gap: 16, transition: "color 0.2s" }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = T.blue)}
+                  onMouseOut={(e) => (e.currentTarget.style.color = T.text)}
                 >
                   {it.q}
                   <span style={{ fontSize: 20, color: T.text3, transition: "transform 0.3s", transform: open === i ? "rotate(45deg)" : "rotate(0)", flexShrink: 0 }}>+</span>
@@ -866,12 +1096,10 @@ export default function RevPhloLanding() {
   return (
     <div style={{ fontFamily: "'DM Sans', -apple-system, sans-serif", background: T.bg, color: T.text, lineHeight: 1.6, overflowX: "hidden", WebkitFontSmoothing: "antialiased" }}>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        .nav-link { transition: color 0.2s ease; }
-        .nav-link:hover { color: ${T.text}; }
-        .faq-row:hover { color: ${T.blue}; }
         .btn-primary {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 15px 30px; border-radius: 12px; background: ${T.blue};
@@ -890,22 +1118,6 @@ export default function RevPhloLanding() {
         }
         .btn-ghost:hover { border-color: ${T.borderHover}; background: ${T.white}; transform: translateY(-2px); }
         .hover-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
-
-        @media (max-width: 1024px) {
-          nav > div > div { gap: 18px !important; }
-        }
-
-        @media (max-width: 800px) {
-          nav { padding: 10px 14px !important; }
-          nav a img { height: 22px !important; }
-          nav > div > div a[href^="#"]:not([href="#book"]) { display: none !important; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          html { scroll-behavior: auto; }
-          * { animation: none !important; transition: none !important; }
-          .btn-primary:hover, .btn-ghost:hover, .hover-card:hover { transform: none !important; }
-        }
       `}</style>
 
       <Nav />
