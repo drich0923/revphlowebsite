@@ -264,15 +264,10 @@ function BeforeAfter() {
                 overflow: "hidden",
               }}
             >
-              {/* Lined paper */}
               <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(transparent, transparent 27px, #D4E0ED 27px, #D4E0ED 28px)", opacity: 0.3, pointerEvents: "none" }} />
-              {/* Red margin */}
               <div style={{ position: "absolute", left: 72, top: 0, bottom: 0, width: 1, background: "rgba(220,80,80,0.2)", pointerEvents: "none" }} />
-              {/* Dog ear */}
               <div style={{ position: "absolute", top: 0, right: 0, width: 40, height: 40, background: `linear-gradient(225deg, ${T.bg} 50%, #F0EDE0 50%)`, zIndex: 3 }} />
-              {/* Tape */}
               <div style={{ position: "absolute", top: -4, left: "40%", width: 60, height: 20, background: "rgba(255,220,100,0.35)", border: "1px solid rgba(200,180,80,0.15)", borderRadius: 2, transform: "rotate(2deg)", zIndex: 3 }} />
-              {/* Coffee stain */}
               <div style={{ position: "absolute", right: 20, bottom: 30, width: 80, height: 70, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(139,90,43,0.08) 40%, rgba(139,90,43,0.02) 60%, transparent 70%)" }} />
 
               <div style={{ position: "relative", zIndex: 1 }}>
@@ -449,7 +444,7 @@ function FeatureBlock({ tag, title, desc, bullets, visual, reversed, paperNote, 
   const [swapped, setSwapped] = useState(false);
   const triggered = useRef(false);
 
-  // Step 1: IntersectionObserver detects entry → show old way
+  // Only trigger when block is solidly in viewport (50% visible)
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -461,16 +456,16 @@ function FeatureBlock({ tag, title, desc, bullets, visual, reversed, paperNote, 
           obs.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.35 }
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
-  // Step 2: Once visible, wait 2s then swap to new way
+  // Once properly visible, wait 2.5s then swap
   useEffect(() => {
     if (!visible) return;
-    const t = setTimeout(() => setSwapped(true), 2000);
+    const t = setTimeout(() => setSwapped(true), 2500);
     return () => clearTimeout(t);
   }, [visible]);
 
