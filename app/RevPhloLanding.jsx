@@ -183,19 +183,8 @@ function Nav() {
 // ── HERO ──
 function Hero() {
   const scrollY = useScrollY();
-  const dotSvg = `data:image/svg+xml,${encodeURIComponent('<svg width="30" height="30" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="1.3" fill="rgba(51,97,255,0.12)"/></svg>')}`;
   return (
-    <section style={{ padding: "160px 32px 80px", textAlign: "center", position: "relative", overflow: "hidden", background: `url("${dotSvg}") repeat` }}>
-      {/* Fade overlay — dots strongest in center, fade to solid at edges */}
-      <div
-        style={{
-          position: "absolute", inset: 0,
-          background: `
-            radial-gradient(ellipse 55% 55% at 50% 35%, transparent 0%, ${T.bg} 100%)
-          `,
-          pointerEvents: "none",
-        }}
-      />
+    <section style={{ padding: "160px 32px 80px", textAlign: "center", position: "relative", overflow: "hidden" }}>
       {/* Blue glow behind headline */}
       <div
         style={{
@@ -260,8 +249,8 @@ function BeforeAfter() {
     <div style={{ padding: "80px 32px 0" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <Reveal>
-          <p style={{ textAlign: "center", fontFamily: "'Caveat', cursive", fontSize: 22, color: T.text3, marginBottom: 40 }}>
-            Your sales floor today vs. tomorrow with RevPhlo
+          <p style={{ textAlign: "center", fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.text3, fontWeight: 600, marginBottom: 40 }}>
+            The Old Way vs. The New Way with RevPhlo
           </p>
         </Reveal>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 60px 1fr", alignItems: "stretch" }}>
@@ -1105,8 +1094,9 @@ function Divider() {
 
 // ── MAIN ──
 export default function RevPhloLanding() {
+  const dotBg = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMS4yIiBmaWxsPSJyZ2JhKDUxLDk3LDI1NSwwLjA4KSIvPjwvc3ZnPg==";
   return (
-    <div style={{ fontFamily: "'DM Sans', -apple-system, sans-serif", background: T.bg, color: T.text, lineHeight: 1.6, overflowX: "hidden", WebkitFontSmoothing: "antialiased" }}>
+    <div style={{ fontFamily: "'DM Sans', -apple-system, sans-serif", backgroundColor: T.bg, backgroundImage: `url("${dotBg}")`, backgroundRepeat: "repeat", backgroundSize: "24px 24px", color: T.text, lineHeight: 1.6, overflowX: "hidden", WebkitFontSmoothing: "antialiased" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
@@ -1147,7 +1137,11 @@ export default function RevPhloLanding() {
       <FAQ />
       <Divider />
       <BookDemo />
-      <footer style={{ padding: "40px 32px", textAlign: "center" }}>
+      <footer style={{ padding: "48px 32px 36px", textAlign: "center", borderTop: `1px solid ${T.border}` }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 }}>
+          <a href="https://revphlo.com/privacy-policy" style={{ fontSize: 13, color: T.text3, textDecoration: "none", transition: "color 0.2s" }} onMouseOver={e => e.target.style.color = T.text2} onMouseOut={e => e.target.style.color = T.text3}>Privacy Policy</a>
+          <a href="https://revphlo.com/terms-of-service" style={{ fontSize: 13, color: T.text3, textDecoration: "none", transition: "color 0.2s" }} onMouseOver={e => e.target.style.color = T.text2} onMouseOut={e => e.target.style.color = T.text3}>Terms of Service</a>
+        </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© 2025 RevPhlo. All rights reserved.</p>
       </footer>
     </div>
