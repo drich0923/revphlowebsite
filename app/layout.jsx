@@ -123,9 +123,8 @@ const jsonLd = {
         contactType: "sales",
       },
       sameAs: [
-        // Add your social URLs here:
-        // "https://www.linkedin.com/company/revphlo",
-        // "https://twitter.com/revphlo",
+        "https://www.linkedin.com/company/revphlo",
+        "https://x.com/revphlo",
       ],
     },
     {
