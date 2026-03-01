@@ -1,4 +1,4 @@
-import { posts } from "./blog-data";
+import { posts } from "./blog/blog-data";
 
 export default function sitemap() {
   const baseUrl = "https://revphlo.com";

@@ -1,4 +1,4 @@
-import { posts } from "../../blog-data";
+import { posts } from "../blog-data";
 
 export async function generateMetadata({ params }) {
   const post = posts.find((p) => p.slug === params.slug);
