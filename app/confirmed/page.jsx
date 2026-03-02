@@ -22,6 +22,13 @@ export default function Confirmed() {
   const [results, setResults] = useState(null);
 
   useEffect(() => {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'conversion', {
+        'send_to': 'AW-XXXXXXXXX/XXXXXXXXXXXXX',
+        'value': 100.0,
+        'currency': 'USD',
+      });
+    }
     setTimeout(() => setShow(true), 100);
     setTimeout(() => setCheckDone(true), 600);
   }, []);
