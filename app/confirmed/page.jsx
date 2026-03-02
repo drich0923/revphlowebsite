@@ -22,13 +22,14 @@ export default function Confirmed() {
   const [results, setResults] = useState(null);
 
   useEffect(() => {
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'conversion', {
-        'send_to': 'AW-17985869159',
-        'value': 100.0,
-        'currency': 'USD',
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', 'conversion', {
+        'send_to': 'AW-17985869159/6aYzCJTdn4EcEOeqqoBD',
       });
     }
+  }, []);
+
+  useEffect(() => {
     setTimeout(() => setShow(true), 100);
     setTimeout(() => setCheckDone(true), 600);
   }, []);
