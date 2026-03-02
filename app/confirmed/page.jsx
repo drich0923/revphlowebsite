@@ -24,7 +24,7 @@ export default function Confirmed() {
   useEffect(() => {
     if (typeof gtag !== 'undefined') {
       gtag('event', 'conversion', {
-        'send_to': 'AW-XXXXXXXXX/XXXXXXXXXXXXX',
+        'send_to': 'AW-17985869159',
         'value': 100.0,
         'currency': 'USD',
       });
