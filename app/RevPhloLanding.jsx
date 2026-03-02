@@ -165,6 +165,14 @@ function Nav() {
             </a>
           ))}
           <a
+            href="/about"
+            style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}
+            onMouseOver={(e) => (e.target.style.color = T.text)}
+            onMouseOut={(e) => (e.target.style.color = T.text2)}
+          >
+            About
+          </a>
+          <a
             href="#book"
             style={{
               padding: "10px 24px", borderRadius: 10, background: T.blue, color: "#fff",
@@ -1173,6 +1181,7 @@ export default function RevPhloLanding() {
       <BookDemo />
       <footer style={{ padding: "48px 32px 36px", textAlign: "center", borderTop: `1px solid ${T.border}` }}>
         <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 }}>
+          <a href="/about" style={{ fontSize: 13, color: T.text3, textDecoration: "none", transition: "color 0.2s" }} onMouseOver={e => e.target.style.color = T.text2} onMouseOut={e => e.target.style.color = T.text3}>About</a>
           <a href="https://revphlo.com/privacy-policy" style={{ fontSize: 13, color: T.text3, textDecoration: "none", transition: "color 0.2s" }} onMouseOver={e => e.target.style.color = T.text2} onMouseOut={e => e.target.style.color = T.text3}>Privacy Policy</a>
           <a href="https://revphlo.com/terms-of-service" style={{ fontSize: 13, color: T.text3, textDecoration: "none", transition: "color 0.2s" }} onMouseOver={e => e.target.style.color = T.text2} onMouseOut={e => e.target.style.color = T.text3}>Terms of Service</a>
         </div>

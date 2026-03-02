@@ -91,8 +91,32 @@ export default function BlogPost() {
   // Find related posts (excluding current)
   const related = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.description,
+    "datePublished": post.date,
+    "author": {
+      "@type": "Person",
+      "name": "Dylan",
+      "url": "https://revphlo.com/about"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "RevPhlo",
+      "url": "https://revphlo.com"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://revphlo.com/blog/${post.slug}`
+    },
+    "image": "https://revphlo.com/og-image"
+  };
+
   return (
     <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "'DM Sans',sans-serif" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }

@@ -4,7 +4,7 @@ const siteUrl = "https://revphlo.com";
 const siteName = "RevPhlo";
 const defaultTitle = "RevPhlo — Post-Booking Sales Intelligence for High-Ticket Teams";
 const defaultDescription =
-  "Stop managing your sales team blind. RevPhlo gives you full visibility into what happens after the call is booked — AI post-call notes, revenue attribution, live leaderboards, and payment matching. Built for 7- and 8-figure sales organizations.";
+  "Post-booking sales intelligence for high-ticket teams. AI call notes, revenue attribution, live leaderboards, payment matching. Built for GoHighLevel + Stripe.";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
