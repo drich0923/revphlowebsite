@@ -24,6 +24,7 @@ export default function About() {
     {
       name: "Jake Tacher",
       initials: "JT",
+      photo: "/headshot-jake.png",
       title: "Co-Founder",
       link: { url: "https://systemizedsales.com", label: "Systemized Sales" },
       bio: "Jake is the co-founder of Systemized Sales and brings deep expertise in building and scaling high-ticket sales organizations. He's seen firsthand how fragmented reporting cripples decision-making at scale — and how the right data infrastructure turns a good sales team into a great one. Jake's operational experience across multiple sales organizations directly shapes RevPhlo's product roadmap.",
@@ -31,6 +32,7 @@ export default function About() {
     {
       name: "Ben Crabb",
       initials: "BC",
+      photo: "/headshot-ben.png",
       title: "Co-Founder & Head of Product",
       bio: "Ben leads product development at RevPhlo. As a sales manager who's lived inside the day-to-day chaos of high-ticket operations, he understands exactly which metrics matter, which workflows break, and where teams lose revenue to bad data. Ben ensures every feature RevPhlo ships solves a real problem that sales managers actually face — not just a problem that looks good on a product roadmap.",
     },
