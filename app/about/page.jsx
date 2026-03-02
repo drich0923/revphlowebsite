@@ -17,6 +17,7 @@ export default function About() {
     {
       name: "Dylan",
       initials: "D",
+      photo: "/headshot-dylan.jpg",
       title: "Co-Founder & CEO",
       bio: "Dylan has spent years inside high-ticket sales operations — managing closers, reviewing call recordings, reconciling Stripe payments against CRM data, and building the spreadsheets that were supposed to give leadership visibility into what was actually happening after calls were booked. He built RevPhlo to solve the problem he lived with every day: giving sales leaders real-time, trustworthy visibility into post-booking performance without asking anyone to change how they work.",
     },
@@ -79,17 +80,24 @@ export default function About() {
             {founders.map((f, i) => (
               <div key={i} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 16, padding: "32px 32px" }}>
                 <div style={{ display: "flex", gap: 20, alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap" }}>
-                  {/* Replace with <img src="/headshots/name.jpg" /> when photos are ready */}
-                  <div style={{
-                    width: 64, height: 64, borderRadius: "50%",
-                    background: `linear-gradient(135deg, ${T.blue}, #5B82FF)`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 20, color: T.white, fontWeight: 700,
-                    fontFamily: "'DM Serif Display',Georgia,serif",
-                    flexShrink: 0,
-                  }}>
-                    {f.initials}
-                  </div>
+                  {f.photo ? (
+                    <img src={f.photo} alt={f.name} style={{
+                      width: 64, height: 64, borderRadius: "50%",
+                      objectFit: "cover", flexShrink: 0,
+                      border: `2px solid ${T.border}`,
+                    }} />
+                  ) : (
+                    <div style={{
+                      width: 64, height: 64, borderRadius: "50%",
+                      background: `linear-gradient(135deg, ${T.blue}, #5B82FF)`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 20, color: T.white, fontWeight: 700,
+                      fontFamily: "'DM Serif Display',Georgia,serif",
+                      flexShrink: 0,
+                    }}>
+                      {f.initials}
+                    </div>
+                  )}
                   <div>
                     <p style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 20, color: T.dark, marginBottom: 4 }}>{f.name}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
