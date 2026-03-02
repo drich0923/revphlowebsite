@@ -173,6 +173,14 @@ function Nav() {
             About
           </a>
           <a
+            href="/blog"
+            style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}
+            onMouseOver={(e) => (e.target.style.color = T.text)}
+            onMouseOut={(e) => (e.target.style.color = T.text2)}
+          >
+            Blog
+          </a>
+          <a
             href="#book"
             style={{
               padding: "10px 24px", borderRadius: 10, background: T.blue, color: "#fff",
