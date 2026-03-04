@@ -34,7 +34,6 @@ function Nav() {
       <div style={{ maxWidth: 1140, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="https://revphlo.com" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
           <img src={LOGO_SRC} alt="RevPhlo" style={{ height: 30, width: "auto" }} />
-          <span style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 20, color: T.text, letterSpacing: -0.5 }}>RevPhlo</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 32 }} className="nav-links">
           <a href="https://revphlo.com/#features" style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>Features</a>
