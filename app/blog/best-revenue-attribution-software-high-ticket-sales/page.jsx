@@ -1,4 +1,4 @@
-import ArticleLayout from "../ArticleLayout";
+import ArticleLayout from "../../components/ArticleLayout";
 
 // META: 5 Best Revenue Attribution Tools for High-Ticket Sales Teams (2026)
 // META DESC: The best revenue attribution tools for high-ticket sales teams. Compared by ability to trace cash collected from ad click through closer to payment processor.

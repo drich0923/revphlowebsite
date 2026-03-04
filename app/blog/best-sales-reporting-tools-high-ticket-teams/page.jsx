@@ -1,4 +1,4 @@
-import ArticleLayout from "../ArticleLayout";
+import ArticleLayout from "../../components/ArticleLayout";
 
 // META: 7 Best Sales Reporting Tools for High-Ticket Sales Teams (2026)
 // META DESC: The best sales reporting and analytics tools for high-ticket setter-closer teams. Compared by CRM integration, payment matching, AI features, and fit for scaled sales operations.

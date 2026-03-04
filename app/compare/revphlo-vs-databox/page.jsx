@@ -1,4 +1,4 @@
-import ArticleLayout from "../ArticleLayout";
+import ArticleLayout from "../../components/ArticleLayout";
 
 // META: RevPhlo vs Databox for Sales Dashboards | 2026 Comparison
 // META DESC: Comparing RevPhlo and Databox for sales team dashboards. One is a general-purpose analytics tool. The other is built specifically for high-ticket sales teams.

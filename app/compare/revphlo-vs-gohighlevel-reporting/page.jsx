@@ -1,4 +1,4 @@
-import ArticleLayout from "../ArticleLayout";
+import ArticleLayout from "../../components/ArticleLayout";
 
 // META: RevPhlo vs GoHighLevel Reporting for Sales Teams | 2026 Comparison
 // META DESC: Comparing RevPhlo and GoHighLevel's built-in reporting for high-ticket sales teams. What GHL covers, where the gaps are, and how RevPhlo adds the post-booking intelligence layer.
