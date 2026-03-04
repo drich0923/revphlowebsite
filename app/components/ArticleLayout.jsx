@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect, useRef } from "react";
 
 // ── DESIGN TOKENS (matches main site) ──
