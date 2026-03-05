@@ -222,7 +222,7 @@ function Hero() {
             letterSpacing: -1.5, maxWidth: 820, margin: "0 auto 24px",
           }}
         >
-          Stop managing your sales team <em style={{ fontStyle: "italic", color: T.blue }}>blind</em>
+          {"You're running a"}{" "}<em style={{ fontStyle: "italic", color: T.blue }}>7-figure sales team</em>{" off a Google Sheet."}
         </h1>
       </Reveal>
       <Reveal delay={0.16}>
