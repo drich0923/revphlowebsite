@@ -935,7 +935,6 @@ function Testimonial() {
     <section style={{ padding: "100px 32px", background: T.white }}>
       <Reveal>
         <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center", position: "relative" }}>
-          <div style={{ position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)", fontSize: 80, color: T.blue, opacity: 0.12, fontFamily: "'DM Serif Display',serif", lineHeight: 1 }}>"</div>
           <p style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(22px,3vw,32px)", lineHeight: 1.4, letterSpacing: -0.5, marginBottom: 32 }}>
             RevPhlo saved our sales team hours of admin work. Since adding it to our stack it's helped us close an additional $200k in revenue.
           </p>
