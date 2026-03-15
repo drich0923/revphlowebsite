@@ -641,7 +641,6 @@ This isn't necessarily an either/or decision. Some teams use Databox for executi
 
 Different tools for different questions. The mistake is expecting a general-purpose dashboard to answer sales-specific questions it was never built to handle.`,
   },
-,
   {
     slug: "how-to-track-revenue-by-closer",
     title: "How to Track Revenue by Closer (Without Spreadsheets)",
