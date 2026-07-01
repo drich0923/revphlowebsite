@@ -1181,7 +1181,7 @@ html.js-motion .oldnew__arrow-dot {
   visibility: hidden;
 }
 html.js-motion .panel__state:not([hidden]) {
-  animation: panel-in 180ms var(--ease-out);
+  animation: panel-in 300ms var(--ease-out);
 }
 
 /* The evidence peek — clipped paper corner, second BEFORE trigger */

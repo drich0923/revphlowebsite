@@ -7,6 +7,7 @@ const LOGOS = [
   { name: "Fathom", file: "fathom.png" },
   { name: "Zapier", file: "zapier.png" },
   { name: "Slack", file: "slack.png" },
+  { name: "HubSpot", file: "hubspot.png" },
   { name: "Whop", file: "whop.png" },
 ];
 
@@ -31,7 +32,6 @@ export default function Integrations() {
               <span className="lattice__name">{l.name}</span>
             </div>
           ))}
-          <div className="lattice__cell lattice__cell--open" aria-hidden="true" />
         </div>
       </div>
     </section>
