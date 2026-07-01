@@ -14,12 +14,15 @@ export default function StickyBar() {
     const book = document.getElementById("book");
     const ios = [];
     if (hero) {
-      const io = new IntersectionObserver(([e]) => setPastHero(!e.isIntersecting && e.boundingClientRect.bottom < 0));
+      const io = new IntersectionObserver((entries) => {
+        const e = entries[entries.length - 1];
+        setPastHero(!e.isIntersecting && e.boundingClientRect.bottom < 0);
+      });
       io.observe(hero);
       ios.push(io);
     }
     if (book) {
-      const io = new IntersectionObserver(([e]) => setBookVisible(e.isIntersecting));
+      const io = new IntersectionObserver((entries) => setBookVisible(entries[entries.length - 1].isIntersecting));
       io.observe(book);
       ios.push(io);
     }

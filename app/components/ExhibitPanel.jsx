@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 // Clicking the tabs (or the peek) takes over and stops the auto-swap.
 // Panels already visible at hydration never flip (no flash), and reduced
 // motion keeps the SSR state.
-const HOLD_MS = 1800;
+const HOLD_MS = 3000;
 
 export default function ExhibitPanel({ index, before, after, beforeSummary }) {
   const [state, setState] = useState("after");
@@ -28,9 +28,16 @@ export default function ExhibitPanel({ index, before, after, beforeSummary }) {
 
     setState("before");
     let timer;
+    // Hovering, tapping, or tabbing into the panel means the visitor is
+    // reading it — never swap it out from under them.
+    const veto = () => {
+      manual.current = true;
+    };
+    el.addEventListener("pointerenter", veto);
+    el.addEventListener("focusin", veto);
     const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
+      (entries) => {
+        if (!entries[entries.length - 1].isIntersecting) return;
         io.disconnect();
         timer = setTimeout(() => {
           if (!manual.current) setState("after");
@@ -42,6 +49,8 @@ export default function ExhibitPanel({ index, before, after, beforeSummary }) {
     return () => {
       io.disconnect();
       clearTimeout(timer);
+      el.removeEventListener("pointerenter", veto);
+      el.removeEventListener("focusin", veto);
     };
   }, []);
 

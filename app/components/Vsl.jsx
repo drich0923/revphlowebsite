@@ -4,38 +4,59 @@ import { useEffect, useRef, useState } from "react";
 const EMBED_ID = "vidalytics_embed_qY0sZQMIwMDYGr3T";
 const BASE_URL = "https://fast.vidalytics.com/embeds/Xbxuo1Sw/qY0sZQMIwMDYGr3T/";
 
+// Facade: hovering the poster only preloads the Vidalytics script; the poster
+// is revealed away only after a real click AND only once an iframe/video has
+// actually mounted — if the embed host is blocked, the play button stays
+// (no dead black box).
 export default function Vsl() {
   const [posterGone, setPosterGone] = useState(false);
   const injected = useRef(false);
+  const armed = useRef(false);
   const embedRef = useRef(null);
+  const posterRef = useRef(null);
+  const posterHadFocus = useRef(false);
   const scriptRef = useRef(null);
+  const observerRef = useRef(null);
 
   useEffect(() => {
     return () => {
       if (scriptRef.current) scriptRef.current.remove();
+      if (observerRef.current) observerRef.current.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (posterGone && posterHadFocus.current) embedRef.current?.focus();
+  }, [posterGone]);
+
+  const reveal = () => {
+    posterHadFocus.current = document.activeElement === posterRef.current;
+    setPosterGone(true);
+  };
+
+  const maybeReveal = () => {
+    if (!armed.current) return;
+    const target = embedRef.current;
+    if (target && target.querySelector("iframe, video")) {
+      reveal();
+      return;
+    }
+    if (target && !observerRef.current) {
+      const mo = new MutationObserver(() => {
+        if (armed.current && target.querySelector("iframe, video")) {
+          mo.disconnect();
+          observerRef.current = null;
+          reveal();
+        }
+      });
+      mo.observe(target, { childList: true, subtree: true });
+      observerRef.current = mo;
+    }
+  };
 
   const inject = () => {
     if (injected.current) return;
     injected.current = true;
-
-    // Fade the poster once the player actually mounts (iframe/video appears);
-    // 4s timeout is the fallback so there is never a dead state.
-    const target = embedRef.current;
-    const done = () => setPosterGone(true);
-    const timeout = setTimeout(done, 4000);
-    if (target) {
-      const mo = new MutationObserver(() => {
-        if (target.querySelector("iframe, video")) {
-          clearTimeout(timeout);
-          mo.disconnect();
-          done();
-        }
-      });
-      mo.observe(target, { childList: true, subtree: true });
-    }
-
     const s = document.createElement("script");
     s.innerHTML = `(function (v, i, d, a, l, y, t, c, s) {
       y='_'+d.toLowerCase();c=d+'L';if(!v[d]){v[d]={}}if(!v[c]){v[c]={}}if(!v[y]){v[y]={}}var vl='Loader',vli=v[y][vl],vsl=v[c][vl + 'Script'],vlf=v[c][vl + 'Loaded'],ve='Embed';
@@ -46,6 +67,12 @@ export default function Vsl() {
     })(window, document, 'Vidalytics', '${EMBED_ID}', '${BASE_URL}');`;
     document.body.appendChild(s);
     scriptRef.current = s;
+  };
+
+  const onPlayClick = () => {
+    armed.current = true;
+    inject();
+    maybeReveal();
   };
 
   return (
@@ -66,14 +93,15 @@ export default function Vsl() {
           connect to dashboard.
         </p>
         <div className="vsl__player" data-reveal>
-          <div id={EMBED_ID} ref={embedRef} className="vsl__embed" />
+          <div id={EMBED_ID} ref={embedRef} className="vsl__embed" tabIndex={-1} />
           <button
+            ref={posterRef}
             className={`vsl__poster ${posterGone ? "vsl__poster--gone" : ""}`}
             aria-label="Play the 3-minute demo video"
             aria-hidden={posterGone}
             tabIndex={posterGone ? -1 : 0}
             onPointerOver={inject}
-            onClick={inject}
+            onClick={onPlayClick}
           >
             <span className="vsl__play">
               <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">

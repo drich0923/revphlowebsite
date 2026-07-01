@@ -123,14 +123,24 @@ const jsonLd = {
       logo: `${siteUrl}/logo.png`,
       description:
         "RevPhlo is a unified post-booking sales analytics platform built for high-ticket sales teams.",
-      contactPoint: {
-        "@type": "ContactPoint",
-        email: "support@revphlo.com",
-        contactType: "sales",
-      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          email: "support@revphlo.com",
+          contactType: "sales",
+        },
+        {
+          "@type": "ContactPoint",
+          telephone: "+1-747-946-7242",
+          contactType: "customer support",
+          areaServed: "US",
+          availableLanguage: "English",
+        },
+      ],
       sameAs: [
         "https://www.linkedin.com/company/revphlo",
         "https://x.com/revphlo",
+        "https://www.crunchbase.com/organization/revphlo",
       ],
     },
     {

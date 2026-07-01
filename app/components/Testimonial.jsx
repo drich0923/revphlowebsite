@@ -22,7 +22,7 @@ export default function Testimonial() {
         </blockquote>
         <p className="testimonial__attr">
           <span className="testimonial__dash" aria-hidden="true" />
-          Sales Director — 8-Figure Sales Organization
+          Sales Director &middot; 8-Figure Sales Organization
         </p>
       </div>
     </section>

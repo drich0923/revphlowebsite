@@ -66,7 +66,7 @@ export default function OldNew() {
       <div className="container">
         <div className="protocol" data-reveal>
           <span className="protocol__index">01</span>
-          <span className="protocol__eyebrow">The Old Way vs. The New Way with RevPhlo</span>
+          <h2 className="protocol__eyebrow">The Old Way vs. The New Way with RevPhlo</h2>
           <span className="protocol__tick" aria-hidden="true" />
         </div>
         <div className="oldnew__grid" data-reveal-group>

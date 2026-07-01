@@ -4,7 +4,7 @@ import { Icon } from "./Icons";
 import { FAQ_ITEMS } from "./faq-data";
 
 export default function Faq() {
-  const [open, setOpen] = useState(0);
+  const [open, setOpen] = useState(-1);
 
   return (
     <section className="faq" id="faq">

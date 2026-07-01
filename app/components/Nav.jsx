@@ -34,6 +34,18 @@ export default function Nav() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // Close the panel if the viewport grows past the mobile breakpoint
+  // (e.g. tablet rotation) — above 768px the burger is hidden and the
+  // open panel would otherwise be stuck with no visible dismiss control.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const onChange = (e) => {
+      if (!e.matches) setOpen(false);
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   return (
     <header className={`nav ${solid || open ? "nav--solid" : ""}`}>
       <div className="container nav__inner">
@@ -64,13 +76,13 @@ export default function Nav() {
           </button>
         </div>
       </div>
-      <div id="mobile-menu" className="nav__menu" hidden={!open}>
+      <nav id="mobile-menu" aria-label="Main" className="nav__menu" hidden={!open}>
         {LINKS.map((l) => (
           <a key={l.href} href={l.href} className="nav__menu-link" onClick={() => setOpen(false)}>
             {l.label}
           </a>
         ))}
-      </div>
+      </nav>
     </header>
   );
 }

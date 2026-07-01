@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="container footer__inner">
         <div className="footer__left">
           <Image src="/logo.png" alt="RevPhlo" width={102} height={20} className="footer__logo" />
-          <span className="footer__copy">&copy; 2026 RevPhlo. All rights reserved.</span>
+          <span className="footer__copy">&copy; {new Date().getFullYear()} RevPhlo. All rights reserved.</span>
         </div>
         <div className="footer__links">
           <a href="https://revphlo.com/privacy-policy">Privacy Policy</a>

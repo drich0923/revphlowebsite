@@ -1,15 +1,6 @@
-import Image from "next/image";
+import { IntegrationMark } from "./IntegrationLogos";
 
-const LOGOS = [
-  { name: "GoHighLevel", file: "gohighlevel.png" },
-  { name: "Zoom", file: "zoom.png" },
-  { name: "Stripe", file: "stripe.png" },
-  { name: "Fathom", file: "fathom.png" },
-  { name: "Zapier", file: "zapier.png" },
-  { name: "Slack", file: "slack.png" },
-  { name: "HubSpot", file: "hubspot.png" },
-  { name: "Whop", file: "whop.png" },
-];
+const NAMES = ["GoHighLevel", "Zoom", "Stripe", "Fathom", "Zapier", "Slack", "HubSpot", "Whop"];
 
 export default function Integrations() {
   return (
@@ -24,12 +15,10 @@ export default function Integrations() {
           Plugs into your existing stack
         </h2>
         <div className="lattice" data-reveal>
-          {LOGOS.map((l) => (
-            <div key={l.name} className="lattice__cell">
-              <span className="lattice__tile">
-                <Image src={`/logos/${l.file}`} alt={`${l.name} logo`} width={30} height={30} className="lattice__logo" />
-              </span>
-              <span className="lattice__name">{l.name}</span>
+          {NAMES.map((name) => (
+            <div key={name} className="lattice__cell">
+              <IntegrationMark name={name} className="lattice__glyph" />
+              <span className="lattice__name">{name}</span>
             </div>
           ))}
         </div>

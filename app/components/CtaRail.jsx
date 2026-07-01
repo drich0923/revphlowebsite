@@ -3,7 +3,7 @@ import Tape from "./Tape";
 
 export default function CtaRail({ ghostLabel = "See How It Works", ghostHref = "#features" }) {
   return (
-    <aside className="ctarail">
+    <div className="ctarail">
       <div className="ctarail__tape">
         <Tape inline />
       </div>
@@ -16,6 +16,6 @@ export default function CtaRail({ ghostLabel = "See How It Works", ghostHref = "
           {ghostLabel}
         </a>
       </div>
-    </aside>
+    </div>
   );
 }

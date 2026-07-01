@@ -171,7 +171,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
           <a href="https://revphlo.com/privacy-policy" style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Privacy Policy</a>
           <a href="https://revphlo.com/terms-of-service" style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Terms of Service</a>
         </div>
-        <p style={{ fontSize: 13, color: T.text3 }}>© 2025 RevPhlo. All rights reserved.</p>
+        <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>
     </div>
   );

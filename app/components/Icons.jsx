@@ -55,6 +55,7 @@ export function DeltaChip({ dir, value }) {
       <svg viewBox="0 0 12 10" width="8" height="7" aria-hidden="true" className={dir === "down" ? "delta__tri delta__tri--down" : "delta__tri"}>
         <path d="M6 1l5 8H1z" fill="currentColor" />
       </svg>
+      <span className="sr-only">{dir === "up" ? "up " : "down "}</span>
       <span className="delta__sign" aria-hidden="true">{dir === "up" ? "+" : "-"}</span>
       {value}
     </span>

@@ -53,8 +53,9 @@ function TitleBar() {
       <div className="dash__title">Dashboard</div>
       <div className="dash__meta">
         <Icon name="calendar" size={14} />
-        <span>
-          <span className="dash__meta-live">This Month</span> &middot; Feb 2026
+        <span className="dash__meta-text">
+          <span className="dash__meta-live">This Month</span>
+          <span className="dash__meta-date"> &middot; Feb 2026</span>
         </span>
         <span className="dash__pills" aria-hidden="true">
           <span className="dash__pill">Today</span>

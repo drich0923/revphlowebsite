@@ -26,7 +26,7 @@
 
   /* Accent — interactive only */
   --accent: #3361ff;
-  --accent-hi: #5c82ff;
+  --accent-hi: #2b55e6; /* hover: darker, keeps >=4.5:1 with white text */
   --accent-text: #93acff;
   --accent-glow: rgba(51, 97, 255, 0.22);
 
@@ -226,6 +226,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
+  margin: 0;
+  font-size: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
   font-weight: 600;
 }
 .protocol__tick {
@@ -575,6 +579,9 @@ html.js-motion .live-dot {
   font-size: 13px;
   color: var(--text-2);
 }
+.dash__meta-text {
+  white-space: nowrap;
+}
 .dash__meta-live {
   color: var(--money);
 }
@@ -646,34 +653,58 @@ html.js-motion .dash--full .delta {
 
 /* ---------- 7. The Tape ---------- */
 .tape {
+  position: relative;
   overflow: hidden;
   border-top: var(--border-1);
   border-bottom: var(--border-1);
   background: var(--bg-1);
   padding: 13px 0;
 }
+/* No flex gap: each item carries its own trailing margin so one copy of the
+   list is exactly half the track width and the -50% loop is seamless. */
 .tape__track {
   display: flex;
-  gap: var(--sp-7);
   width: max-content;
 }
 html.js-motion .tape__track {
   animation: tape 45s linear infinite;
 }
 .tape:hover .tape__track,
-.tape:focus-within .tape__track {
+.tape:focus-within .tape__track,
+.tape--paused .tape__track {
   animation-play-state: paused;
 }
 .tape__item {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-3);
+  margin-right: var(--sp-7);
   font-family: var(--font-mono), monospace;
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
   white-space: nowrap;
+}
+.tape__pause {
+  position: absolute;
+  top: 50%;
+  right: var(--sp-3);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-1);
+  border: var(--border-1);
+  background: var(--bg-1);
+  color: var(--text-3);
+  transition: color 0.15s, border-color 0.15s;
+}
+.tape__pause:hover {
+  color: var(--text-1);
+  border-color: var(--line-2);
 }
 .tape__value {
   color: var(--text-2);
@@ -1144,6 +1175,7 @@ html.js-motion .oldnew__arrow-dot {
 .panel__tab {
   padding: 8px 16px;
   min-height: 36px;
+  border: 1px solid transparent;
   border-radius: var(--r-1);
   font-family: var(--font-mono), monospace;
   font-size: 11px;
@@ -1172,6 +1204,10 @@ html.js-motion .oldnew__arrow-dot {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+/* Reserve the evidence-peek intrusion zone so content never sits under it */
+.panel__state--after {
+  padding-bottom: calc(var(--sp-6) + 48px);
 }
 .panel__state--before {
   align-items: center;
@@ -1242,7 +1278,7 @@ html.js-motion .panel__state:not([hidden]) {
   font-weight: 600;
 }
 .gform__sub {
-  color: #80868b;
+  color: #5f6368;
   font-size: 12px;
   margin-top: 4px;
 }
@@ -1260,13 +1296,13 @@ html.js-motion .panel__state:not([hidden]) {
   min-height: 28px;
 }
 .gform__input--empty {
-  color: transparent;
+  color: #5f6368;
 }
 .gform__error {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #d93025;
+  color: #b3261e;
   font-size: 12px;
   margin-top: 5px;
 }
@@ -1326,7 +1362,7 @@ html.js-motion .panel__state:not([hidden]) {
   font-size: 12px;
 }
 .gsheet__cellref {
-  color: #80868b;
+  color: #5f6368;
   border-right: 1px solid #dadce0;
   padding-right: 10px;
 }
@@ -1356,7 +1392,7 @@ html.js-motion .panel__state:not([hidden]) {
   text-overflow: ellipsis;
 }
 .gsheet__cell--err {
-  color: #d93025;
+  color: #b3261e;
   background: #fce8e6;
   font-weight: 600;
 }
@@ -1376,7 +1412,7 @@ html.js-motion .panel__state:not([hidden]) {
   gap: 4px;
   padding: 4px 12px;
   border-radius: 4px 4px 0 0;
-  color: #80868b;
+  color: #5f6368;
 }
 .gsheet__tab--active {
   background: #fff;
@@ -1534,7 +1570,7 @@ html.js-motion .panel__state:not([hidden]) {
 }
 .lb__row {
   display: grid;
-  grid-template-columns: 28px 1fr 64px 84px;
+  grid-template-columns: 28px minmax(0, 1fr) 64px auto;
   gap: var(--sp-3);
   align-items: center;
   background: var(--bg-3);
@@ -1551,6 +1587,11 @@ html.js-motion .panel__state:not([hidden]) {
   font-family: var(--font-mono), monospace;
   font-weight: 600;
   color: var(--text-3);
+}
+.lb__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .lb__row--top .lb__rank {
   color: var(--accent-text);
@@ -1599,6 +1640,9 @@ html.js-motion .panel__state:not([hidden]) {
 .paycard__email {
   font-family: var(--font-mono), monospace;
   font-size: 13px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .paycard__amt {
   font-size: 18px;
@@ -1677,7 +1721,7 @@ html.js-motion .panel__state:not([hidden]) {
   font-size: 44px;
   line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.34);
   margin-bottom: var(--sp-4);
   transition: -webkit-text-stroke-color 0.2s;
 }
@@ -1734,42 +1778,21 @@ html.js-motion .panel__state:not([hidden]) {
 .lattice__cell:hover {
   background: var(--bg-2);
 }
-.lattice__tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-}
-.lattice__logo {
-  filter: grayscale(1) contrast(0.9);
-  opacity: 0.85;
-  transition: filter 0.2s, opacity 0.2s;
+.lattice__glyph {
   width: 30px;
   height: 30px;
-  object-fit: contain;
-  border-radius: 6px;
+  color: var(--text-1);
+  opacity: 0.72;
+  transition: opacity 0.2s, transform 0.2s;
 }
-.lattice__cell:hover .lattice__logo {
-  filter: none;
+.lattice__cell:hover .lattice__glyph {
   opacity: 1;
+  transform: translateY(-2px);
 }
 .lattice__name {
   font-family: var(--font-mono), monospace;
   font-size: 13px;
   color: var(--text-2);
-}
-.lattice__cell--open {
-  background: repeating-linear-gradient(
-    45deg,
-    var(--bg-1),
-    var(--bg-1) 14px,
-    rgba(255, 255, 255, 0.012) 14px,
-    rgba(255, 255, 255, 0.012) 15px
-  );
 }
 
 /* ---------- 15. FAQ ---------- */
@@ -1836,11 +1859,13 @@ html.js-motion .panel__state:not([hidden]) {
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  transition: grid-template-rows 0.24s var(--ease-out), opacity 0.24s;
+  visibility: hidden;
+  transition: grid-template-rows 0.24s var(--ease-out), opacity 0.24s, visibility 0.24s;
 }
 .faq__panel--open {
   grid-template-rows: 1fr;
   opacity: 1;
+  visibility: visible;
 }
 .faq__panel-inner {
   overflow: hidden;
@@ -2047,6 +2072,9 @@ html.js-motion .book__skeleton::after {
 
 /* ---------- 20. Media queries ---------- */
 @media (max-width: 900px) {
+  .testimonial__glyph {
+    left: 0;
+  }
   .oldnew__grid {
     grid-template-columns: 1fr;
     justify-items: center;
@@ -2129,7 +2157,7 @@ html.js-motion .book__skeleton::after {
     width: 100%;
     min-height: 52px;
   }
-  .dash__grid {
+  .dash--full .dash__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .dash--full .kpi--anchor {
@@ -2180,10 +2208,12 @@ html.js-motion .book__skeleton::after {
     backdrop-filter: blur(12px);
     border-top: var(--border-1);
     transform: translateY(100%);
-    transition: transform 0.25s var(--ease-out);
+    visibility: hidden;
+    transition: transform 0.25s var(--ease-out), visibility 0.25s;
   }
   .stickybar--on {
     transform: translateY(0);
+    visibility: visible;
   }
   body.menu-open .stickybar {
     display: none;
@@ -2217,8 +2247,15 @@ html.js-motion .book__skeleton::after {
   .panel__state {
     padding: var(--sp-4);
   }
+  .panel__state--after {
+    padding-bottom: calc(var(--sp-4) + 64px);
+  }
   .panel__stage {
     min-height: 320px;
+  }
+  .dash__meta > svg,
+  .dash__meta-date {
+    display: none;
   }
   .book__card {
     min-height: 620px;
@@ -2234,7 +2271,7 @@ html.js-motion .book__skeleton::after {
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 393px) {
   .gsheet__grid {
     -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
     mask-image: linear-gradient(90deg, #000 85%, transparent);

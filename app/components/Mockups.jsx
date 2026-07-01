@@ -27,7 +27,7 @@ export function FormMockup() {
         </div>
         <div className="gform__field">
           <div className="gform__label">Lead source for your closes *</div>
-          <div className="gform__input gform__input--empty" />
+          <div className="gform__input gform__input--empty">Short answer text</div>
           <div className="gform__error">
             <Icon name="warning-triangle" size={12} /> This field is required
           </div>
