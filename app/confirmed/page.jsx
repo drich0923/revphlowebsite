@@ -227,7 +227,7 @@ export default function Confirmed() {
         {/* Inbox note */}
         <div style={{ height: 1, background: T.border, margin: "48px 0" }} />
         <p style={{ fontSize: 15, color: T.text2, lineHeight: 1.65 }}>
-          📧 <strong style={{ color: T.dark }}>Check your inbox</strong> &mdash; your calendar invite with the meeting link is on the way. We&rsquo;ll walk through your numbers live on the call.
+          <strong style={{ color: T.dark }}>Check your inbox</strong> &mdash; your calendar invite with the meeting link is on the way. We&rsquo;ll walk through your numbers live on the call.
         </p>
       </main>
 

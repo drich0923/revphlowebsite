@@ -1,4 +1,10 @@
 import "./globals.css";
+import { Bricolage_Grotesque, Inter, IBM_Plex_Mono, Caveat } from "next/font/google";
+
+const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-display", display: "swap" });
+const body = Inter({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-body", display: "swap" });
+const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-mono", display: "swap" });
+const hand = Caveat({ subsets: ["latin"], weight: ["600"], variable: "--font-hand", display: "swap" });
 
 const siteUrl = "https://revphlo.com";
 const siteName = "RevPhlo";
@@ -137,10 +143,20 @@ const jsonLd = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${display.variable} ${body.variable} ${mono.variable} ${hand.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches)document.documentElement.classList.add('js-motion')}catch(e){}",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
