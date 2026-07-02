@@ -1,8 +1,13 @@
 import ArticleLayout from "../../components/ArticleLayout";
 
-// META: RevPhlo vs Spreadsheets for Sales Reporting | 2026 Comparison
-// META DESC: Comparing RevPhlo's automated sales intelligence dashboard to spreadsheet-based reporting for high-ticket sales teams. Feature comparison, time savings, and data accuracy breakdown.
-// URL: revphlo.com/compare/revphlo-vs-spreadsheets
+export const metadata = {
+  title: { absolute: "RevPhlo vs Spreadsheets for Sales Reporting | 2026 Comparison" },
+  description:
+    "Comparing RevPhlo's automated sales intelligence dashboard to spreadsheet-based reporting for high-ticket sales teams. Feature comparison, time savings, and data accuracy breakdown.",
+  alternates: {
+    canonical: "/compare/revphlo-vs-spreadsheets",
+  },
+};
 
 export default function RevPhloVsSpreadsheets() {
   return (

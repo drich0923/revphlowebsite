@@ -23,7 +23,7 @@ function renderContent(content) {
     if (trimmed.startsWith("## ")) {
       return (
         <h2 key={i} style={{
-          fontFamily: "'DM Serif Display',Georgia,serif",
+          fontFamily: "var(--font-dm-serif),Georgia,serif",
           fontSize: 28, color: T.dark, lineHeight: 1.3,
           marginTop: 48, marginBottom: 16,
         }}>
@@ -79,9 +79,9 @@ export default function BlogPost() {
 
   if (!post) {
     return (
-      <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "var(--font-dm-sans),sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <h1 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 36, color: T.dark, marginBottom: 16 }}>Post not found</h1>
+          <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 36, color: T.dark, marginBottom: 16 }}>Post not found</h1>
           <Link href="/blog" style={{ color: T.blue, fontSize: 16 }}>← Back to Blog</Link>
         </div>
       </div>
@@ -115,10 +115,9 @@ export default function BlogPost() {
   };
 
   return (
-    <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "'DM Sans',sans-serif" }}>
+    <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "var(--font-dm-sans),sans-serif" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         .related-card { transition: transform 0.25s ease, box-shadow 0.25s ease; text-decoration: none; color: inherit; }
         .related-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
@@ -146,7 +145,7 @@ export default function BlogPost() {
 
         {/* Title */}
         <h1 style={{
-          fontFamily: "'DM Serif Display',Georgia,serif",
+          fontFamily: "var(--font-dm-serif),Georgia,serif",
           fontSize: "clamp(32px,4.5vw,46px)", lineHeight: 1.15,
           letterSpacing: -0.5, color: T.dark, marginBottom: 40,
         }}>
@@ -164,7 +163,7 @@ export default function BlogPost() {
           textAlign: "center", marginTop: 56,
           border: "1px solid rgba(255,255,255,0.06)",
         }}>
-          <p style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 26, color: T.white, marginBottom: 12, lineHeight: 1.3 }}>
+          <p style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 26, color: T.white, marginBottom: 12, lineHeight: 1.3 }}>
             See what RevPhlo can do for your team
           </p>
           <p style={{ fontSize: 15, color: T.text3, marginBottom: 28, lineHeight: 1.6 }}>
@@ -194,7 +193,7 @@ export default function BlogPost() {
                   }}>
                     <span style={{ fontSize: 11, fontWeight: 600, color: T.blue }}>{r.category}</span>
                     <p style={{
-                      fontFamily: "'DM Serif Display',Georgia,serif",
+                      fontFamily: "var(--font-dm-serif),Georgia,serif",
                       fontSize: 17, color: T.dark, lineHeight: 1.35, marginTop: 8,
                     }}>
                       {r.title}

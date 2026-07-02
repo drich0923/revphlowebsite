@@ -1,8 +1,13 @@
 import ArticleLayout from "../../components/ArticleLayout";
 
-// META: RevPhlo vs Databox for Sales Dashboards | 2026 Comparison
-// META DESC: Comparing RevPhlo and Databox for sales team dashboards. One is a general-purpose analytics tool. The other is built specifically for high-ticket sales teams.
-// URL: revphlo.com/compare/revphlo-vs-databox
+export const metadata = {
+  title: { absolute: "RevPhlo vs Databox for Sales Dashboards | 2026 Comparison" },
+  description:
+    "Comparing RevPhlo and Databox for sales team dashboards. One is a general-purpose analytics tool. The other is built specifically for high-ticket sales teams.",
+  alternates: {
+    canonical: "/compare/revphlo-vs-databox",
+  },
+};
 
 export default function RevPhloVsDatabox() {
   return (

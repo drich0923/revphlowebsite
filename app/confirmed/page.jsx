@@ -75,9 +75,8 @@ export default function Confirmed() {
   const confettiColors = [T.blue, T.green, T.amber, T.blueLight, T.green, T.blue, T.amber, T.blueLight];
 
   return (
-    <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "'DM Sans',sans-serif" }}>
+    <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "var(--font-dm-sans),sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         @keyframes checkPop { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
         @keyframes confettiDot { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.3); } }
@@ -112,7 +111,7 @@ export default function Confirmed() {
 
         {/* Heading */}
         <div style={{ opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(20px)", transition: "all 0.6s ease 0.3s" }}>
-          <h1 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(32px,5vw,48px)", lineHeight: 1.15, letterSpacing: -1, color: T.dark, marginBottom: 16 }}>
+          <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(32px,5vw,48px)", lineHeight: 1.15, letterSpacing: -1, color: T.dark, marginBottom: 16 }}>
             You&rsquo;re booked.
           </h1>
           <p style={{ fontSize: 18, color: T.text2, lineHeight: 1.65, maxWidth: 520, margin: "0 auto 48px" }}>
@@ -131,7 +130,7 @@ export default function Confirmed() {
           padding: "40px 36px", textAlign: "left", boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
           opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(20px)", transition: "all 0.6s ease 0.7s",
         }}>
-          <p style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 26, color: T.dark, marginBottom: 8, textAlign: "center" }}>
+          <p style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 26, color: T.dark, marginBottom: 8, textAlign: "center" }}>
             How much is broken reporting costing you?
           </p>
           <p style={{ fontSize: 15, color: T.text3, textAlign: "center", marginBottom: 36 }}>
@@ -158,7 +157,7 @@ export default function Confirmed() {
                     onChange={e => field.set(e.target.value)}
                     style={{
                       width: "100%", padding: "13px 14px", border: "none", background: "transparent",
-                      fontFamily: "'DM Sans',sans-serif", fontSize: 15, color: T.dark, outline: "none",
+                      fontFamily: "var(--font-dm-sans),sans-serif", fontSize: 15, color: T.dark, outline: "none",
                       paddingLeft: field.prefix ? 4 : 14, paddingRight: field.suffix ? 4 : 14,
                     }}
                   />
@@ -170,7 +169,7 @@ export default function Confirmed() {
 
           <button onClick={calculate} style={{
             display: "block", width: "100%", padding: 16, border: "none", borderRadius: 12,
-            background: T.blue, color: T.white, fontFamily: "'DM Sans',sans-serif",
+            background: T.blue, color: T.white, fontFamily: "var(--font-dm-sans),sans-serif",
             fontSize: 16, fontWeight: 600, cursor: "pointer",
             boxShadow: "0 2px 10px rgba(51,97,255,0.2)", transition: "all 0.25s ease",
           }}>
@@ -186,10 +185,10 @@ export default function Confirmed() {
             animation: "fadeUp 0.5s ease both",
           }}>
             <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }`}</style>
-            <p style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 20, color: T.white, marginBottom: 8 }}>Your RevPhlo opportunity</p>
+            <p style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 20, color: T.white, marginBottom: 8 }}>Your RevPhlo opportunity</p>
             <p style={{ fontSize: 14, color: T.text3, marginBottom: 32 }}>Based on conservative improvements from full pipeline visibility</p>
 
-            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: "clamp(42px,6vw,56px)", fontWeight: 700, color: T.green, marginBottom: 6, lineHeight: 1 }}>
+            <p style={{ fontFamily: "var(--font-dm-sans),sans-serif", fontSize: "clamp(42px,6vw,56px)", fontWeight: 700, color: T.green, marginBottom: 6, lineHeight: 1 }}>
               {formatMoney(results.additionalRevAnnual)}
             </p>
             <p style={{ fontSize: 14, color: T.text3, marginBottom: 36 }}>additional revenue per year</p>

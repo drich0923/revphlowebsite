@@ -1,10 +1,12 @@
 import "./globals.css";
-import { Bricolage_Grotesque, Inter, IBM_Plex_Mono, Caveat } from "next/font/google";
+import { Bricolage_Grotesque, Inter, IBM_Plex_Mono, Caveat, DM_Sans, DM_Serif_Display } from "next/font/google";
 
 const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-display", display: "swap" });
 const body = Inter({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-body", display: "swap" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-mono", display: "swap" });
 const hand = Caveat({ subsets: ["latin"], weight: ["600"], variable: "--font-hand", display: "swap" });
+const dmSans = DM_Sans({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-dm-sans", display: "swap" });
+const dmSerif = DM_Serif_Display({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-dm-serif", display: "swap" });
 
 const siteUrl = "https://revphlo.com";
 const siteName = "RevPhlo";
@@ -80,9 +82,6 @@ export const metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    canonical: siteUrl,
-  },
   verification: {
     // Add your Google Search Console verification code here:
     // google: "your-verification-code",
@@ -155,7 +154,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${display.variable} ${body.variable} ${mono.variable} ${hand.variable}`}
+      className={`${display.variable} ${body.variable} ${mono.variable} ${hand.variable} ${dmSans.variable} ${dmSerif.variable}`}
       suppressHydrationWarning
     >
       <head>

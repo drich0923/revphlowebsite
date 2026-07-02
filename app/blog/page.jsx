@@ -13,9 +13,8 @@ const T = {
 
 export default function Blog() {
   return (
-    <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "'DM Sans',sans-serif" }}>
+    <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "var(--font-dm-sans),sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         .blog-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
         .blog-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
@@ -32,7 +31,7 @@ export default function Blog() {
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "80px 24px 120px" }}>
         <p style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.blue, fontWeight: 600, marginBottom: 16 }}>Blog</p>
-        <h1 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(36px,5vw,50px)", lineHeight: 1.12, letterSpacing: -1, color: T.dark, marginBottom: 12 }}>
+        <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(36px,5vw,50px)", lineHeight: 1.12, letterSpacing: -1, color: T.dark, marginBottom: 12 }}>
           Sales Intelligence Insights
         </h1>
         <p style={{ fontSize: 18, color: T.text2, lineHeight: 1.65, maxWidth: 560, marginBottom: 56 }}>
@@ -57,7 +56,7 @@ export default function Blog() {
                   <span style={{ fontSize: 13, color: T.text3 }}>{post.readTime}</span>
                 </div>
                 <h2 className="blog-title" style={{
-                  fontFamily: "'DM Serif Display',Georgia,serif",
+                  fontFamily: "var(--font-dm-serif),Georgia,serif",
                   fontSize: 24, lineHeight: 1.3, color: T.dark, marginBottom: 10,
                 }}>
                   {post.title}

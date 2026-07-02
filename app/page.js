@@ -15,6 +15,12 @@ import StickyBar from "./components/StickyBar";
 import RevealManager from "./components/RevealManager";
 import { FAQ_ITEMS } from "./components/faq-data";
 
+export const metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",

@@ -42,6 +42,18 @@ export default function sitemap() {
     },
   ];
 
+  const comparePages = [
+    "revphlo-vs-databox",
+    "revphlo-vs-hubspot-reporting",
+    "revphlo-vs-gohighlevel-reporting",
+    "revphlo-vs-spreadsheets",
+  ].map((slug) => ({
+    url: `${baseUrl}/compare/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
   const blogPages = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: new Date(post.date),
@@ -49,5 +61,5 @@ export default function sitemap() {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...blogPages];
+  return [...staticPages, ...comparePages, ...blogPages];
 }

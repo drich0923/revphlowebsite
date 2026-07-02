@@ -54,7 +54,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
   return (
     <div
       style={{
-        fontFamily: "'DM Sans', -apple-system, sans-serif",
+        fontFamily: "var(--font-dm-sans), -apple-system, sans-serif",
         backgroundColor: T.bg,
         backgroundImage: `url("${dotBg}")`,
         backgroundRepeat: "repeat",
@@ -67,7 +67,6 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         .btn-primary {
@@ -83,7 +82,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
 
         /* ── ARTICLE TYPOGRAPHY ── */
         .article-body h1 {
-          font-family: 'DM Serif Display', Georgia, serif;
+          font-family: var(--font-dm-serif), Georgia, serif;
           font-size: clamp(32px, 4.5vw, 48px);
           line-height: 1.12;
           letter-spacing: -1px;
@@ -91,7 +90,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
           color: ${T.text};
         }
         .article-body h2 {
-          font-family: 'DM Serif Display', Georgia, serif;
+          font-family: var(--font-dm-serif), Georgia, serif;
           font-size: clamp(22px, 3vw, 30px);
           line-height: 1.2;
           letter-spacing: -0.5px;
@@ -151,7 +150,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
       {/* CTA Band */}
       <section style={{ padding: "80px 32px", textAlign: "center" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.12, letterSpacing: -0.5, marginBottom: 16, marginTop: 0 }}>
+          <h2 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(28px,3.5vw,40px)", lineHeight: 1.12, letterSpacing: -0.5, marginBottom: 16, marginTop: 0 }}>
             See RevPhlo with your own data
           </h2>
           <p style={{ fontSize: 16, color: T.text2, marginBottom: 32, lineHeight: 1.65 }}>

@@ -1,8 +1,13 @@
 import ArticleLayout from "../../components/ArticleLayout";
 
-// META: RevPhlo vs HubSpot Reporting for High-Ticket Sales | 2026 Comparison
-// META DESC: Comparing RevPhlo and HubSpot for sales reporting in high-ticket setter-closer teams. Feature differences and which is better for post-booking sales intelligence.
-// URL: revphlo.com/compare/revphlo-vs-hubspot-reporting
+export const metadata = {
+  title: { absolute: "RevPhlo vs HubSpot Reporting for High-Ticket Sales | 2026 Comparison" },
+  description:
+    "Comparing RevPhlo and HubSpot for sales reporting in high-ticket setter-closer teams. Feature differences and which is better for post-booking sales intelligence.",
+  alternates: {
+    canonical: "/compare/revphlo-vs-hubspot-reporting",
+  },
+};
 
 export default function RevPhloVsHubSpot() {
   return (

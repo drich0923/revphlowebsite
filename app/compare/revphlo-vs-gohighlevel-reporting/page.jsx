@@ -1,8 +1,13 @@
 import ArticleLayout from "../../components/ArticleLayout";
 
-// META: RevPhlo vs GoHighLevel Reporting for Sales Teams | 2026 Comparison
-// META DESC: Comparing RevPhlo and GoHighLevel's built-in reporting for high-ticket sales teams. What GHL covers, where the gaps are, and how RevPhlo adds the post-booking intelligence layer.
-// URL: revphlo.com/compare/revphlo-vs-gohighlevel-reporting
+export const metadata = {
+  title: { absolute: "RevPhlo vs GoHighLevel Reporting for Sales Teams | 2026 Comparison" },
+  description:
+    "Comparing RevPhlo and GoHighLevel's built-in reporting for high-ticket sales teams. What GHL covers, where the gaps are, and how RevPhlo adds the post-booking intelligence layer.",
+  alternates: {
+    canonical: "/compare/revphlo-vs-gohighlevel-reporting",
+  },
+};
 
 export default function RevPhloVsGHLReporting() {
   return (

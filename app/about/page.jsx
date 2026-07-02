@@ -51,7 +51,7 @@ export default function About() {
 
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "80px 24px 120px" }}>
         <p style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.blue, fontWeight: 600, marginBottom: 16 }}>About</p>
-        <h1 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(32px,4vw,44px)", lineHeight: 1.15, letterSpacing: -0.5, color: T.dark, marginBottom: 24 }}>
+        <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(32px,4vw,44px)", lineHeight: 1.15, letterSpacing: -0.5, color: T.dark, marginBottom: 24 }}>
           Built by sales operators, for sales operators.
         </h1>
         <p style={{ fontSize: 17, color: T.text2, lineHeight: 1.75, marginBottom: 40 }}>
@@ -60,7 +60,7 @@ export default function About() {
 
         {/* Origin story */}
         <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 16, padding: "36px 36px", marginBottom: 48 }}>
-          <h2 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 22, color: T.dark, marginBottom: 16, lineHeight: 1.3 }}>
+          <h2 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 22, color: T.dark, marginBottom: 16, lineHeight: 1.3 }}>
             The problem we lived with every day
           </h2>
           <div style={{ fontSize: 15, color: T.text2, lineHeight: 1.75 }}>
@@ -75,7 +75,7 @@ export default function About() {
 
         {/* Founders */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 24, lineHeight: 1.3 }}>
+          <h2 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 24, lineHeight: 1.3 }}>
             The team
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -94,14 +94,14 @@ export default function About() {
                       background: `linear-gradient(135deg, ${T.blue}, #5B82FF)`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: 20, color: T.white, fontWeight: 700,
-                      fontFamily: "'DM Serif Display',Georgia,serif",
+                      fontFamily: "var(--font-dm-serif),Georgia,serif",
                       flexShrink: 0,
                     }}>
                       {f.initials}
                     </div>
                   )}
                   <div>
-                    <p style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 20, color: T.dark, marginBottom: 4 }}>{f.name}</p>
+                    <p style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 20, color: T.dark, marginBottom: 4 }}>{f.name}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                       <p style={{ fontSize: 14, color: T.blue, fontWeight: 600 }}>{f.title}</p>
                       {f.link && (
@@ -123,7 +123,7 @@ export default function About() {
 
         {/* Why RevPhlo exists */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 16, lineHeight: 1.3 }}>
+          <h2 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 16, lineHeight: 1.3 }}>
             Why RevPhlo exists
           </h2>
           <p style={{ fontSize: 15, color: T.text2, lineHeight: 1.75, marginBottom: 16 }}>
@@ -139,7 +139,7 @@ export default function About() {
 
         {/* What we believe */}
         <div style={{ marginBottom: 48 }}>
-          <h2 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 16, lineHeight: 1.3 }}>
+          <h2 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 16, lineHeight: 1.3 }}>
             What we believe
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -159,7 +159,7 @@ export default function About() {
 
         {/* CTA */}
         <div style={{ textAlign: "center", padding: "48px 0 0", borderTop: `1px solid ${T.border}` }}>
-          <p style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 12 }}>
+          <p style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 24, color: T.dark, marginBottom: 12 }}>
             Ready to see it in action?
           </p>
           <p style={{ fontSize: 15, color: T.text2, lineHeight: 1.65, marginBottom: 28 }}>

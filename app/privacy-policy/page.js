@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
 
   const sectionStyle = { marginBottom: 36 };
   const h2Style = {
-    fontFamily: "'DM Serif Display',Georgia,serif",
+    fontFamily: "var(--font-dm-serif),Georgia,serif",
     fontSize: 24,
     color: T.dark,
     marginBottom: 12,
@@ -41,14 +41,14 @@ export default function PrivacyPolicy() {
       {/* Nav */}
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px", borderBottom: `1px solid ${T.border}`, background: T.white }}>
         <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: 22, color: T.dark, fontWeight: 700 }}>RevPhlo</span>
+          <span style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: 22, color: T.dark, fontWeight: 700 }}>RevPhlo</span>
         </a>
         <a href="/" style={{ fontSize: 14, color: T.text2, textDecoration: "none" }}>← Back to Home</a>
       </nav>
 
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "80px 24px 120px" }}>
         <p style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.blue, fontWeight: 600, marginBottom: 16 }}>Legal</p>
-        <h1 style={{ fontFamily: "'DM Serif Display',Georgia,serif", fontSize: "clamp(32px,4vw,44px)", lineHeight: 1.15, letterSpacing: -0.5, color: T.dark, marginBottom: 12 }}>Privacy Policy</h1>
+        <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(32px,4vw,44px)", lineHeight: 1.15, letterSpacing: -0.5, color: T.dark, marginBottom: 12 }}>Privacy Policy</h1>
         <p style={{ fontSize: 14, color: T.text3, marginBottom: 48 }}>Last updated: March 1, 2026</p>
 
         <div style={sectionStyle}>
