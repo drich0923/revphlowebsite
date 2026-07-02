@@ -205,6 +205,10 @@ body {
   color: var(--money);
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 /* Protocol line — numbered section header */
 .protocol {
   display: flex;
@@ -490,11 +494,15 @@ html.js-motion .live-dot {
 .hero__h1 {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 800;
-  font-size: clamp(40px, 5.5vw, 64px);
-  line-height: 1.02;
+  font-size: clamp(38px, 5.2vw, 60px);
+  line-height: 1.04;
   letter-spacing: -0.02em;
-  max-width: 15ch;
+  max-width: 21ch;
+  text-wrap: balance;
   margin-bottom: var(--sp-5);
+}
+.hero__accent {
+  color: var(--accent-text);
 }
 .hero__blind {
   position: relative;
@@ -512,7 +520,7 @@ html.js-motion .live-dot {
   font-size: clamp(17px, 1.5vw, 19px);
   line-height: 1.55;
   color: var(--text-2);
-  max-width: 560px;
+  max-width: 640px;
   margin-bottom: var(--sp-6);
 }
 .hero__ctas {

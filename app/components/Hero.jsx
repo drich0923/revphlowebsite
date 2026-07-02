@@ -12,15 +12,19 @@ export default function Hero() {
           Built for high-performing sales teams
         </div>
         <h1 className="hero__h1">
-          Stop managing your sales team{" "}
+          You&rsquo;re running a{" "}
+          <span className="hero__accent">
+            <span className="nowrap">7-figure</span> sales team
+          </span>{" "}
+          off a{" "}
           <span className="hero__blind">
-            blind
+            Google Sheet.
             <RedUnderline className="hero__blind-stroke" />
           </span>
         </h1>
         <p className="hero__sub">
-          Full visibility into what happens after the call is booked &mdash; who&rsquo;s closing,
-          what&rsquo;s converting, and where your revenue is leaking.
+          Watch how high-ticket teams replace broken spreadsheets and manual EOD reports with
+          real-time sales intelligence &mdash; without changing a single tool.
         </p>
         <div className="hero__ctas">
           <a href="#book" className="btn btn--primary">
