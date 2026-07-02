@@ -458,7 +458,7 @@ html.js-motion .live-dot {
 /* ---------- 5. Hero ---------- */
 .hero {
   position: relative;
-  padding-top: 120px;
+  padding-top: 104px;
   padding-bottom: var(--sp-8);
 }
 .hero__glow {
@@ -526,7 +526,7 @@ html.js-motion .live-dot {
 .hero__ctas {
   display: flex;
   gap: var(--sp-4);
-  margin-bottom: var(--sp-7);
+  margin-bottom: var(--sp-6);
 }
 
 /* ---------- 6. Dashboard mockup ---------- */
@@ -649,14 +649,6 @@ html.js-motion .live-dot {
 }
 .kpi__spark-area {
   opacity: 0.12;
-}
-html.js-motion .dash--full .kpi__spark-line {
-  stroke-dasharray: 140;
-  stroke-dashoffset: 140;
-  animation: spark-draw 900ms ease-out 400ms forwards;
-}
-html.js-motion .dash--full .delta {
-  animation: delta-tick 200ms ease-out 900ms backwards;
 }
 
 /* ---------- 7. The Tape ---------- */
@@ -954,30 +946,10 @@ html.js-motion .oldnew__arrow-dot {
   background: var(--ink-soft);
 }
 
-/* ---------- 10. VSL ---------- */
-.vsl {
-  background: var(--bg-1);
-  border-top: var(--border-1);
-  border-bottom: var(--border-1);
-  padding-top: var(--sect-pad);
-  padding-bottom: var(--sect-pad);
-  text-align: center;
-}
-.vsl .protocol {
-  border-top: none;
-  padding-top: 0;
-}
-.vsl__h2 {
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: var(--sp-4);
-}
-.vsl__body {
-  color: var(--text-2);
-  max-width: 520px;
-  margin: 0 auto var(--sp-7);
-}
+/* ---------- 10. VSL player (lives in the hero) ---------- */
 .vsl__player {
+  width: 100%;
+  scroll-margin-top: 96px;
   position: relative;
   max-width: 960px;
   margin: 0 auto;
@@ -2032,19 +2004,6 @@ html.js-motion .book__skeleton::after {
     transform: translateX(-50%);
   }
 }
-@keyframes spark-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-@keyframes delta-tick {
-  from {
-    transform: scale(0.85);
-  }
-  to {
-    transform: scale(1);
-  }
-}
 @keyframes travel {
   0%,
   100% {
@@ -2165,20 +2124,11 @@ html.js-motion .book__skeleton::after {
     width: 100%;
     min-height: 52px;
   }
-  .dash--full .dash__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .dash--full .kpi--anchor {
-    grid-column: 1 / -1;
-  }
   .kpi__value {
     font-size: 22px;
   }
   .kpi--anchor .kpi__value {
     font-size: 30px;
-  }
-  .dash__pills {
-    display: none;
   }
   .container {
     padding-left: 20px;

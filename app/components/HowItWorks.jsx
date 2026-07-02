@@ -21,7 +21,7 @@ export default function HowItWorks() {
     <section className="how" id="howitworks">
       <div className="container">
         <div className="protocol" data-reveal>
-          <span className="protocol__index">04</span>
+          <span className="protocol__index">03</span>
           <span className="protocol__eyebrow">How It Works</span>
           <span className="protocol__tick" aria-hidden="true" />
         </div>

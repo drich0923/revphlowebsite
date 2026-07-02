@@ -11,7 +11,7 @@ export default function Faq() {
       <div className="container faq__grid">
         <div className="faq__left">
           <div className="protocol">
-            <span className="protocol__index">06</span>
+            <span className="protocol__index">05</span>
             <span className="protocol__eyebrow">Questions</span>
             <span className="protocol__tick" aria-hidden="true" />
           </div>

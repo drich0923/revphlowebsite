@@ -81,7 +81,7 @@ export default function Features() {
     <section className="features" id="features">
       <div className="container">
         <div className="protocol" data-reveal>
-          <span className="protocol__index">03</span>
+          <span className="protocol__index">02</span>
           <span className="protocol__eyebrow">
             Before <Icon name="arrow-right" size={12} /> After
           </span>

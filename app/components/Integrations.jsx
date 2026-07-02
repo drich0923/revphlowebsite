@@ -7,7 +7,7 @@ export default function Integrations() {
     <section className="integrations">
       <div className="container">
         <div className="protocol" data-reveal>
-          <span className="protocol__index">05</span>
+          <span className="protocol__index">04</span>
           <span className="protocol__eyebrow">Integrations</span>
           <span className="protocol__tick" aria-hidden="true" />
         </div>

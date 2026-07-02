@@ -3,7 +3,6 @@ import Hero from "./components/Hero";
 import Tape from "./components/Tape";
 import OldNew from "./components/OldNew";
 import Testimonial from "./components/Testimonial";
-import Vsl from "./components/Vsl";
 import CtaRail from "./components/CtaRail";
 import Features from "./components/Features";
 import HowItWorks from "./components/HowItWorks";
@@ -44,7 +43,6 @@ export default function Home() {
         <Tape />
         <OldNew />
         <Testimonial />
-        <Vsl />
         <CtaRail />
         <Features />
         <CtaRail ghostLabel="See It In Action" ghostHref="#vsl" />

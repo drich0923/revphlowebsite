@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 const EMBED_ID = "vidalytics_embed_qY0sZQMIwMDYGr3T";
 const BASE_URL = "https://fast.vidalytics.com/embeds/Xbxuo1Sw/qY0sZQMIwMDYGr3T/";
 
-// Facade: hovering the poster only preloads the Vidalytics script; the poster
-// is revealed away only after a real click AND only once an iframe/video has
-// actually mounted — if the embed host is blocked, the play button stays
-// (no dead black box).
-export default function Vsl() {
+// Hero VSL facade: hovering the poster only preloads the Vidalytics script;
+// the poster is revealed away only after a real click AND only once an
+// iframe/video has actually mounted — if the embed host is blocked, the
+// play button stays (no dead black box).
+export default function VslPlayer() {
   const [posterGone, setPosterGone] = useState(false);
   const injected = useRef(false);
   const armed = useRef(false);
@@ -76,42 +76,24 @@ export default function Vsl() {
   };
 
   return (
-    <section className="vsl" id="vsl">
-      <div className="container">
-        <div className="protocol protocol--center" data-reveal>
-          <span className="protocol__index">02</span>
-          <span className="protocol__eyebrow">See It In Action</span>
-          <span className="protocol__tick" aria-hidden="true" />
-        </div>
-        <h2 className="h2 vsl__h2" data-reveal>
-          3 minutes to see what
-          <br />
-          you&rsquo;ve been missing
-        </h2>
-        <p className="vsl__body" data-reveal>
-          Watch how RevPhlo replaces broken reporting with real-time sales intelligence &mdash; from
-          connect to dashboard.
-        </p>
-        <div className="vsl__player" data-reveal>
-          <div id={EMBED_ID} ref={embedRef} className="vsl__embed" tabIndex={-1} />
-          <button
-            ref={posterRef}
-            className={`vsl__poster ${posterGone ? "vsl__poster--gone" : ""}`}
-            aria-label="Play the 3-minute demo video"
-            aria-hidden={posterGone}
-            tabIndex={posterGone ? -1 : 0}
-            onPointerOver={inject}
-            onClick={onPlayClick}
-          >
-            <span className="vsl__play">
-              <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
-                <path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor" />
-              </svg>
-            </span>
-            <span className="vsl__duration">03:00</span>
-          </button>
-        </div>
-      </div>
-    </section>
+    <div className="vsl__player" id="vsl">
+      <div id={EMBED_ID} ref={embedRef} className="vsl__embed" tabIndex={-1} />
+      <button
+        ref={posterRef}
+        className={`vsl__poster ${posterGone ? "vsl__poster--gone" : ""}`}
+        aria-label="Play the 3-minute demo video"
+        aria-hidden={posterGone}
+        tabIndex={posterGone ? -1 : 0}
+        onPointerOver={inject}
+        onClick={onPlayClick}
+      >
+        <span className="vsl__play">
+          <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+            <path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor" />
+          </svg>
+        </span>
+        <span className="vsl__duration">03:00</span>
+      </button>
+    </div>
   );
 }

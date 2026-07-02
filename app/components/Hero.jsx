@@ -1,6 +1,6 @@
 import { Icon } from "./Icons";
 import { RedUnderline } from "./RedPen";
-import DashboardMockup from "./DashboardMockup";
+import VslPlayer from "./Vsl";
 
 export default function Hero() {
   return (
@@ -35,7 +35,7 @@ export default function Hero() {
             See How It Works
           </a>
         </div>
-        <DashboardMockup variant="full" caption="FIG. 00 — LIVE DASHBOARD · FEB 2026" />
+        <VslPlayer />
       </div>
     </section>
   );
