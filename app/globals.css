@@ -1177,6 +1177,9 @@ html.js-motion .oldnew__arrow-dot {
   display: grid;
   min-height: 400px;
 }
+/* True crossfade: both states share the grid cell; the outgoing one fades
+   and settles away while the incoming one rises in. Visibility flips at the
+   end of the fade-out (0.55s delay) but instantly on the way in. */
 .panel__state {
   grid-area: 1 / 1;
   position: relative;
@@ -1184,6 +1187,9 @@ html.js-motion .oldnew__arrow-dot {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out), visibility 0s linear 0s;
 }
 /* Reserve the evidence-peek intrusion zone so content never sits under it */
 .panel__state--after {
@@ -1195,9 +1201,10 @@ html.js-motion .oldnew__arrow-dot {
 .panel__state[hidden] {
   display: flex;
   visibility: hidden;
-}
-html.js-motion .panel__state:not([hidden]) {
-  animation: panel-in 300ms var(--ease-out);
+  opacity: 0;
+  transform: translateY(8px) scale(0.99);
+  pointer-events: none;
+  transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out), visibility 0s linear 0.55s;
 }
 
 /* The evidence peek — clipped paper corner, second BEFORE trigger */
@@ -2011,16 +2018,6 @@ html.js-motion .book__skeleton::after {
   }
   50% {
     transform: translateX(34px);
-  }
-}
-@keyframes panel-in {
-  from {
-    opacity: 0.2;
-    transform: scale(0.99);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }
 
