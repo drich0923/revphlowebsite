@@ -27,6 +27,28 @@ test("an embedded session must use the same Stripe mode as its public key", () =
   assert.equal(isEmbeddedSession({ publishableKey: "pk_test_example", clientSecret: "https://other.example" }), false);
 });
 
+test("Stripe checkout secrets accept an opaque encoded suffix without changing it", () => {
+  for (const mode of ["test", "live"]) {
+    const clientSecret = `cs_${mode}_Example123_secret_${"fake%2Fencoded%3Dvalue_-.".repeat(20)}`;
+    const session = { publishableKey: `pk_${mode}_example`, clientSecret };
+    assert.equal(isEmbeddedSession(session), true);
+    assert.equal(session.clientSecret, clientSecret);
+    assert.equal(isEmbeddedSession({ ...session, publishableKey: `pk_${mode === "live" ? "test" : "live"}_example` }), false);
+  }
+});
+
+test("Stripe checkout secrets reject missing, whitespace, control and oversized values", () => {
+  for (const clientSecret of [
+    "", "cs_live_Example123_secret_", "cs_live__secret_opaque", "other_live_Example123_secret_opaque",
+    "cs_live_Example123_secret_ ", "cs_live_Example123_secret_some value",
+    "cs_live_Example123_secret_value\n", "cs_live_Example123_secret_value\t",
+    "cs_live_Example123_secret_value\u00a0", "cs_live_Example123_secret_value\u0000",
+    `cs_live_Example123_secret_${"x".repeat(4096)}`,
+  ]) {
+    assert.equal(isEmbeddedSession({ publishableKey: "pk_live_example", clientSecret }), false);
+  }
+});
+
 const details = { companyName: "Example", ownerName: "Owner", ownerEmail: "owner@example.com", timezone: "America/New_York", teamMembers: [], termsAccepted: true };
 test("owner and team addresses must be distinct before payment", () => {
   assert.equal(validateDetails(details), null);

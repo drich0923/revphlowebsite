@@ -35,7 +35,9 @@ export function isPublishableKey(value) {
 
 export function isEmbeddedSession(value) {
   if (!value || !isPublishableKey(value.publishableKey) || typeof value.clientSecret !== "string") return false;
-  const match = /^cs_(test|live)_[A-Za-z0-9]+_secret_[A-Za-z0-9]+$/.exec(value.clientSecret);
+  // Stripe owns the secret format. Encoded characters are valid in its opaque suffix.
+  if (value.clientSecret.length > 4096 || /[\s\u0000-\u001f\u007f]/u.test(value.clientSecret)) return false;
+  const match = /^cs_(test|live)_[A-Za-z0-9]+_secret_(.+)$/u.exec(value.clientSecret);
   return !!match && value.publishableKey.startsWith(`pk_${match[1]}_`);
 }
 
