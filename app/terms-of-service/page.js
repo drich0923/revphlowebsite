@@ -49,7 +49,7 @@ export default function TermsOfService() {
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "80px 24px 120px" }}>
         <p style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.blue, fontWeight: 600, marginBottom: 16 }}>Legal</p>
         <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(32px,4vw,44px)", lineHeight: 1.15, letterSpacing: -0.5, color: T.dark, marginBottom: 12 }}>Terms of Service</h1>
-        <p style={{ fontSize: 14, color: T.text3, marginBottom: 48 }}>Last updated: March 1, 2026</p>
+        <p style={{ fontSize: 14, color: T.text3, marginBottom: 48 }}>Last updated: September 9, 2026</p>
 
         <div style={sectionStyle}>
           <p style={pStyle}>These Terms of Service ("Terms") govern your access to and use of the RevPhlo platform, website, and related services (collectively, the "Service") operated by RevPhlo ("we," "our," or "us"). By accessing or using the Service, you agree to be bound by these Terms.</p>
@@ -84,7 +84,8 @@ export default function TermsOfService() {
             <li style={liStyle}>Subscriptions automatically renew unless canceled before the renewal date</li>
             <li style={liStyle}>You are responsible for all applicable taxes</li>
           </ul>
-          <p style={pStyle}>To cancel your subscription, contact us at support@revphlo.com or use the cancellation option in your account settings. Cancellations take effect at the end of the current billing period.</p>
+          <p style={pStyle}>For the self-serve plan sold at /checkout, pay $2,000 USD for setup and the first 30 days. After 30 days, the subscription renews at $397 USD each month. The six-month minimum includes the first 30 days and five monthly payments, for a minimum total of $3,985 USD. The subscription continues each month after the minimum term until canceled. Time spent on setup does not delay the first renewal. These plan terms apply to this self-serve plan; they do not change a separate existing billing agreement.</p>
+          <p style={pStyle}>To cancel your subscription, contact us at support@revphlo.com or use the cancellation option in your account settings. For the self-serve plan, cancellation takes effect after both the minimum term and the current billing period have ended. Monthly payments continue until that date. For other plans, cancellation takes effect at the end of the current billing period, subject to any separate billing agreement.</p>
         </div>
 
         <div style={sectionStyle}>
