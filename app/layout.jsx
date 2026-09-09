@@ -99,12 +99,6 @@ const jsonLd = {
       description: defaultDescription,
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "USD",
-        description: "Book a demo to get started",
-      },
       featureList: [
         "AI-powered post-call notes from Fathom recordings",
         "Full revenue attribution by source, funnel, and closer",
