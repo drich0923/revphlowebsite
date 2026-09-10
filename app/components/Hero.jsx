@@ -27,12 +27,12 @@ export default function Hero() {
           real-time sales intelligence &mdash; without changing a single tool.
         </p>
         <div className="hero__ctas">
-          <a href="#book" className="btn btn--primary">
-            Book a Demo
+          <a href="/checkout" className="btn btn--primary">
+            Get Started
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
-          <a href="#features" className="btn btn--ghost">
-            See How It Works
+          <a href="#book" className="btn btn--ghost">
+            Book a Demo
           </a>
         </div>
         <VslPlayer />

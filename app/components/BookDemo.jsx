@@ -50,7 +50,7 @@ export default function BookDemo() {
         </div>
         <p className="book__trust">
           <Icon name="lock" size={13} />
-          One-click OAuth &middot; Live in 48 hours
+          Guided setup &middot; Clear setup checks
         </p>
       </div>
     </section>

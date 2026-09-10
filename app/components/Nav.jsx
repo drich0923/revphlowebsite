@@ -7,6 +7,7 @@ const LINKS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#howitworks" },
   { label: "FAQ", href: "#faq" },
+  { label: "Book a Demo", href: "#book" },
 ];
 
 export default function Nav() {
@@ -60,8 +61,8 @@ export default function Nav() {
           ))}
         </nav>
         <div className="nav__right">
-          <a href="#book" className="btn btn--primary btn--compact">
-            Book a Demo
+          <a href="/checkout" className="btn btn--primary btn--compact">
+            Get Started
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
           <button

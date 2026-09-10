@@ -32,6 +32,19 @@ export function isPublishableKey(value) {
   return typeof value === "string" && /^pk_(?:test|live)_[A-Za-z0-9]+$/.test(value);
 }
 
+/** An older app can accept hosted checkout without supporting the Payment Element. */
+export function getCheckoutAvailability(data) {
+  if (!data?.enabled || !isExpectedPlan(data.plan)) return { state: "unavailable" };
+  const modes = data.supportedUiModes;
+  if (Array.isArray(modes) && modes.includes("custom") && data.embeddedEnabled && isPublishableKey(data.publishableKey)) {
+    return { state: "ready" };
+  }
+  if (modes === undefined || (Array.isArray(modes) && modes.includes("hosted"))) {
+    return { state: "hosted" };
+  }
+  return { state: "unavailable" };
+}
+
 export function isCheckoutClientSession(value) {
   if (!value || !isPublishableKey(value.publishableKey) || typeof value.clientSecret !== "string") return false;
   // Stripe owns the secret format. Encoded characters are valid in its opaque suffix.

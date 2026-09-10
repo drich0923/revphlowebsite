@@ -1,6 +1,24 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isCheckoutClientSession } from "./checkout-contract.mjs";
+import { CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isCheckoutClientSession, getCheckoutAvailability } from "./checkout-contract.mjs";
+
+test("custom checkout requires the app to advertise support", () => {
+  const data = { enabled: true, embeddedEnabled: true, publishableKey: "pk_test_example", plan: CHECKOUT_PLAN };
+  assert.deepEqual(getCheckoutAvailability(data), { state: "hosted" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: ["hosted", "embedded"] }), { state: "hosted" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: ["hosted", "embedded", "custom"] }), { state: "ready" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: ["embedded"] }), { state: "unavailable" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: "custom" }), { state: "unavailable" });
+});
+
+test("hosted checkout remains available without a valid Payment Element key", () => {
+  const data = { enabled: true, supportedUiModes: ["hosted", "custom"], plan: CHECKOUT_PLAN };
+  assert.deepEqual(getCheckoutAvailability(data), { state: "hosted" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, embeddedEnabled: true, publishableKey: "sk_test_example" }), { state: "hosted" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, enabled: false }), { state: "unavailable" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, plan: { ...CHECKOUT_PLAN, amount: 1 } }), { state: "unavailable" });
+  assert.deepEqual(getCheckoutAvailability(null), { state: "unavailable" });
+});
 
 test("customer data only goes to a configured HTTPS origin", () => {
   assert.equal(getAppOrigin("https://app.revphlo.com"), "https://app.revphlo.com");

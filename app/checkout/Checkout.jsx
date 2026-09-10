@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { isCheckoutClientSession, isExpectedPlan, isPublishableKey } from "./checkout-contract.mjs";
+import { getCheckoutAvailability, isCheckoutClientSession } from "./checkout-contract.mjs";
 import { loadStripeScript } from "./stripe-loader";
 import styles from "./checkout.module.css";
 
@@ -16,6 +16,11 @@ function Lock() {
 function StripePayment({ session }) {
   const container = useRef(null);
   const actions = useRef(null);
+  const emailInput = useRef(null);
+  const originalEmail = useRef(null);
+  const emailValue = useRef("");
+  const emailRequest = useRef(0);
+  const emailUpdate = useRef(Promise.resolve());
   const [attempt, setAttempt] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -23,6 +28,9 @@ function StripePayment({ session }) {
   const [canConfirm, setCanConfirm] = useState(false);
   const [email, setEmail] = useState("");
   const [fixedEmail, setFixedEmail] = useState("");
+  const [validatedEmail, setValidatedEmail] = useState("");
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailError, setEmailError] = useState("");
   const [total, setTotal] = useState("");
 
   useEffect(() => {
@@ -33,6 +41,9 @@ function StripePayment({ session }) {
     setError("");
     setCanConfirm(false);
     setFixedEmail("");
+    setValidatedEmail("");
+    setEmailChecking(false);
+    setEmailError("");
     actions.current = null;
     async function mount() {
       try {
@@ -62,7 +73,9 @@ function StripePayment({ session }) {
         if (result.type !== "success") throw new Error(result.error?.message || "The payment form could not load.");
         actions.current = result.actions;
         const current = result.actions.getSession();
-        setFixedEmail(current.email || "");
+        // Retrying the form must not make an email entered here read-only.
+        if (originalEmail.current === null) originalEmail.current = current.email || "";
+        setFixedEmail(originalEmail.current);
         setCanConfirm(Boolean(current.canConfirm));
         setTotal(current.total?.total?.amount || "");
         setLoading(false);
@@ -75,17 +88,55 @@ function StripePayment({ session }) {
       }
     }
     mount();
-    return () => { disposed = true; actions.current = null; paymentElement?.destroy(); };
+    return () => { disposed = true; emailRequest.current += 1; actions.current = null; paymentElement?.destroy(); };
   }, [session, attempt]);
+
+  async function validateEmail() {
+    if (fixedEmail) return true;
+    const value = emailValue.current.trim();
+    if (!actions.current || !emailInput.current?.validity.valid) {
+      setEmailError("Enter a valid email address for your new account.");
+      return false;
+    }
+    const currentActions = actions.current;
+    const request = ++emailRequest.current;
+    setEmailChecking(true);
+    setEmailError("");
+    // Serialize updates so an older request cannot replace a newer owner email.
+    const previous = emailUpdate.current;
+    const update = (async () => {
+      await previous;
+      if (request !== emailRequest.current || currentActions !== actions.current) return false;
+      try {
+        const result = await currentActions.updateEmail(value);
+        if (request !== emailRequest.current || currentActions !== actions.current) return false;
+        if (result.error) throw new Error(result.error.message);
+        setValidatedEmail(value);
+        setCanConfirm(Boolean(currentActions.getSession().canConfirm));
+        return true;
+      } catch (cause) {
+        if (request === emailRequest.current && currentActions === actions.current) {
+          setEmailError(cause instanceof Error ? cause.message : "We could not check your email. Try again.");
+        }
+        return false;
+      } finally {
+        if (request === emailRequest.current && currentActions === actions.current) setEmailChecking(false);
+      }
+    })();
+    emailUpdate.current = update;
+    return update;
+  }
 
   async function confirmPayment(event) {
     event.preventDefault();
-    if (!actions.current || submitting || !canConfirm) return;
+    if (!actions.current || submitting || emailChecking || !canConfirm) return;
     setSubmitting(true);
     setError("");
     try {
-      // Stripe rejects an email override when the server already set customer_email.
-      const result = await actions.current.confirm(fixedEmail ? {} : { email: email.trim() });
+      if (!fixedEmail && !(await validateEmail())) { setSubmitting(false); return; }
+      // updateEmail lets Stripe validate the address before canConfirm enables payment.
+      // A server-provided customer_email is already validated and must not be overridden.
+      const result = await actions.current.confirm();
       if (result.type === "error") {
         setError(result.error?.message || "We could not complete your payment. Check your details and try again.");
         setSubmitting(false);
@@ -98,13 +149,22 @@ function StripePayment({ session }) {
 
   return <form className={styles.paymentArea} onSubmit={confirmPayment}>
     <label className={styles.emailLabel} htmlFor="checkout-email">Email for your new Revphlo account</label>
-    <input id="checkout-email" className={styles.emailInput} type="email" autoComplete="email" required value={fixedEmail || email} readOnly={Boolean(fixedEmail)} disabled={loading || submitting} onChange={(event) => setEmail(event.target.value)} />
-    <p className={styles.emailHelp}>You will use this email to create and verify your new login after payment.</p>
+    <input ref={emailInput} id="checkout-email" className={styles.emailInput} type="email" autoComplete="email" required value={fixedEmail || email} readOnly={Boolean(fixedEmail)} disabled={loading || submitting} aria-describedby={emailError ? "checkout-email-help checkout-email-error" : "checkout-email-help"} aria-invalid={Boolean(emailError)} onBlur={() => { if (!fixedEmail) void validateEmail(); }} onChange={(event) => {
+      emailValue.current = event.target.value;
+      emailRequest.current += 1;
+      setEmail(event.target.value);
+      setValidatedEmail("");
+      setEmailChecking(false);
+      setEmailError("");
+    }} />
+    <p id="checkout-email-help" className={styles.emailHelp}>You will use this email to create and verify your new login after payment.</p>
+    {emailChecking ? <p role="status" className={styles.emailHelp}>Checking your email…</p> : null}
+    {emailError ? <p id="checkout-email-error" className={styles.error} role="alert">{emailError}<br /><button type="button" className={styles.textButton} onClick={() => void validateEmail()}>Check email again</button></p> : null}
     {loading ? <p role="status" className={styles.loading}>Loading your secure payment form…</p> : null}
     <div ref={container} className={styles.stripeMount} />
     {total ? <p className={styles.paymentTotal}><span>Due today</span><strong>{total}</strong></p> : null}
     {error ? <div className={styles.error} role="alert"><p>{error}</p>{actions.current ? null : <button type="button" className={styles.textButton} onClick={() => setAttempt((value) => value + 1)}>Try payment form again</button>}</div> : null}
-    <button className={styles.submit} type="submit" disabled={loading || submitting || !canConfirm}>{submitting ? "Starting…" : "Get Started"}{!submitting ? <Arrow /> : null}</button>
+    <button className={styles.submit} type="submit" disabled={loading || submitting || emailChecking || !canConfirm || (!fixedEmail && (!validatedEmail || validatedEmail !== email.trim()))}>{submitting ? "Starting…" : "Get Started"}{!submitting ? <Arrow /> : null}</button>
   </form>;
 }
 
@@ -137,10 +197,7 @@ export default function Checkout({ appOrigin }) {
         const body = await response.json();
         if (!response.ok || !body.success) throw new Error("unavailable");
         if (!disposed) {
-          const data = body.data;
-          setAvailability(data?.enabled && data.embeddedEnabled && isExpectedPlan(data.plan) && isPublishableKey(data.publishableKey)
-            ? { state: "ready" }
-            : { state: "unavailable" });
+          setAvailability(getCheckoutAvailability(body.data));
         }
       })
       .catch(() => { if (!disposed) setAvailability({ state: "unavailable" }); })
@@ -228,14 +285,15 @@ export default function Checkout({ appOrigin }) {
             </div>
 
             {availability.state === "loading" ? <p className={styles.notice} role="status">Checking checkout availability…</p> : null}
+            {availability.state === "hosted" ? <div className={styles.notice} role="status"><strong>Continue with secure hosted checkout.</strong><p>Open checkout in RevPhlo to review the same plan and payment terms, then pay through Stripe.</p><div className={styles.noticeActions}><a href={`${appOrigin}/get-started`}>Continue to hosted checkout <Arrow /></a></div></div> : null}
             {availability.state === "unavailable" ? <div className={styles.notice} role="status"><strong>Checkout is not available right now.</strong><p>You can contact us for help, or try again in a moment.</p><div className={styles.noticeActions}>{appOrigin ? <><button type="button" className={styles.textButton} onClick={() => setLoadAttempt((value) => value + 1)}>Check again</button><a href={`${appOrigin}/get-started`}>Open checkout in RevPhlo <Arrow /></a></> : null}<a href="mailto:support@revphlo.com">Contact support</a></div></div> : null}
 
-            <div className={styles.termsBlock}>
+            {availability.state !== "hosted" ? <div className={styles.termsBlock}>
               <label className={styles.terms}><input type="checkbox" required checked={termsAccepted} disabled={busy} onChange={(event) => setTermsAccepted(event.target.checked)} /><span>I agree to pay <strong>$2,000 today</strong> for setup and the first 30 days, then <strong>$397 each month</strong>. I agree to a <strong>six-month minimum term</strong>. The plan continues monthly after that until canceled. Cancellation takes effect after the minimum term or current billing period, whichever is later.</span></label>
               <p className={styles.legal}>By continuing, I accept the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a> and acknowledge the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
-            </div>
+            </div> : null}
             {error ? <div ref={errorRef} tabIndex={-1} className={styles.error} role="alert"><p>{error}</p></div> : null}
-            <button className={styles.submit} type="submit" disabled={disabled}>{busy ? "Opening secure checkout…" : "Continue to payment"}{!busy ? <Arrow /> : null}</button>
+            {availability.state !== "hosted" ? <button className={styles.submit} type="submit" disabled={disabled}>{busy ? "Opening secure checkout…" : "Continue to payment"}{!busy ? <Arrow /> : null}</button> : null}
             <p className={styles.secure}><Lock />Secure payment through Stripe. Your card details stay with Stripe.</p>
           </form>}
         </section>
@@ -252,7 +310,7 @@ export default function Checkout({ appOrigin }) {
           </div>
           <div className={styles.nextSteps}>
             <h3>What happens after payment</h3>
-            <ol><li><span>1</span><div><strong>Create your login</strong><p>Use and verify the email from checkout.</p></div></li><li><span>2</span><div><strong>Add your company details</strong><p>Name your company and invite your first team members.</p></div></li><li><span>3</span><div><strong>Connect your tools</strong><p>The wizard guides you through integrations, calendars, and team setup.</p></div></li></ol>
+            <ol><li><span>1</span><div><strong>Create your login</strong><p>Use and verify the email from checkout.</p></div></li><li><span>2</span><div><strong>Add your company details</strong><p>Name your company and invite your first team members.</p></div></li><li><span>3</span><div><strong>Complete your setup</strong><p>Follow the questions and actions to connect your tools. Share setup tasks with a teammate when you need their access or knowledge. The full dashboard opens after all required setup checks pass.</p></div></li></ol>
           </div>
         </aside>
       </div>
