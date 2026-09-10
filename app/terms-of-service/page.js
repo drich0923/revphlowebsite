@@ -71,6 +71,7 @@ export default function TermsOfService() {
             <li style={liStyle}>Notifying us immediately of any unauthorized use</li>
             <li style={liStyle}>Ensuring that team members added to your account comply with these Terms</li>
           </ul>
+          <p style={pStyle}>For self-serve signup, you complete payment before you enter your company details. Use the email address from checkout when you sign in and verify your account.</p>
           <p style={pStyle}>We reserve the right to suspend or terminate accounts that violate these Terms or that remain inactive for an extended period.</p>
         </div>
 

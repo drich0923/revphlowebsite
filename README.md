@@ -29,7 +29,7 @@ If you set `DEMO_WEBHOOK_URL`, submissions are forwarded server-side.
 
 ## Self-serve checkout
 
-`/checkout` collects the company name, owner name and email, company time zone, and optional initial team members. It then shows Stripe Embedded Checkout on the same page. The Revphlo app creates the company only after it verifies payment with Stripe. The owner receives a secure account setup link and can create a login or use an existing login. Passwords are not sent by email.
+`/checkout` is the payment step. The customer accepts the billing terms and pays through Stripe Embedded Checkout on the same page. Stripe collects the billing email. After payment, the customer opens the Revphlo app at `/checkout/success`, verifies the checkout email, and enters the company name, owner name, company time zone, and optional first team members. The app creates the company after it verifies payment and receives those details. It then sends secure account setup and team invitation links. Passwords are not sent by email.
 
 The price is $2,000 USD now, including setup and the first 30 days, then $397 USD each month. A six-month minimum term applies. The subscription continues monthly after the minimum term.
 
@@ -41,9 +41,9 @@ Stripe secrets, prices, company creation, invitations, and webhooks belong in th
 
 The app must have the self-serve checkout migration and configuration described in its `docs/SELF_SERVE_CHECKOUT_SETUP.md`. Embedded checkout also needs `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` in the app, in the same test or live mode as its secret key. Its checkout start API permits the exact origins `https://revphlo.com` and `https://www.revphlo.com`. The live apex domain redirects to `www`. A test website origin can be added through the app's `STRIPE_CHECKOUT_WEBSITE_ORIGIN` setting. Do not use a wildcard for preview domains.
 
-The website calls only the app's public `GET` and `POST /api/checkout/start` route. Requests omit browser credentials. The app checks the plan and form, stores the accepted terms, and returns a short-lived Checkout client secret. Keep that secret in memory. Do not log it or add it to a URL, browser storage, or analytics event.
+The website calls only the app's public `GET` and `POST /api/checkout/start` route. Requests omit browser credentials. The start request contains only `{ termsAccepted: true, uiMode: "embedded" }`. The app checks the plan, stores the accepted terms, and returns a short-lived Checkout client secret. Company details are not sent in this request. Keep that secret in memory. Do not log it or add it to a URL, browser storage, or analytics event.
 
-The page loads `https://js.stripe.com/clover/stripe.js`. This matches the app's current Stripe SDK API release. It mounts Stripe directly in the page, without an outer iframe. After payment, Stripe returns the buyer to the configured app origin at `/checkout/success`. The payment webhook also runs if the buyer closes the browser. The owner's verified primary login email must match the saved company owner email before access is granted.
+The page loads `https://js.stripe.com/clover/stripe.js`. This matches the app's current Stripe SDK API release. It mounts Stripe directly in the page, without an outer iframe. After payment, Stripe returns the buyer to the configured app origin at `/checkout/success`. The payment webhook also runs if the buyer closes the browser. The company details step still has to be completed before a company and invitations are created. The owner's verified primary login email must match the Stripe checkout email before the company details can be saved.
 
 This repository does not set a Content Security Policy. If a Vercel project policy is added, permit the Stripe script, frame, and connection domains listed in [Stripe's security guide](https://docs.stripe.com/security/guide), plus the exact app origin for API requests. Keep the app's existing frame protection.
 
@@ -53,11 +53,11 @@ This feature needs releases in both the app and this website. The website Vercel
 
 1. Configure and test the app in Stripe test mode. Apply its additive database migration through the normal release process.
 2. Configure the test website's app URL and allow its exact origin in the app. Rebuild the website.
-3. Open `/checkout` on desktop and mobile. Check required fields, duplicate emails, roles, time zone, and terms acceptance.
-4. Check unavailable checkout, network failure, and blocked Stripe script states. Before the payment form opens, a manual retry must keep the company details. It must not send simultaneous requests. Once a session is received, payment-form retries must reuse it.
-5. Complete a Stripe test payment. Confirm $2,000 due now and $397 per month after 30 days. Confirm there is one company and one subscription when the return page is refreshed or the webhook is sent again.
-6. Confirm that the owner invitation arrives. Use the correct verified email and check that the new company's Setup Wizard opens. Test an existing login and a wrong owner email too.
-7. Check team invitations, integrations, calendars, billing recovery, and cancellation at the minimum term through the app guide.
+3. Open `/checkout` on desktop and mobile. Confirm that it has payment terms and Stripe checkout, with no company, owner, time zone, or team fields.
+4. Check unavailable checkout, network failure, and blocked Stripe script states. Before the payment form opens, a manual retry must keep the accepted terms. It must not send simultaneous requests. Once a session is received, payment-form retries must reuse it.
+5. Complete a Stripe test payment. Confirm $2,000 due now and $397 per month after 30 days. Confirm that payment opens the app's company details step and that payment alone does not create a company or send team invitations.
+6. Sign in with the verified checkout email, submit company details, and confirm that one company is created. Check required fields, duplicate team emails, roles, and time zone in this app step. Refresh the return page and resend the webhook to check for duplicate companies. Test an existing login and a wrong email too.
+7. Confirm that secure owner and team invitation links arrive. Open the company's Setup Wizard. Check integrations, calendars, billing recovery, and cancellation at the minimum term through the app guide.
 8. Deploy the app before the public checkout page. Set matching live Stripe configuration only when the test flow is complete. Check both `revphlo.com/checkout` and its `www` destination after release.
 
 The app's `/get-started` page remains available for the Stripe-hosted checkout flow. If embedded checkout is unavailable, the website can link there. A customer who already paid must use the return page or their invitation instead of making another payment.
