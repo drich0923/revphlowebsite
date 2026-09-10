@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { isEmbeddedSession, isExpectedPlan, isPublishableKey, validateDetails } from "./checkout-contract.mjs";
+import { isEmbeddedSession, isExpectedPlan, isPublishableKey } from "./checkout-contract.mjs";
 import { loadStripeScript } from "./stripe-loader";
 import styles from "./checkout.module.css";
-
-const COMMON_ZONES = ["America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "America/Phoenix", "Pacific/Honolulu", "Europe/London", "Europe/Paris", "Asia/Dubai", "Asia/Singapore", "Australia/Sydney", "UTC"];
-const EMPTY_DETAILS = { companyName: "", ownerName: "", ownerEmail: "", timezone: "America/New_York", teamMembers: [], termsAccepted: false };
 
 function Arrow() {
   return <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
@@ -58,8 +55,7 @@ function StripePayment({ session }) {
 }
 
 export default function Checkout({ appOrigin }) {
-  const [details, setDetails] = useState(EMPTY_DETAILS);
-  const [zones, setZones] = useState(COMMON_ZONES);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [availability, setAvailability] = useState({ state: "loading" });
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -68,21 +64,12 @@ export default function Checkout({ appOrigin }) {
   const submitting = useRef(false);
   const errorRef = useRef(null);
   const paymentHeading = useRef(null);
-  const memberSequence = useRef(0);
   const mounted = useRef(true);
   const activeRequest = useRef(null);
 
   useEffect(() => {
     mounted.current = true;
     return () => { mounted.current = false; activeRequest.current?.abort(); };
-  }, []);
-
-  useEffect(() => {
-    const browserZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    let supported = COMMON_ZONES;
-    if (typeof Intl.supportedValuesOf === "function") supported = Intl.supportedValuesOf("timeZone");
-    setZones(Array.from(new Set([...supported, ...COMMON_ZONES, browserZone].filter(Boolean))).sort());
-    if (browserZone) setDetails((value) => ({ ...value, timezone: browserZone }));
   }, []);
 
   useEffect(() => {
@@ -110,25 +97,10 @@ export default function Checkout({ appOrigin }) {
   useEffect(() => { if (error) errorRef.current?.focus(); }, [error]);
   useEffect(() => { if (session) paymentHeading.current?.focus(); }, [session]);
 
-  function update(field, value) {
-    setDetails((previous) => ({ ...previous, [field]: value }));
-  }
-
-  function addMember() {
-    if (details.teamMembers.length >= 10) return;
-    const id = ++memberSequence.current;
-    setDetails((previous) => ({ ...previous, teamMembers: [...previous.teamMembers, { id, name: "", email: "", role: "rep" }] }));
-  }
-
-  function updateMember(id, field, value) {
-    setDetails((previous) => ({ ...previous, teamMembers: previous.teamMembers.map((member) => member.id === id ? { ...member, [field]: value } : member) }));
-  }
-
   async function submit(event) {
     event.preventDefault();
     if (submitting.current || session || availability.state !== "ready") return;
-    const validationError = validateDetails(details);
-    if (validationError) { setError(validationError); return; }
+    if (!termsAccepted) { setError("Accept the payment terms to continue."); return; }
     submitting.current = true;
     setBusy(true);
     setError("");
@@ -145,12 +117,7 @@ export default function Checkout({ appOrigin }) {
         credentials: "omit",
         signal: controller.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          companyName: details.companyName.trim(), ownerName: details.ownerName.trim(),
-          ownerEmail: details.ownerEmail.trim().toLowerCase(), timezone: details.timezone,
-          teamMembers: details.teamMembers.map(({ name, email, role }) => ({ name: name.trim(), email: email.trim().toLowerCase(), role })),
-          termsAccepted: true, uiMode: "embedded",
-        }),
+        body: JSON.stringify({ termsAccepted: true, uiMode: "embedded" }),
       });
       const body = await response.json();
       if (!response.ok || !body.success || !isEmbeddedSession(body.data)) {
@@ -182,58 +149,35 @@ export default function Checkout({ appOrigin }) {
       <div className={styles.intro}>
         <p className={styles.eyebrow}>YOUR NEXT CHAPTER STARTS HERE</p>
         <h1>Your sales team.<br /><span>One clear picture.</span></h1>
-        <p>Create your company account, then connect the tools your team already uses.</p>
+        <p>Pay securely, then add your company details and connect your tools.</p>
       </div>
 
       <div className={styles.grid}>
-        <section className={styles.card} aria-labelledby="details-heading">
+        <section className={styles.card} aria-labelledby="payment-heading">
           <ol className={styles.steps} aria-label="Account setup progress">
-            <li className={session ? styles.completeStep : styles.currentStep} aria-current={session ? undefined : "step"}><span>{session ? "✓" : "1"}</span>Company</li>
-            <li className={session ? styles.currentStep : undefined} aria-current={session ? "step" : undefined}><span>2</span>Payment</li>
+            <li className={styles.currentStep} aria-current="step"><span>1</span>Payment</li>
+            <li><span>2</span>Company</li>
             <li><span>3</span>Set up</li>
           </ol>
 
           {session ? <div className={styles.paymentSection}>
-            <p className={styles.sectionLabel}>STEP 2 OF 3</p>
-            <h2 id="details-heading" ref={paymentHeading} tabIndex={-1}>Complete your payment</h2>
-            <p className={styles.description}>We will create <strong>{details.companyName}</strong> after payment. Your secure account setup link will go to <strong>{details.ownerEmail}</strong>.</p>
+            <p className={styles.sectionLabel}>STEP 1 OF 3</p>
+            <h2 id="payment-heading" ref={paymentHeading} tabIndex={-1}>Complete your payment</h2>
+            <p className={styles.description}>Use the email you want to sign in with. You will add your company details after payment.</p>
             <StripePayment session={session} />
-            <p className={styles.paymentNote}>After payment, you will open RevPhlo to create or use your login and start the setup wizard.</p>
+            <p className={styles.paymentNote}>After payment, you will open RevPhlo to verify your email and add your company details.</p>
           </div> : <form onSubmit={submit} className={styles.form}>
             <div>
               <p className={styles.sectionLabel}>STEP 1 OF 3</p>
-              <h2 id="details-heading">Tell us about your company</h2>
-              <p className={styles.description}>This creates your workspace and tells us where to send your setup link.</p>
+              <h2 id="payment-heading">Secure checkout</h2>
+              <p className={styles.description}>Complete your payment first. Your company details come next.</p>
             </div>
 
             {availability.state === "loading" ? <p className={styles.notice} role="status">Checking checkout availability…</p> : null}
             {availability.state === "unavailable" ? <div className={styles.notice} role="status"><strong>Checkout is not available right now.</strong><p>You can contact us for help, or try again in a moment.</p><div className={styles.noticeActions}>{appOrigin ? <><button type="button" className={styles.textButton} onClick={() => setLoadAttempt((value) => value + 1)}>Check again</button><a href={`${appOrigin}/get-started`}>Open checkout in RevPhlo <Arrow /></a></> : null}<a href="mailto:support@revphlo.com">Contact support</a></div></div> : null}
 
-            <fieldset className={styles.fields} disabled={busy}>
-              <legend className={styles.srOnly}>Company and account owner</legend>
-              <label className={styles.field}>Company name<input name="companyName" autoComplete="organization" maxLength={255} required value={details.companyName} onChange={(event) => update("companyName", event.target.value)} placeholder="Your company" /></label>
-              <div className={styles.fieldPair}>
-                <label className={styles.field}>Owner name<input name="ownerName" autoComplete="name" maxLength={200} required value={details.ownerName} onChange={(event) => update("ownerName", event.target.value)} placeholder="Full name" /></label>
-                <label className={styles.field}>Owner email<input name="ownerEmail" type="email" autoComplete="email" maxLength={255} required value={details.ownerEmail} onChange={(event) => update("ownerEmail", event.target.value)} placeholder="you@company.com" aria-describedby="owner-hint" /></label>
-              </div>
-              <p id="owner-hint" className={styles.hint}>Use the email you want to sign in with. The owner will manage this company.</p>
-              <label className={styles.field}>Company time zone<select name="timezone" value={details.timezone} onChange={(event) => update("timezone", event.target.value)}>{zones.map((zone) => <option key={zone} value={zone}>{zone.replaceAll("_", " ").replaceAll("/", " / ")}</option>)}</select></label>
-            </fieldset>
-
-            <fieldset className={styles.teamSection} disabled={busy}>
-              <legend>Bring your team <span>Optional</span></legend>
-              <p className={styles.hint}>Send their invites after payment. You can also add people during setup.</p>
-              {details.teamMembers.length ? <div className={styles.teamList}>{details.teamMembers.map((member, index) => <div key={member.id} className={styles.member}>
-                <div className={styles.memberHeading}><strong>Team member {index + 1}</strong><button type="button" className={styles.removeButton} onClick={() => update("teamMembers", details.teamMembers.filter((item) => item.id !== member.id))} aria-label={`Remove team member ${index + 1}`}>Remove</button></div>
-                <div className={styles.fieldPair}><label className={styles.field}>Name<input autoComplete="off" required maxLength={200} value={member.name} onChange={(event) => updateMember(member.id, "name", event.target.value)} /></label><label className={styles.field}>Email<input autoComplete="off" type="email" required maxLength={255} value={member.email} onChange={(event) => updateMember(member.id, "email", event.target.value)} /></label></div>
-                <label className={styles.field}>Role<select value={member.role} onChange={(event) => updateMember(member.id, "role", event.target.value)}><option value="rep">Sales rep</option><option value="manager">Manager</option><option value="admin">Admin</option><option value="viewer">Viewer</option></select></label>
-              </div>)}</div> : null}
-              <button type="button" className={styles.addButton} onClick={addMember} disabled={details.teamMembers.length >= 10}>+ Add team member</button>
-              {details.teamMembers.length >= 10 ? <p className={styles.hint}>You can add more people after setup.</p> : null}
-            </fieldset>
-
             <div className={styles.termsBlock}>
-              <label className={styles.terms}><input type="checkbox" required checked={details.termsAccepted} disabled={busy} onChange={(event) => update("termsAccepted", event.target.checked)} /><span>I agree to pay <strong>$2,000 today</strong> for setup and the first 30 days, then <strong>$397 each month</strong>. I agree to a six-month minimum of <strong>$3,985 USD</strong>. The plan continues monthly after that until canceled. Cancellation takes effect after the minimum term or current billing period, whichever is later.</span></label>
+              <label className={styles.terms}><input type="checkbox" required checked={termsAccepted} disabled={busy} onChange={(event) => setTermsAccepted(event.target.checked)} /><span>I agree to pay <strong>$2,000 today</strong> for setup and the first 30 days, then <strong>$397 each month</strong>. I agree to a <strong>six-month minimum term</strong>. The plan continues monthly after that until canceled. Cancellation takes effect after the minimum term or current billing period, whichever is later.</span></label>
               <p className={styles.legal}>By continuing, I accept the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a> and acknowledge the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
             </div>
             {error ? <div ref={errorRef} tabIndex={-1} className={styles.error} role="alert"><p>{error}</p></div> : null}
@@ -249,12 +193,12 @@ export default function Checkout({ appOrigin }) {
             <div className={styles.price}><span>$2,000</span><span>due today</span></div>
             <p className={styles.priceHint}>One-time setup + your first 30 days</p>
             <div className={styles.billingTimeline}><div><span className={styles.timelineDot} /><div><strong>Today</strong><p>Set up your account and get started.</p></div></div><div><span className={styles.timelineDot} /><div><strong>After 30 days</strong><p>$397 USD per month.</p></div></div></div>
-            <div className={styles.minimum}><span>Six-month minimum</span><strong>$3,985 USD</strong></div>
-            <p className={styles.smallPrint}>$2,000 today + five monthly payments of $397. Then $397 per month until canceled.</p>
+            <div className={styles.minimum}><span>Minimum term</span><strong>6 months</strong></div>
+            <p className={styles.smallPrint}>The plan continues monthly after the minimum term until canceled.</p>
           </div>
           <div className={styles.nextSteps}>
             <h3>What happens after payment</h3>
-            <ol><li><span>1</span><div><strong>Your company is created</strong><p>We use the details you enter here.</p></div></li><li><span>2</span><div><strong>Get your secure setup link</strong><p>Create or use your login. Your team gets separate invites.</p></div></li><li><span>3</span><div><strong>Connect, then get to work</strong><p>The wizard guides you through your integrations, calendars, and team setup.</p></div></li></ol>
+            <ol><li><span>1</span><div><strong>Verify your email</strong><p>Create or use your login with the email from checkout.</p></div></li><li><span>2</span><div><strong>Add your company details</strong><p>Name your company and invite your first team members.</p></div></li><li><span>3</span><div><strong>Connect your tools</strong><p>The wizard guides you through integrations, calendars, and team setup.</p></div></li></ol>
           </div>
           <p className={styles.supportNote}>Already have an account? {appOrigin ? <a href={`${appOrigin}/sign-in`}>Sign in to RevPhlo</a> : <a href="mailto:support@revphlo.com">Contact support</a>}.</p>
         </aside>

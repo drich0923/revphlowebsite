@@ -5,7 +5,6 @@ export const CHECKOUT_PLAN = Object.freeze({
   interval: "month",
   intervalCount: 1,
   minimumMonths: 6,
-  minimumTotalAmount: 398500,
   includedDays: 30,
 });
 
@@ -39,27 +38,4 @@ export function isEmbeddedSession(value) {
   if (value.clientSecret.length > 4096 || /[\s\u0000-\u001f\u007f]/u.test(value.clientSecret)) return false;
   const match = /^cs_(test|live)_[A-Za-z0-9]+_secret_(.+)$/u.exec(value.clientSecret);
   return !!match && value.publishableKey.startsWith(`pk_${match[1]}_`);
-}
-
-export function validateDetails(input) {
-  if (!input.companyName.trim()) return "Enter your company name.";
-  if (!input.ownerName.trim()) return "Enter the account owner's name.";
-  const emails = new Set();
-  const users = [{ email: input.ownerEmail, name: input.ownerName }, ...input.teamMembers];
-  for (const user of users) {
-    if (!user.name.trim()) return "Enter a name for each team member, or remove the empty row.";
-    const email = user.email.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Enter a valid email address for each person.";
-    if (emails.has(email)) return "Use a different email address for each person.";
-    emails.add(email);
-  }
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone: input.timezone });
-    if (!input.timezone) return "Select your company's time zone.";
-  } catch {
-    return "Select your company's time zone.";
-  }
-  if (input.teamMembers.length > 10) return "You can invite up to 10 people here. Add more during setup.";
-  if (!input.termsAccepted) return "Accept the payment terms to continue.";
-  return null;
 }
