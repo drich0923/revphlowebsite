@@ -84,7 +84,7 @@ export default function TermsOfService() {
             <li style={liStyle}>Subscriptions automatically renew unless canceled before the renewal date</li>
             <li style={liStyle}>You are responsible for all applicable taxes</li>
           </ul>
-          <p style={pStyle}>For the self-serve plan sold at /checkout, pay $2,000 USD for setup and the first 30 days. After 30 days, the subscription renews at $397 USD each month. The six-month minimum includes the first 30 days and five monthly payments, for a minimum total of $3,985 USD. The subscription continues each month after the minimum term until canceled. Time spent on setup does not delay the first renewal. These plan terms apply to this self-serve plan; they do not change a separate existing billing agreement.</p>
+          <p style={pStyle}>For the self-serve plan sold at /checkout, pay $2,000 USD for setup and the first 30 days. After 30 days, the subscription renews at $397 USD each month. A six-month minimum term applies. The subscription continues each month after the minimum term until canceled. Time spent on setup does not delay the first renewal. These plan terms apply to this self-serve plan; they do not change a separate existing billing agreement.</p>
           <p style={pStyle}>To cancel your subscription, contact us at support@revphlo.com or use the cancellation option in your account settings. For the self-serve plan, cancellation takes effect after both the minimum term and the current billing period have ended. Monthly payments continue until that date. For other plans, cancellation takes effect at the end of the current billing period, subject to any separate billing agreement.</p>
         </div>
 

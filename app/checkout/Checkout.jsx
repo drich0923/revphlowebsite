@@ -233,7 +233,7 @@ export default function Checkout({ appOrigin }) {
             </fieldset>
 
             <div className={styles.termsBlock}>
-              <label className={styles.terms}><input type="checkbox" required checked={details.termsAccepted} disabled={busy} onChange={(event) => update("termsAccepted", event.target.checked)} /><span>I agree to pay <strong>$2,000 today</strong> for setup and the first 30 days, then <strong>$397 each month</strong>. I agree to a six-month minimum of <strong>$3,985 USD</strong>. The plan continues monthly after that until canceled. Cancellation takes effect after the minimum term or current billing period, whichever is later.</span></label>
+              <label className={styles.terms}><input type="checkbox" required checked={details.termsAccepted} disabled={busy} onChange={(event) => update("termsAccepted", event.target.checked)} /><span>I agree to pay <strong>$2,000 today</strong> for setup and the first 30 days, then <strong>$397 each month</strong>. I agree to a <strong>six-month minimum term</strong>. The plan continues monthly after that until canceled. Cancellation takes effect after the minimum term or current billing period, whichever is later.</span></label>
               <p className={styles.legal}>By continuing, I accept the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a> and acknowledge the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
             </div>
             {error ? <div ref={errorRef} tabIndex={-1} className={styles.error} role="alert"><p>{error}</p></div> : null}
@@ -249,8 +249,8 @@ export default function Checkout({ appOrigin }) {
             <div className={styles.price}><span>$2,000</span><span>due today</span></div>
             <p className={styles.priceHint}>One-time setup + your first 30 days</p>
             <div className={styles.billingTimeline}><div><span className={styles.timelineDot} /><div><strong>Today</strong><p>Set up your account and get started.</p></div></div><div><span className={styles.timelineDot} /><div><strong>After 30 days</strong><p>$397 USD per month.</p></div></div></div>
-            <div className={styles.minimum}><span>Six-month minimum</span><strong>$3,985 USD</strong></div>
-            <p className={styles.smallPrint}>$2,000 today + five monthly payments of $397. Then $397 per month until canceled.</p>
+            <div className={styles.minimum}><span>Minimum term</span><strong>6 months</strong></div>
+            <p className={styles.smallPrint}>The plan continues monthly after the minimum term until canceled.</p>
           </div>
           <div className={styles.nextSteps}>
             <h3>What happens after payment</h3>

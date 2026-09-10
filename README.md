@@ -31,7 +31,7 @@ If you set `DEMO_WEBHOOK_URL`, submissions are forwarded server-side.
 
 `/checkout` collects the company name, owner name and email, company time zone, and optional initial team members. It then shows Stripe Embedded Checkout on the same page. The Revphlo app creates the company only after it verifies payment with Stripe. The owner receives a secure account setup link and can create a login or use an existing login. Passwords are not sent by email.
 
-The price is $2,000 USD now, including setup and the first 30 days, then $397 USD each month. The six-month minimum includes five monthly renewals after the included period, for a minimum total of $3,985 USD. The subscription continues monthly after the minimum term.
+The price is $2,000 USD now, including setup and the first 30 days, then $397 USD each month. A six-month minimum term applies. The subscription continues monthly after the minimum term.
 
 ### Configuration
 
