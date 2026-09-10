@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { isEmbeddedSession, isExpectedPlan, isPublishableKey } from "./checkout-contract.mjs";
+import { isCheckoutClientSession, isExpectedPlan, isPublishableKey } from "./checkout-contract.mjs";
 import { loadStripeScript } from "./stripe-loader";
 import styles from "./checkout.module.css";
 
@@ -15,43 +15,93 @@ function Lock() {
 
 function StripePayment({ session }) {
   const container = useRef(null);
+  const actions = useRef(null);
   const [attempt, setAttempt] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [canConfirm, setCanConfirm] = useState(false);
+  const [email, setEmail] = useState("");
+  const [total, setTotal] = useState("");
 
   useEffect(() => {
     let disposed = false;
     let checkout;
+    let paymentElement;
     setLoading(true);
     setError("");
+    setCanConfirm(false);
+    actions.current = null;
     async function mount() {
       try {
         const Stripe = await loadStripeScript();
         if (disposed) return;
-        checkout = await Stripe(session.publishableKey).initEmbeddedCheckout({
-          fetchClientSecret: async () => session.clientSecret,
+        checkout = Stripe(session.publishableKey).initCheckout({
+          clientSecret: session.clientSecret,
+          elementsOptions: {
+            appearance: {
+              theme: "stripe",
+              variables: { colorPrimary: "#3361ff", borderRadius: "8px", fontFamily: "Arial, sans-serif" },
+            },
+          },
         });
-        if (disposed) { checkout.destroy(); return; }
-        checkout.mount(container.current);
+        paymentElement = checkout.createPaymentElement({
+          layout: "tabs",
+          fields: { billingDetails: { email: "never" } },
+        });
+        paymentElement.mount(container.current);
+        checkout.on("change", (current) => {
+          if (disposed) return;
+          setCanConfirm(Boolean(current.canConfirm));
+          setTotal(current.total?.total?.amount || "");
+        });
+        const result = await checkout.loadActions();
+        if (disposed) return;
+        if (result.type !== "success") throw new Error(result.error?.message || "The payment form could not load.");
+        actions.current = result.actions;
+        const current = result.actions.getSession();
+        setCanConfirm(Boolean(current.canConfirm));
+        setTotal(current.total?.total?.amount || "");
         setLoading(false);
       } catch {
         if (!disposed) {
-          checkout?.destroy();
-          checkout = undefined;
+          paymentElement?.destroy();
           setError("The payment form could not load. Try again to open the same checkout.");
           setLoading(false);
         }
       }
     }
     mount();
-    return () => { disposed = true; checkout?.destroy(); };
+    return () => { disposed = true; actions.current = null; paymentElement?.destroy(); };
   }, [session, attempt]);
 
-  return <div className={styles.paymentArea}>
+  async function confirmPayment(event) {
+    event.preventDefault();
+    if (!actions.current || submitting || !canConfirm) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      const result = await actions.current.confirm({ email: email.trim() });
+      if (result.type === "error") {
+        setError(result.error?.message || "We could not complete your payment. Check your details and try again.");
+        setSubmitting(false);
+      }
+    } catch {
+      setError("We could not complete your payment. Check your details and try again.");
+      setSubmitting(false);
+    }
+  }
+
+  return <form className={styles.paymentArea} onSubmit={confirmPayment}>
+    <label className={styles.emailLabel} htmlFor="checkout-email">Email for your new Revphlo account</label>
+    <input id="checkout-email" className={styles.emailInput} type="email" autoComplete="email" required value={email} disabled={submitting} onChange={(event) => setEmail(event.target.value)} />
+    <p className={styles.emailHelp}>You will use this email to create and verify your new login after payment.</p>
     {loading ? <p role="status" className={styles.loading}>Loading your secure payment form…</p> : null}
-    {error ? <div className={styles.error} role="alert"><p>{error}</p><button type="button" className={styles.textButton} onClick={() => setAttempt((value) => value + 1)}>Try payment form again</button></div> : null}
     <div ref={container} className={styles.stripeMount} />
-  </div>;
+    {total ? <p className={styles.paymentTotal}><span>Due today</span><strong>{total}</strong></p> : null}
+    {error ? <div className={styles.error} role="alert"><p>{error}</p>{actions.current ? null : <button type="button" className={styles.textButton} onClick={() => setAttempt((value) => value + 1)}>Try payment form again</button>}</div> : null}
+    <button className={styles.submit} type="submit" disabled={loading || submitting || !canConfirm}>{submitting ? "Starting…" : "Get Started"}{!submitting ? <Arrow /> : null}</button>
+  </form>;
 }
 
 export default function Checkout({ appOrigin }) {
@@ -117,10 +167,10 @@ export default function Checkout({ appOrigin }) {
         credentials: "omit",
         signal: controller.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ termsAccepted: true, uiMode: "embedded" }),
+        body: JSON.stringify({ termsAccepted: true, uiMode: "custom" }),
       });
       const body = await response.json();
-      if (!response.ok || !body.success || !isEmbeddedSession(body.data)) {
+      if (!response.ok || !body.success || !isCheckoutClientSession(body.data)) {
         throw new Error("We could not open checkout. Please try again.");
       }
       if (!mounted.current) return;
@@ -163,7 +213,7 @@ export default function Checkout({ appOrigin }) {
           {session ? <div className={styles.paymentSection}>
             <p className={styles.sectionLabel}>STEP 1 OF 3</p>
             <h2 id="payment-heading" ref={paymentHeading} tabIndex={-1}>Complete your payment</h2>
-            <p className={styles.description}>Use the email you want to sign in with. You will add your company details after payment.</p>
+            <p className={styles.description}>Use the email for your new Revphlo account. You will add your company details after payment.</p>
             <StripePayment session={session} />
             <p className={styles.paymentNote}>After payment, you will open RevPhlo to verify your email and add your company details.</p>
           </div> : <form onSubmit={submit} className={styles.form}>
@@ -198,9 +248,8 @@ export default function Checkout({ appOrigin }) {
           </div>
           <div className={styles.nextSteps}>
             <h3>What happens after payment</h3>
-            <ol><li><span>1</span><div><strong>Verify your email</strong><p>Create or use your login with the email from checkout.</p></div></li><li><span>2</span><div><strong>Add your company details</strong><p>Name your company and invite your first team members.</p></div></li><li><span>3</span><div><strong>Connect your tools</strong><p>The wizard guides you through integrations, calendars, and team setup.</p></div></li></ol>
+            <ol><li><span>1</span><div><strong>Create your login</strong><p>Use and verify the email from checkout.</p></div></li><li><span>2</span><div><strong>Add your company details</strong><p>Name your company and invite your first team members.</p></div></li><li><span>3</span><div><strong>Connect your tools</strong><p>The wizard guides you through integrations, calendars, and team setup.</p></div></li></ol>
           </div>
-          <p className={styles.supportNote}>Already have an account? {appOrigin ? <a href={`${appOrigin}/sign-in`}>Sign in to RevPhlo</a> : <a href="mailto:support@revphlo.com">Contact support</a>}.</p>
         </aside>
       </div>
       <footer className={styles.footer}><span>© {new Date().getFullYear()} RevPhlo</span><nav aria-label="Legal"><a href="/privacy-policy">Privacy</a><a href="/terms-of-service">Terms</a><a href="mailto:support@revphlo.com">Support</a></nav></footer>
