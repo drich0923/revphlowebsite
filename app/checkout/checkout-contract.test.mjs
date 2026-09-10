@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isEmbeddedSession } from "./checkout-contract.mjs";
+import { CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isCheckoutClientSession } from "./checkout-contract.mjs";
 
 test("customer data only goes to a configured HTTPS origin", () => {
   assert.equal(getAppOrigin("https://app.revphlo.com"), "https://app.revphlo.com");
@@ -20,20 +20,20 @@ test("checkout is disabled when the server plan differs from the displayed agree
   assert.equal(isExpectedPlan(null), false);
 });
 
-test("an embedded session must use the same Stripe mode as its public key", () => {
-  assert.equal(isEmbeddedSession({ publishableKey: "pk_test_example", clientSecret: "cs_test_example_secret_example" }), true);
-  assert.equal(isEmbeddedSession({ publishableKey: "pk_live_example", clientSecret: "cs_test_example_secret_example" }), false);
-  assert.equal(isEmbeddedSession({ publishableKey: "sk_test_example", clientSecret: "cs_test_example_secret_example" }), false);
-  assert.equal(isEmbeddedSession({ publishableKey: "pk_test_example", clientSecret: "https://other.example" }), false);
+test("a checkout session must use the same Stripe mode as its public key", () => {
+  assert.equal(isCheckoutClientSession({ publishableKey: "pk_test_example", clientSecret: "cs_test_example_secret_example" }), true);
+  assert.equal(isCheckoutClientSession({ publishableKey: "pk_live_example", clientSecret: "cs_test_example_secret_example" }), false);
+  assert.equal(isCheckoutClientSession({ publishableKey: "sk_test_example", clientSecret: "cs_test_example_secret_example" }), false);
+  assert.equal(isCheckoutClientSession({ publishableKey: "pk_test_example", clientSecret: "https://other.example" }), false);
 });
 
 test("Stripe checkout secrets accept an opaque encoded suffix without changing it", () => {
   for (const mode of ["test", "live"]) {
     const clientSecret = `cs_${mode}_Example123_secret_${"fake%2Fencoded%3Dvalue_-.".repeat(20)}`;
     const session = { publishableKey: `pk_${mode}_example`, clientSecret };
-    assert.equal(isEmbeddedSession(session), true);
+    assert.equal(isCheckoutClientSession(session), true);
     assert.equal(session.clientSecret, clientSecret);
-    assert.equal(isEmbeddedSession({ ...session, publishableKey: `pk_${mode === "live" ? "test" : "live"}_example` }), false);
+    assert.equal(isCheckoutClientSession({ ...session, publishableKey: `pk_${mode === "live" ? "test" : "live"}_example` }), false);
   }
 });
 
@@ -45,6 +45,6 @@ test("Stripe checkout secrets reject missing, whitespace, control and oversized 
     "cs_live_Example123_secret_value\u00a0", "cs_live_Example123_secret_value\u0000",
     `cs_live_Example123_secret_${"x".repeat(4096)}`,
   ]) {
-    assert.equal(isEmbeddedSession({ publishableKey: "pk_live_example", clientSecret }), false);
+    assert.equal(isCheckoutClientSession({ publishableKey: "pk_live_example", clientSecret }), false);
   }
 });

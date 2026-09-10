@@ -32,7 +32,7 @@ export function isPublishableKey(value) {
   return typeof value === "string" && /^pk_(?:test|live)_[A-Za-z0-9]+$/.test(value);
 }
 
-export function isEmbeddedSession(value) {
+export function isCheckoutClientSession(value) {
   if (!value || !isPublishableKey(value.publishableKey) || typeof value.clientSecret !== "string") return false;
   // Stripe owns the secret format. Encoded characters are valid in its opaque suffix.
   if (value.clientSecret.length > 4096 || /[\s\u0000-\u001f\u007f]/u.test(value.clientSecret)) return false;
