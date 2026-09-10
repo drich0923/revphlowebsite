@@ -22,6 +22,7 @@ function StripePayment({ session }) {
   const [submitting, setSubmitting] = useState(false);
   const [canConfirm, setCanConfirm] = useState(false);
   const [email, setEmail] = useState("");
+  const [fixedEmail, setFixedEmail] = useState("");
   const [total, setTotal] = useState("");
 
   useEffect(() => {
@@ -31,6 +32,7 @@ function StripePayment({ session }) {
     setLoading(true);
     setError("");
     setCanConfirm(false);
+    setFixedEmail("");
     actions.current = null;
     async function mount() {
       try {
@@ -60,6 +62,7 @@ function StripePayment({ session }) {
         if (result.type !== "success") throw new Error(result.error?.message || "The payment form could not load.");
         actions.current = result.actions;
         const current = result.actions.getSession();
+        setFixedEmail(current.email || "");
         setCanConfirm(Boolean(current.canConfirm));
         setTotal(current.total?.total?.amount || "");
         setLoading(false);
@@ -81,7 +84,8 @@ function StripePayment({ session }) {
     setSubmitting(true);
     setError("");
     try {
-      const result = await actions.current.confirm({ email: email.trim() });
+      // Stripe rejects an email override when the server already set customer_email.
+      const result = await actions.current.confirm(fixedEmail ? {} : { email: email.trim() });
       if (result.type === "error") {
         setError(result.error?.message || "We could not complete your payment. Check your details and try again.");
         setSubmitting(false);
@@ -94,7 +98,7 @@ function StripePayment({ session }) {
 
   return <form className={styles.paymentArea} onSubmit={confirmPayment}>
     <label className={styles.emailLabel} htmlFor="checkout-email">Email for your new Revphlo account</label>
-    <input id="checkout-email" className={styles.emailInput} type="email" autoComplete="email" required value={email} disabled={submitting} onChange={(event) => setEmail(event.target.value)} />
+    <input id="checkout-email" className={styles.emailInput} type="email" autoComplete="email" required value={fixedEmail || email} readOnly={Boolean(fixedEmail)} disabled={loading || submitting} onChange={(event) => setEmail(event.target.value)} />
     <p className={styles.emailHelp}>You will use this email to create and verify your new login after payment.</p>
     {loading ? <p role="status" className={styles.loading}>Loading your secure payment form…</p> : null}
     <div ref={container} className={styles.stripeMount} />

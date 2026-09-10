@@ -20,7 +20,7 @@ test("checkout is disabled when the server plan differs from the displayed agree
   assert.equal(isExpectedPlan(null), false);
 });
 
-test("an embedded session must use the same Stripe mode as its public key", () => {
+test("a checkout session must use the same Stripe mode as its public key", () => {
   assert.equal(isCheckoutClientSession({ publishableKey: "pk_test_example", clientSecret: "cs_test_example_secret_example" }), true);
   assert.equal(isCheckoutClientSession({ publishableKey: "pk_live_example", clientSecret: "cs_test_example_secret_example" }), false);
   assert.equal(isCheckoutClientSession({ publishableKey: "sk_test_example", clientSecret: "cs_test_example_secret_example" }), false);

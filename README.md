@@ -33,6 +33,8 @@ If you set `DEMO_WEBHOOK_URL`, submissions are forwarded server-side.
 
 The price is $2,000 USD now, including setup and the first 30 days, then $397 USD each month. A six-month minimum term applies. The subscription continues monthly after the minimum term.
 
+This checkout is for new customers. It has no existing-account sign-in option. The customer enters the email for their new account, selects `Get Started` to pay, then creates and verifies that account in the app. The app's signup page must also hide the sign-in option when opened from checkout.
+
 ### Configuration
 
 Set `NEXT_PUBLIC_REVPHLO_APP_URL` to the trusted HTTPS origin of the Revphlo app, such as `https://app.revphlo.com`. This is a public URL, not a Stripe key. Next.js includes it at build time, so rebuild the website after changing it. Local development can use an HTTP localhost origin. Do not include a path or query string.
@@ -42,6 +44,8 @@ Stripe secrets, prices, company creation, invitations, and webhooks belong in th
 The app must have the self-serve checkout migration and configuration described in its `docs/SELF_SERVE_CHECKOUT_SETUP.md`. Website checkout also needs `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` in the app, in the same test or live mode as its secret key. Its checkout start API permits the exact origins `https://revphlo.com` and `https://www.revphlo.com`. The live apex domain redirects to `www`. A test website origin can be added through the app's `STRIPE_CHECKOUT_WEBSITE_ORIGIN` setting. Do not use a wildcard for preview domains.
 
 The website calls only the app's public `GET` and `POST /api/checkout/start` route. Requests omit browser credentials. The start request contains only `{ termsAccepted: true, uiMode: "custom" }`. The app checks the plan, stores the accepted terms, and returns a short-lived Checkout client secret. Company details are not sent in this request. Keep that secret in memory. Do not log it or add it to a URL, browser storage, or analytics event.
+
+If Stripe already has an email on the new checkout session, the website displays it as read-only and does not send an email override during payment confirmation. This supports the fixed recipient in the test app. Otherwise, the customer enters their new-account email on the website.
 
 The page loads `https://js.stripe.com/clover/stripe.js`. This matches the app's current Stripe SDK API release. It mounts Stripe's Payment Element directly in the page, without an outer iframe. The Revphlo page owns the `Get Started` button and passes the required new owner email to Stripe during confirmation. After payment, Stripe returns the buyer to the configured app origin at `/checkout/success`. The payment webhook also runs if the buyer closes the browser. The company details step still has to be completed before a company and invitations are created. The owner's verified primary login email must match the Stripe checkout email before the company details can be saved.
 
@@ -53,7 +57,7 @@ This feature needs releases in both the app and this website. The website Vercel
 
 1. Configure and test the app in Stripe test mode. Apply its additive database migration through the normal release process.
 2. Configure the test website's app URL and allow its exact origin in the app. Rebuild the website.
-3. Open `/checkout` on desktop and mobile. Confirm that it has payment terms and Stripe checkout, with no company, owner, time zone, or team fields.
+3. Open `/checkout` on desktop and mobile. Confirm that it has payment terms, a new-account email field, and the `Get Started` payment button. Confirm that it has no sign-in option or company, owner name, time zone, or team fields.
 4. Check unavailable checkout, network failure, and blocked Stripe script states. Before the payment form opens, a manual retry must keep the accepted terms. It must not send simultaneous requests. Once a session is received, payment-form retries must reuse it.
 5. Complete a Stripe test payment. Confirm $2,000 due now and $397 per month after 30 days. Confirm that payment opens the app's company details step and that payment alone does not create a company or send team invitations.
 6. Create and verify a login with the checkout email, submit company details, and confirm that one company is created. Check required fields, duplicate team emails, roles, and time zone in this app step. Refresh the return page and resend the webhook to check for duplicate companies. Test a wrong email too.
