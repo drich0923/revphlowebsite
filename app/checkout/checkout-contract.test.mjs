@@ -13,7 +13,7 @@ test("customer data only goes to a configured HTTPS origin", () => {
 
 test("checkout is disabled when the server plan differs from the displayed agreement", () => {
   assert.equal(isExpectedPlan({ ...CHECKOUT_PLAN, name: "Revphlo" }), true);
-  for (const field of ["setupAmount", "amount", "minimumTotalAmount", "minimumMonths", "includedDays", "intervalCount"]) {
+  for (const field of ["setupAmount", "amount", "minimumMonths", "includedDays", "intervalCount"]) {
     assert.equal(isExpectedPlan({ ...CHECKOUT_PLAN, [field]: CHECKOUT_PLAN[field] + 1 }), false, field);
   }
   assert.equal(isExpectedPlan({ ...CHECKOUT_PLAN, currency: "eur" }), false);

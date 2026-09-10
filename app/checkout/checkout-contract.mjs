@@ -5,7 +5,6 @@ export const CHECKOUT_PLAN = Object.freeze({
   interval: "month",
   intervalCount: 1,
   minimumMonths: 6,
-  minimumTotalAmount: 398500,
   includedDays: 30,
 });
 
