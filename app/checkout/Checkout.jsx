@@ -86,8 +86,8 @@ function StripePayment({ session }) {
         setError(result.error?.message || "We could not complete your payment. Check your details and try again.");
         setSubmitting(false);
       }
-    } catch {
-      setError("We could not complete your payment. Check your details and try again.");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "We could not complete your payment. Check your details and try again.");
       setSubmitting(false);
     }
   }
