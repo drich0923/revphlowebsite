@@ -8,8 +8,8 @@ export default function CtaRail({ ghostLabel = "See How It Works", ghostHref = "
         <Tape inline />
       </div>
       <div className="ctarail__actions">
-        <a href="#book" className="btn btn--primary">
-          Book a Demo
+        <a href="/checkout" className="btn btn--primary">
+          Get Started
           <Icon name="arrow-right" size={16} className="btn__arrow" />
         </a>
         <a href={ghostHref} className="btn btn--ghost">

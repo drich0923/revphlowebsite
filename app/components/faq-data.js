@@ -3,11 +3,11 @@
 export const FAQ_ITEMS = [
   {
     q: "What CRM / tech stack does RevPhlo work with?",
-    a: "RevPhlo integrates with GoHighLevel, Zoom, Stripe, Fathom, Zapier, Slack, and Whop via one-click OAuth. If your leads flow through GHL and calls are recorded on Fathom, you're good to go.",
+    a: "RevPhlo connects with tools such as GoHighLevel, HubSpot, Zoom, Stripe, Fathom, Zapier, Slack, and Whop. Setup shows the connection method, access, and configuration needed for the tools your business uses.",
   },
   {
     q: "How long does setup take?",
-    a: "Most teams are fully live within 48 hours. Connect your integrations, map your sources and calendars, and your dashboard starts populating immediately.",
+    a: "Setup starts directly after checkout. The time needed depends on your tools and who has access to them. RevPhlo guides you through each question and action. You can share tasks with teammates. The full dashboard opens after all required setup checks pass; you do not need to wait for a real sale.",
   },
   {
     q: "How do the AI post-call notes work?",

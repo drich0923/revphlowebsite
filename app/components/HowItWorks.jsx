@@ -1,18 +1,18 @@
 const STEPS = [
   {
     n: "01",
-    title: "Connect your tools",
-    body: "One-click OAuth with GoHighLevel, Zoom, Stripe, Fathom, and more. No developers needed.",
+    title: "Start your account",
+    body: "Complete checkout, verify your email, and add your company details. Your setup starts right away.",
   },
   {
     n: "02",
-    title: "Map your sources",
-    body: "Tell RevPhlo how to identify paid vs. organic, which funnels map to which tags, and your calendar structure.",
+    title: "Connect and configure",
+    body: "Follow each setup question and action. Each step explains why it matters and who needs to complete it. Share tasks with a teammate when you need help.",
   },
   {
     n: "03",
-    title: "See everything",
-    body: "Dashboard is live. Every call auto-dispositioned. Every dollar attributed. Drill into anything.",
+    title: "Open your dashboard",
+    body: "Your full dashboard opens when all required setup checks pass. New bookings, calls, and payments appear as they arrive.",
   },
 ];
 
@@ -26,8 +26,8 @@ export default function HowItWorks() {
           <span className="protocol__tick" aria-hidden="true" />
         </div>
         <div className="how__head" data-reveal>
-          <h2 className="h2">Live in 48 hours, not 48 days</h2>
-          <p className="how__sub">Connect your stack. Map your sources. See everything.</p>
+          <h2 className="h2">From checkout to a connected team</h2>
+          <p className="how__sub">Start your account. Complete your setup. Open your dashboard.</p>
         </div>
         <div className="how__cards" data-reveal-group>
           <div className="how__rail" aria-hidden="true" />
