@@ -61,6 +61,9 @@ export default function Nav() {
           ))}
         </nav>
         <div className="nav__right">
+          <a href="https://app.revphlo.com" className="btn btn--ghost btn--compact nav__login">
+            Login
+          </a>
           <a href="/checkout" className="btn btn--primary btn--compact">
             Get Started
             <Icon name="arrow-right" size={16} className="btn__arrow" />
@@ -83,6 +86,9 @@ export default function Nav() {
             {l.label}
           </a>
         ))}
+        <a href="https://app.revphlo.com" className="nav__menu-link" onClick={() => setOpen(false)}>
+          Login
+        </a>
       </nav>
     </header>
   );
