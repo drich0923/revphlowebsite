@@ -7,7 +7,6 @@ const LINKS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#howitworks" },
   { label: "FAQ", href: "#faq" },
-  { label: "Book a Demo", href: "#book" },
 ];
 
 export default function Nav() {
@@ -64,8 +63,8 @@ export default function Nav() {
           <a href="https://app.revphlo.com" className="btn btn--ghost btn--compact nav__login">
             Login
           </a>
-          <a href="/checkout" className="btn btn--primary btn--compact">
-            Get Started
+          <a href="#book" className="btn btn--primary btn--compact">
+            Book a Demo
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
           <button

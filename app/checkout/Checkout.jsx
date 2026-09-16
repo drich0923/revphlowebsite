@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { getCheckoutAvailability, isCheckoutClientSession } from "./checkout-contract.mjs";
 import { loadStripeScript } from "./stripe-loader";
@@ -252,7 +253,9 @@ export default function Checkout({ appOrigin }) {
   return <div className={styles.page}>
     <a className={styles.skipLink} href="#checkout-main">Skip to checkout</a>
     <header className={styles.header}>
-      <a href="/" className={styles.logo} aria-label="RevPhlo home"><span className={styles.logoMark} aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 15c5 0 7-8 16-8M4 19c5 0 7-8 16-8M4 11c5 0 7-8 16-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></span>RevPhlo</a>
+      <a href="/" className={styles.logo} aria-label="RevPhlo home">
+        <Image src="/logo.png" alt="RevPhlo" width={142} height={32} className={styles.logoImage} priority />
+      </a>
       <a className={styles.helpLink} href="mailto:support@revphlo.com">Need help? <span>Contact us</span></a>
     </header>
 

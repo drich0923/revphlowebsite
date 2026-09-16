@@ -14,8 +14,8 @@
 .skipLink { position: fixed; top: -60px; left: 16px; z-index: 100; padding: 8px 16px; background: white; border: 1px solid #3361ff; border-radius: 8px; }
 .skipLink:focus { top: 8px; }
 .header { height: 88px; max-width: 1232px; padding: 0 32px; margin: auto; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e7f0; }
-.logo { display: inline-flex; align-items: center; gap: 9px; font-size: 24px; font-weight: 600; text-decoration: none; letter-spacing: -1px; color: #172139 !important; }
-.logoMark { width: 35px; height: 35px; display: grid; place-items: center; background: #3361ff; color: white; border-radius: 50%; }
+.logo { display: inline-flex; align-items: center; text-decoration: none; }
+.logoImage { display: block; width: 142px; height: auto; }
 .helpLink { font-size: 12px; color: #5a6578 !important; text-decoration: none; }
 .helpLink span { color: #294ed0; font-weight: 600; margin-left: 5px; }
 .main { max-width: 1168px; margin: auto; padding: 46px 32px 22px; }
@@ -106,8 +106,7 @@
 }
 @media (max-width: 700px) {
   .header { height: 72px; padding: 0 20px; }
-  .logo { font-size: 22px; }
-  .logoMark { width: 31px; height: 31px; }
+  .logoImage { width: 128px; }
   .helpLink { font-size: 0; }
   .helpLink span { font-size: 12px; }
   .main { padding: 32px 18px 22px; }

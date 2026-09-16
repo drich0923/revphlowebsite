@@ -1903,13 +1903,17 @@ html.js-motion .oldnew__arrow-dot {
   border: var(--border-2);
   border-radius: var(--r-4);
   box-shadow: var(--sh-card);
-  min-height: 560px;
   padding: var(--sp-5);
   position: relative;
 }
 .book__form {
   position: relative;
-  min-height: 510px;
+  height: 780px;
+}
+.book__form > div,
+.book__form iframe {
+  height: 100% !important;
+  min-height: 100%;
 }
 .book__skeleton {
   position: absolute;
@@ -2216,7 +2220,10 @@ html.js-motion .book__skeleton::after {
     display: none;
   }
   .book__card {
-    min-height: 620px;
+    padding: var(--sp-4);
+  }
+  .book__form {
+    height: 860px;
   }
   .faq__question {
     font-size: 16px;
