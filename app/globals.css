@@ -1072,9 +1072,12 @@ html.js-motion .oldnew__arrow-dot {
 }
 .feature__grid {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: var(--sp-8);
+  grid-template-columns: minmax(280px, 4fr) minmax(0, 8fr);
+  gap: var(--sp-7);
   align-items: center;
+}
+.feature--flipped .feature__grid {
+  grid-template-columns: minmax(0, 8fr) minmax(280px, 4fr);
 }
 .feature--flipped .feature__text {
   grid-column: 2;
@@ -1083,6 +1086,9 @@ html.js-motion .oldnew__arrow-dot {
 .feature--flipped .feature__visual {
   grid-column: 1;
   grid-row: 1;
+}
+.feature__visual {
+  min-width: 0;
 }
 .feature__tag {
   display: inline-flex;
@@ -1138,101 +1144,107 @@ html.js-motion .oldnew__arrow-dot {
   margin-top: 2px;
 }
 
-/* Exhibit panel */
-.panel {
+/* Static before/after comparison: both states remain visible without interaction. */
+.comparison {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+.comparison__card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--bg-2);
   border: var(--border-2);
   border-radius: var(--r-3);
   box-shadow: var(--sh-card);
-  overflow: hidden;
 }
-.panel__tabs {
+.comparison__card--before {
+  border-color: rgba(248, 113, 113, 0.22);
+  background: linear-gradient(180deg, rgba(248, 113, 113, 0.045), transparent 28%), var(--bg-2);
+}
+.comparison__card--after {
+  border-color: rgba(147, 172, 255, 0.32);
+  background: linear-gradient(180deg, rgba(51, 97, 255, 0.09), transparent 32%), var(--bg-2);
+  box-shadow: inset 0 1px 0 rgba(147, 172, 255, 0.12), 0 18px 44px -20px var(--accent-glow);
+}
+.comparison__head {
+  min-height: 56px;
   display: flex;
-  gap: 2px;
-  padding: var(--sp-3);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
   border-bottom: var(--border-1);
 }
-.panel__tab {
-  padding: 8px 16px;
-  min-height: 36px;
-  border: 1px solid transparent;
-  border-radius: var(--r-1);
+.comparison__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-family: var(--font-mono), monospace;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.comparison__label--before {
+  color: var(--loss);
+}
+.comparison__label--after {
+  color: var(--accent-text);
+}
+.comparison__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+}
+.comparison__descriptor {
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3);
-  transition: background 0.15s, color 0.15s;
+  text-align: right;
 }
-.panel__tab:hover {
-  color: var(--text-1);
-}
-.panel__tab[aria-pressed="true"] {
-  background: var(--bg-3);
-  color: var(--text-1);
-  border: var(--border-1);
-}
-.panel__stage {
-  display: grid;
-  min-height: 400px;
-}
-/* True crossfade: both states share the grid cell; the outgoing one fades
-   and settles away while the incoming one rises in. Visibility flips at the
-   end of the fade-out (0.55s delay) but instantly on the way in. */
-.panel__state {
-  grid-area: 1 / 1;
-  position: relative;
-  padding: var(--sp-6);
+.comparison__stage {
+  min-height: 430px;
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out), visibility 0s linear 0s;
-}
-/* Reserve the evidence-peek intrusion zone so content never sits under it */
-.panel__state--after {
-  padding-bottom: calc(var(--sp-6) + 48px);
-}
-.panel__state--before {
   align-items: center;
+  justify-content: center;
+  padding: var(--sp-5) var(--sp-4);
 }
-.panel__state[hidden] {
-  display: flex;
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(8px) scale(0.99);
-  pointer-events: none;
-  transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out), visibility 0s linear 0.55s;
+.comparison__stage--after > * {
+  width: 100%;
 }
-
-/* The evidence peek — clipped paper corner, second BEFORE trigger */
-.panel__peek {
+.comparison__bridge {
   position: absolute;
-  bottom: -26px;
-  left: -26px;
-  width: 110px;
-  height: 96px;
-  background: var(--paper);
-  transform: rotate(-6deg);
-  border-radius: 3px;
-  box-shadow: var(--sh-paper);
-  transition: transform 0.2s;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 4px solid var(--bg-0);
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--sh-btn);
 }
-.panel__peek:hover {
-  transform: rotate(-6deg) translateY(-4px);
+.comparison__caption {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
 }
-.panel__peek-tab {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+.comparison__caption span:last-child {
+  color: var(--accent-text);
 }
 
 /* BEFORE artifacts */
@@ -2058,7 +2070,8 @@ html.js-motion .book__skeleton::after {
     width: 100%;
     max-width: 480px;
   }
-  .feature__grid {
+  .feature__grid,
+  .feature--flipped .feature__grid {
     grid-template-columns: 1fr;
     gap: var(--sp-6);
   }
@@ -2192,6 +2205,20 @@ html.js-motion .book__skeleton::after {
   }
 }
 
+@media (max-width: 640px) {
+  .comparison {
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+  }
+  .comparison__bridge {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .comparison__caption {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
 @media (max-width: 480px) {
   .hero__h1 {
     font-size: 40px;
@@ -2206,14 +2233,15 @@ html.js-motion .book__skeleton::after {
     width: 64px;
     height: 64px;
   }
-  .panel__state {
+  .comparison__head {
+    min-height: 52px;
+  }
+  .comparison__descriptor {
+    font-size: 8px;
+  }
+  .comparison__stage {
+    min-height: 340px;
     padding: var(--sp-4);
-  }
-  .panel__state--after {
-    padding-bottom: calc(var(--sp-4) + 64px);
-  }
-  .panel__stage {
-    min-height: 320px;
   }
   .dash__meta > svg,
   .dash__meta-date {
