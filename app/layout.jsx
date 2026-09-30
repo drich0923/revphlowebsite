@@ -13,6 +13,7 @@ const siteName = "RevPhlo";
 const defaultTitle = "RevPhlo — Post-Booking Sales Intelligence for High-Ticket Teams";
 const defaultDescription =
   "Post-booking sales intelligence for high-ticket teams. AI call notes, revenue attribution, live leaderboards, payment matching. Built for GoHighLevel + Stripe.";
+const socialImageUrl = "https://www.revphlo.com/og-image.png?v=20260930";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
@@ -58,9 +59,10 @@ export const metadata = {
     description: defaultDescription,
     images: [
       {
-        url: `${siteUrl}/og-image.png`,
+        url: socialImageUrl,
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "RevPhlo — Post-Booking Sales Intelligence Platform",
       },
     ],
@@ -69,7 +71,7 @@ export const metadata = {
     card: "summary_large_image",
     title: defaultTitle,
     description: defaultDescription,
-    images: [`${siteUrl}/og-image.png`],
+    images: [{ url: socialImageUrl, alt: "RevPhlo — Post-Booking Sales Intelligence Platform" }],
   },
   robots: {
     index: true,
@@ -107,7 +109,7 @@ const jsonLd = {
         "GoHighLevel, Zoom, Stripe, Fathom, Zapier, Slack, and Whop integrations",
         "Real-time sales analytics dashboard",
       ],
-      screenshot: `${siteUrl}/og-image.png`,
+      screenshot: socialImageUrl,
     },
     {
       "@type": "Organization",
