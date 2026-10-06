@@ -8,7 +8,7 @@ const hand = Caveat({ subsets: ["latin"], weight: ["600"], variable: "--font-han
 const dmSans = DM_Sans({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-dm-sans", display: "swap" });
 const dmSerif = DM_Serif_Display({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-dm-serif", display: "swap" });
 
-const siteUrl = "https://revphlo.com";
+const siteUrl = "https://www.revphlo.com";
 const siteName = "RevPhlo";
 const defaultTitle = "RevPhlo — Post-Booking Sales Intelligence for High-Ticket Teams";
 const defaultDescription =
@@ -113,11 +113,23 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
       name: "RevPhlo",
       url: siteUrl,
       logo: `${siteUrl}/logo.png`,
       description:
         "RevPhlo is a unified post-booking sales analytics platform built for high-ticket sales teams.",
+      founder: [
+        { "@type": "Person", name: "Dylan Rich" },
+        { "@type": "Person", name: "Jake Tacher" },
+        { "@type": "Person", name: "Ben Crabb" },
+      ],
+      parentOrganization: {
+        "@type": "Organization",
+        "@id": "https://systemizedsales.com/#organization",
+        name: "Systemized Sales",
+        url: "https://systemizedsales.com",
+      },
       contactPoint: [
         {
           "@type": "ContactPoint",
