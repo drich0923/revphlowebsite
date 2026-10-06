@@ -9,7 +9,7 @@ export default function Footer() {
           <span className="footer__copy">&copy; {new Date().getFullYear()} RevPhlo. All rights reserved.</span>
         </div>
         <div className="footer__links">
-          <a href="https://systemizedsales.com">Systemized Sales</a>
+          <a href="https://www.systemizedsales.com">Systemized Sales</a>
           <a href="https://systemizedsales.ai">Systemized Sales AI</a>
           <a href="https://revphlo.com/privacy-policy">Privacy Policy</a>
           <a href="https://revphlo.com/terms-of-service">Terms of Service</a>

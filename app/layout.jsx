@@ -126,9 +126,9 @@ const jsonLd = {
       ],
       parentOrganization: {
         "@type": "Organization",
-        "@id": "https://systemizedsales.com/#organization",
+        "@id": "https://www.systemizedsales.com/#organization",
         name: "Systemized Sales",
-        url: "https://systemizedsales.com",
+        url: "https://www.systemizedsales.com",
       },
       contactPoint: [
         {

@@ -26,7 +26,7 @@ export default function About() {
       initials: "JT",
       photo: "/headshot-jake.png",
       title: "Co-Founder",
-      link: { url: "https://systemizedsales.com", label: "Systemized Sales" },
+      link: { url: "https://www.systemizedsales.com", label: "Systemized Sales" },
       bio: "Jake is the co-founder of Systemized Sales and brings deep expertise in building and scaling high-ticket sales organizations. He's seen firsthand how fragmented reporting cripples decision-making at scale — and how the right data infrastructure turns a good sales team into a great one. Jake's operational experience across multiple sales organizations directly shapes RevPhlo's product roadmap.",
     },
     {
@@ -179,7 +179,7 @@ export default function About() {
       <footer style={{ borderTop: `1px solid ${T.border}`, padding: "32px", textAlign: "center" }}>
         <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 }}>
           <a href="/about" style={{ fontSize: 13, color: T.blue, fontWeight: 600, textDecoration: "none" }}>About</a>
-          <a href="https://systemizedsales.com" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Systemized Sales</a>
+          <a href="https://www.systemizedsales.com" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Systemized Sales</a>
           <a href="https://systemizedsales.ai" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Systemized Sales AI</a>
           <a href="/privacy-policy" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Privacy Policy</a>
           <a href="/terms-of-service" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Terms of Service</a>
