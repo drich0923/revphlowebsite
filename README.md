@@ -11,26 +11,45 @@ Open http://localhost:3000
 
 ## Interactive demo opt-in
 
-- `GET /api/health` - health check
-- `GET /demo` - public lead-capture page for the interactive product sandbox
-- `POST /api/demo-lead` - validates the lead, forwards it to GoHighLevel, and returns the sandbox destination after the webhook succeeds
+- `GET /api/health` - website health check
+- `GET /demo` - public form for the Revphlo Demo Account
+- The form sends a native `POST` to `https://app.revphlo.com/api/demo/start` with `application/x-www-form-urlencoded` data and `target="_self"`.
 
-Example payload:
+Send only these four fields:
 
-```json
-{
-  "name": "Jane Doe",
-  "email": "jane@company.com",
-  "phone": "+1 212 555 0199",
-  "company": "Acme"
-}
-```
+| Field | Value |
+| --- | --- |
+| `name` | Visitor name; 2 to 160 characters |
+| `email` | Valid email address; at most 254 characters |
+| `phone` | Phone number; 7 to 50 characters, with at least seven digits |
+| `website` | Hidden honeypot; leave empty |
 
-Set `DEMO_WEBHOOK_URL` to the private GoHighLevel inbound webhook and `DEMO_SANDBOX_URL` to the full HTTPS sandbox destination. Neither value is exposed in the page source. The API only returns the sandbox URL after GoHighLevel accepts the contact payload. Configure both variables in Development, Preview, and Production as appropriate; do not give preview deployments a production webhook unless that is intentional.
+Show this exact notice beside the submit button:
+
+> By submitting, you agree that Revphlo may contact you by email or phone about this demo and a product walkthrough.
+
+There is no consent checkbox or `consent` field. The app records consent version `demo-contact-submit-v2` and its timestamp when the visitor submits the form. Do not add company, UTM, redirect, or other fields to this request. Do not replace the native form with a JavaScript JSON request.
+
+The app creates its own HTTP-only guest cookie and returns `303 See Other` to `/demo/dashboard`. The dashboard opens in the same tab. There is no email verification, password, account signup, or invitation. Errors return an app-host recovery form that keeps the entered details for a retry.
+
+Leads appear in the app at **Super Admin → Demo Leads**. The app owns contact storage, consent, guest sessions, the guided tour, and the booking CTA. The website does not need a demo webhook or sandbox environment variable. The old website `/api/demo-lead` route has been removed.
+
+The app permits the exact origins `https://www.revphlo.com` and `https://revphlo.com`. Use `Referrer-Policy: strict-origin-when-cross-origin` on the website form page. If a Content Security Policy is added, permit `https://app.revphlo.com` in `form-action`. Keep contact details and session tokens out of URLs.
+
+### Demo release checks
+
+These instructions describe the source change. A website deployment and complete live path still need verification. Physical mobile Safari and Chrome checks are not recorded here.
+
+1. Confirm that the app's four-field guest endpoint is deployed and enabled before publishing the website form.
+2. Build and deploy the reviewed website version. Check that **Try the demo** in the navigation and hero opens `/demo`. Existing **Book a Demo** actions must keep their booking routes.
+3. In a fresh desktop browser, submit `/demo`. Confirm a same-tab redirect to the app dashboard without a login, email verification, or second opt-in form.
+4. Check invalid contact fields and a failed submission. Confirm that the app recovery form shows the error and preserves the entered details for a retry.
+5. Verify the test lead and consent record in **Super Admin → Demo Leads**. Check the tour and booking CTA. Opening the booking page is not a confirmed meeting; no new test booking is required for the accepted team calendar. End the test session and exclude the marked test lead from launch counts.
+6. Check the corrected path on physical mobile Safari and Chrome. A narrow desktop viewport does not prove physical phone behavior. Record the deployment and the checks that passed before calling the website flow live.
 
 ## Self-serve checkout
 
-Public homepage, navigation, and mobile calls to action send visitors to the demo form. They do not link to `/checkout`. The checkout page remains available as a direct, buyer-only URL for prospects who are ready to purchase. At checkout, the customer accepts the billing terms and pays through Stripe's secure Payment Element on the same page when the app supports it. The website validates the new owner email with Stripe when the customer leaves the email field. After payment, the customer opens the Revphlo app at `/checkout/success`, creates and verifies a login with the checkout email, and enters the company name, owner name, company time zone, and optional first team members. The app creates the company after it verifies payment and receives those details. It then sends secure account setup and team invitation links. Passwords are not sent by email.
+**Try the demo** in the homepage navigation and hero opens `/demo`. Existing **Book a Demo** actions keep their booking routes. Public marketing actions do not link to `/checkout`. The checkout page remains available as a direct, buyer-only URL for prospects who are ready to purchase. At checkout, the customer accepts the billing terms and pays through Stripe's secure Payment Element on the same page when the app supports it. The website validates the new owner email with Stripe when the customer leaves the email field. After payment, the customer opens the Revphlo app at `/checkout/success`, creates and verifies a login with the checkout email, and enters the company name, owner name, company time zone, and optional first team members. The app creates the company after it verifies payment and receives those details. It then sends secure account setup and team invitation links. Passwords are not sent by email.
 
 Company setup follows payment. Each required step explains the question, action, purpose, and person who needs to complete it. The owner can share setup tasks with teammates. The full dashboard opens after the required setup checks pass. A real sale, booking, call, or payment from the customer's business is not required to unlock it. These live events are tracked afterward.
 
@@ -64,7 +83,7 @@ This feature needs releases in both the app and this website. The website Vercel
 
 1. Configure and test the app in Stripe test mode. Apply its additive database migration through the normal release process.
 2. Configure the test website's app URL and allow its exact origin in the app. Rebuild the website.
-3. Open the homepage on desktop and mobile. Confirm that every primary marketing action opens the demo form and that none links to `/checkout`. Then open `/checkout` directly and confirm that it has payment terms, a new-account email field, and the `Get Started` payment button. Confirm that it has no sign-in option or company, owner name, time zone, or team fields.
+3. Open the homepage on desktop and mobile. Confirm that **Try the demo** opens `/demo`, **Book a Demo** keeps its booking route, and neither links to `/checkout`. Then open `/checkout` directly and confirm that it has payment terms, a new-account email field, and the `Get Started` payment button. Confirm that it has no sign-in option or company, owner name, time zone, or team fields.
 4. Check a legacy app response without `supportedUiModes`, hosted-only support, unavailable checkout, network failure, and blocked Stripe script states. The legacy and hosted-only states must offer hosted checkout without sending a custom session request. Before the payment form opens, a manual retry must keep the accepted terms. It must not send simultaneous requests. Once a session is received, payment-form retries must reuse it. Enter and change the email, check invalid-email recovery, and confirm that Stripe validation and payment details enable `Get Started`.
 5. Complete a Stripe test payment. Confirm $2,000 due now and $397 per month after 30 days. Confirm that payment opens the app's company details step and that payment alone does not create a company or send team invitations.
 6. Create and verify a login with the checkout email, submit company details, and confirm that one company is created. Check required fields, duplicate team emails, roles, and time zone in this app step. Refresh the return page and resend the webhook to check for duplicate companies. Test a wrong email too.
