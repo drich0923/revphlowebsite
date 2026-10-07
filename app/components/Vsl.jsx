@@ -1,17 +1,17 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const EMBED_ID = "vidalytics_embed_qY0sZQMIwMDYGr3T";
 const BASE_URL = "https://fast.vidalytics.com/embeds/Xbxuo1Sw/qY0sZQMIwMDYGr3T/";
+const THUMBNAIL_URL =
+  "https://fast.vidalytics.com/video/Xbxuo1Sw/LzYTPTpF4cp5hL_m/232535/216354__FFMPEG/thumb/thumbnail-5_0.jpg";
 
-// Hero VSL facade: hovering the poster only preloads the Vidalytics script;
-// the poster is revealed away only after a real click AND only once an
-// iframe/video has actually mounted — if the embed host is blocked, the
-// play button stays (no dead black box).
+// Load the real player as soon as the hero mounts. The thumbnail keeps the
+// video visually useful while Vidalytics initializes and remains as a
+// fallback if the third-party embed is blocked.
 export default function VslPlayer() {
   const [posterGone, setPosterGone] = useState(false);
   const injected = useRef(false);
-  const armed = useRef(false);
   const embedRef = useRef(null);
   const posterRef = useRef(null);
   const posterHadFocus = useRef(false);
@@ -19,23 +19,15 @@ export default function VslPlayer() {
   const observerRef = useRef(null);
 
   useEffect(() => {
-    return () => {
-      if (scriptRef.current) scriptRef.current.remove();
-      if (observerRef.current) observerRef.current.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
     if (posterGone && posterHadFocus.current) embedRef.current?.focus();
   }, [posterGone]);
 
-  const reveal = () => {
+  const reveal = useCallback(() => {
     posterHadFocus.current = document.activeElement === posterRef.current;
     setPosterGone(true);
-  };
+  }, []);
 
-  const maybeReveal = () => {
-    if (!armed.current) return;
+  const maybeReveal = useCallback(() => {
     const target = embedRef.current;
     if (target && target.querySelector("iframe, video")) {
       reveal();
@@ -43,7 +35,7 @@ export default function VslPlayer() {
     }
     if (target && !observerRef.current) {
       const mo = new MutationObserver(() => {
-        if (armed.current && target.querySelector("iframe, video")) {
+        if (target.querySelector("iframe, video")) {
           mo.disconnect();
           observerRef.current = null;
           reveal();
@@ -52,9 +44,9 @@ export default function VslPlayer() {
       mo.observe(target, { childList: true, subtree: true });
       observerRef.current = mo;
     }
-  };
+  }, [reveal]);
 
-  const inject = () => {
+  const inject = useCallback(() => {
     if (injected.current) return;
     injected.current = true;
     const s = document.createElement("script");
@@ -67,10 +59,19 @@ export default function VslPlayer() {
     })(window, document, 'Vidalytics', '${EMBED_ID}', '${BASE_URL}');`;
     document.body.appendChild(s);
     scriptRef.current = s;
-  };
+  }, []);
 
-  const onPlayClick = () => {
-    armed.current = true;
+  useEffect(() => {
+    inject();
+    maybeReveal();
+
+    return () => {
+      if (scriptRef.current) scriptRef.current.remove();
+      if (observerRef.current) observerRef.current.disconnect();
+    };
+  }, [inject, maybeReveal]);
+
+  const onPosterClick = () => {
     inject();
     maybeReveal();
   };
@@ -84,9 +85,16 @@ export default function VslPlayer() {
         aria-label="Play the 3-minute demo video"
         aria-hidden={posterGone}
         tabIndex={posterGone ? -1 : 0}
-        onPointerOver={inject}
-        onClick={onPlayClick}
+        onClick={onPosterClick}
       >
+        <img
+          className="vsl__poster-image"
+          src={THUMBNAIL_URL}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+        />
         <span className="vsl__play">
           <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
             <path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor" />
