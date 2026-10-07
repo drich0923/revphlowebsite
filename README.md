@@ -9,10 +9,11 @@ npm run dev
 
 Open http://localhost:3000
 
-## API routes
+## Interactive demo opt-in
 
 - `GET /api/health` - health check
-- `POST /api/book-demo` - validates and forwards demo lead payload
+- `GET /demo` - public lead-capture page for the interactive product sandbox
+- `POST /api/demo-lead` - validates the lead, forwards it to GoHighLevel, and returns the sandbox destination after the webhook succeeds
 
 Example payload:
 
@@ -20,12 +21,12 @@ Example payload:
 {
   "name": "Jane Doe",
   "email": "jane@company.com",
-  "company": "Acme",
-  "notes": "Interested in attribution + rep leaderboard"
+  "phone": "+1 212 555 0199",
+  "company": "Acme"
 }
 ```
 
-If you set `DEMO_WEBHOOK_URL`, submissions are forwarded server-side.
+Set `DEMO_WEBHOOK_URL` to the private GoHighLevel inbound webhook and `DEMO_SANDBOX_URL` to the full HTTPS sandbox destination. Neither value is exposed in the page source. The API only returns the sandbox URL after GoHighLevel accepts the contact payload. Configure both variables in Development, Preview, and Production as appropriate; do not give preview deployments a production webhook unless that is intentional.
 
 ## Self-serve checkout
 

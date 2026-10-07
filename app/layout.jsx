@@ -170,12 +170,6 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="preconnect" href="https://fast.vidalytics.com" />
         <link rel="dns-prefetch" href="https://fast.vidalytics.com" />
-        <link
-          rel="preload"
-          as="image"
-          href="https://fast.vidalytics.com/video/Xbxuo1Sw/LzYTPTpF4cp5hL_m/232535/216354__FFMPEG/thumb/thumbnail-5_0.jpg"
-          fetchPriority="high"
-        />
         <script
           dangerouslySetInnerHTML={{
             __html:
