@@ -3,16 +3,17 @@ import DemoOptInForm from "./DemoOptInForm";
 import styles from "./demo.module.css";
 
 export const metadata = {
-  title: "Live RevPhlo Demo Sandbox",
+  title: "Interactive RevPhlo Demo",
   description:
-    "Explore RevPhlo in a live, interactive sandbox. Click through dashboards, build reports, and see the sales analytics your team is missing.",
+    "Explore sample sales results with a guided tour. Compare team performance, review calls and applications, and book a walkthrough.",
+  referrer: "strict-origin-when-cross-origin",
   alternates: { canonical: "https://www.revphlo.com/demo" },
   robots: { index: false, follow: true },
 };
 
 const FEATURES = [
   "Click through the executive dashboard",
-  "Build reports and filter team performance",
+  "Compare results and filter team performance",
   "Explore application analytics and rep insights",
 ];
 
@@ -30,7 +31,7 @@ function ProductPreview() {
       <div className={styles.previewTopbar}>
         <div className={styles.previewDots}><span /><span /><span /></div>
         <span>Executive Dashboard</span>
-        <span className={styles.previewLive}><i /> LIVE DATA</span>
+        <span className={styles.previewLive}><i /> SAMPLE DATA</span>
       </div>
       <div className={styles.previewBody}>
         <div className={styles.previewSidebar}>
@@ -84,11 +85,11 @@ export default function DemoPage() {
 
       <main className={styles.main}>
         <section className={styles.copy}>
-          <div className={styles.eyebrow}><span /> LIVE PRODUCT SANDBOX</div>
+          <div className={styles.eyebrow}><span /> INTERACTIVE PRODUCT DEMO</div>
           <h1>See what your sales team has been <em>missing.</em></h1>
           <p className={styles.subhead}>
-            Get hands-on with RevPhlo. Explore a live workspace, click through real workflows,
-            and see exactly how your sales operation looks when every number connects.
+            Get hands-on with RevPhlo. Follow a guided tour through sample sales results,
+            compare team performance, and explore calls and applications.
           </p>
           <ul className={styles.featureList}>
             {FEATURES.map((feature) => (
@@ -98,7 +99,7 @@ export default function DemoPage() {
         </section>
 
         <section className={styles.previewWrap}>
-          <div className={styles.previewLabel}><span>YOUR SANDBOX INCLUDES</span><span>Sample data &middot; Fully interactive</span></div>
+          <div className={styles.previewLabel}><span>YOUR SANDBOX INCLUDES</span><span>Sample data &middot; Guided tour</span></div>
           <ProductPreview />
         </section>
 

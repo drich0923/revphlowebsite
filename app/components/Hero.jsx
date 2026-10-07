@@ -31,8 +31,8 @@ export default function Hero() {
             Book a Demo
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
-          <a href="#features" className="btn btn--ghost">
-            See How It Works
+          <a href="/demo" className="btn btn--ghost">
+            Try the demo
           </a>
         </div>
         <VslPlayer />
