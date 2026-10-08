@@ -174,7 +174,7 @@ export default function BlogPost() {
             background: T.blue, color: T.white, fontSize: 15, fontWeight: 600,
             textDecoration: "none", boxShadow: "0 2px 10px rgba(51,97,255,0.3)",
           }}>
-            Book a Demo
+            Talk to us
           </Link>
         </div>
 
