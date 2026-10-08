@@ -13,26 +13,27 @@ Open http://localhost:3000
 
 - `GET /api/health` - website health check
 - `GET /demo` - public form for the Revphlo Demo Account
-- The form sends a native `POST` to `https://app.revphlo.com/api/demo/start` with `application/x-www-form-urlencoded` data and `target="_self"`.
+- `POST /api/demo-lead` - validates the opt-in and forwards every accepted submission to GoHighLevel
 
-Send only these four fields:
+The website form collects these visible fields:
 
 | Field | Value |
 | --- | --- |
-| `name` | Visitor name; 2 to 160 characters |
+| `name` | Visitor name; 2 to 100 characters |
 | `email` | Valid email address; at most 254 characters |
-| `phone` | Phone number; 7 to 50 characters, with at least seven digits |
+| `phone` | Phone number; 7 to 30 characters, with 7 to 15 digits |
+| `company` | Company name; 2 to 120 characters |
 | `website` | Hidden honeypot; leave empty |
 
 Show this exact notice beside the submit button:
 
 > By submitting, you agree that Revphlo may contact you by email or phone about this demo and a product walkthrough.
 
-There is no consent checkbox or `consent` field. The app records consent version `demo-contact-submit-v2` and its timestamp when the visitor submits the form. Do not add company, UTM, redirect, or other fields to this request. Do not replace the native form with a JavaScript JSON request.
+There is no consent checkbox or `consent` field. The browser sends the form as JSON to the website's same-origin `/api/demo-lead` route. That server route validates the four contact fields and sends a GoHighLevel-friendly payload containing top-level contact fields, a nested `contact` object, source tags, and supported UTM values. It determines delivery from the webhook HTTP status and never parses the provider response body, because LeadConnector may return HTML.
 
-The app creates its own HTTP-only guest cookie and returns `303 See Other` to `/demo/dashboard`. The dashboard opens in the same tab. There is no email verification, password, account signup, or invitation. Errors return an app-host recovery form that keeps the entered details for a retry.
+Only after GoHighLevel accepts the webhook does the browser make a native same-tab form POST to `https://app.revphlo.com/api/demo/start`. That second request contains only `name`, `email`, `phone`, and an empty `website` honeypot, matching the app's strict guest-session contract. The app creates its own HTTP-only guest cookie and returns `303 See Other` to `/demo/dashboard`. There is no email verification, password, account signup, or invitation.
 
-Leads appear in the app at **Super Admin → Demo Leads**. The app owns contact storage, consent, guest sessions, the guided tour, and the booking CTA. The website does not need a demo webhook or sandbox environment variable. The old website `/api/demo-lead` route has been removed.
+Set `DEMO_WEBHOOK_URL` as a server-only Vercel secret on the website project. Never expose it with a `NEXT_PUBLIC_` prefix or commit the value. Production accepts only HTTPS LeadConnector `/hooks/` URLs. The app continues to own guest sessions, the guided tour, the booking CTA, and its own lead/consent record.
 
 The app permits the exact origins `https://www.revphlo.com` and `https://revphlo.com`. Use `Referrer-Policy: strict-origin-when-cross-origin` on the website form page. If a Content Security Policy is added, permit `https://app.revphlo.com` in `form-action`. Keep contact details and session tokens out of URLs.
 
@@ -42,8 +43,8 @@ These instructions describe the source change. A website deployment and complete
 
 1. Confirm that the app's four-field guest endpoint is deployed and enabled before publishing the website form.
 2. Build and deploy the reviewed website version. Check that **See it in action** in the navigation and hero opens `/demo`. Existing **Talk to us** actions must keep their booking routes.
-3. In a fresh desktop browser, submit `/demo`. Confirm a same-tab redirect to the app dashboard without a login, email verification, or second opt-in form.
-4. Check invalid contact fields and a failed submission. Confirm that the app recovery form shows the error and preserves the entered details for a retry.
+3. In a fresh desktop browser, submit `/demo`. Confirm the contact is created in GoHighLevel and the same tab then redirects to the app dashboard without a login, email verification, or second opt-in form.
+4. Check invalid contact fields and a failed webhook response. Confirm the website displays a safe retry message and does not open the sandbox unless CRM delivery succeeds.
 5. Verify the test lead and consent record in **Super Admin → Demo Leads**. Check the tour and booking CTA. Opening the booking page is not a confirmed meeting; no new test booking is required for the accepted team calendar. End the test session and exclude the marked test lead from launch counts.
 6. Check the corrected path on physical mobile Safari and Chrome. A narrow desktop viewport does not prove physical phone behavior. Record the deployment and the checks that passed before calling the website flow live.
 

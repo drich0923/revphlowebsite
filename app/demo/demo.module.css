@@ -95,14 +95,21 @@
 .field input::placeholder { color: #566174; }
 .field input:hover { border-color: #3b475b; }
 .field input:focus { border-color: #6685ff; background: #0d1320; box-shadow: 0 0 0 3px rgba(70, 106, 255, .13); }
+.field input[aria-invalid="true"] { border-color: #e76868; }
+.fieldError { display: block; margin-top: 5px; color: #ff9c9c; font-size: 10px; }
+.honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.formError { margin-top: 16px; padding: 10px 12px; border: 1px solid rgba(239, 103, 103, .3); border-radius: 7px; color: #ffb7b7; background: rgba(172, 44, 44, .12); font-size: 11px; line-height: 1.5; }
 .submit { width: 100%; height: 49px; margin-top: 21px; padding: 0 18px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 8px; color: #fff; background: #3361ff; box-shadow: 0 13px 30px -13px rgba(51, 97, 255, .8); font-size: 12px !important; font-weight: 600 !important; cursor: pointer; transition: transform .18s, background .18s, box-shadow .18s; }
 .submit:hover:not(:disabled) { transform: translateY(-1px); background: #4770ff; box-shadow: 0 16px 34px -13px rgba(51, 97, 255, .95); }
 .submit:focus-visible { outline: 3px solid #91a8ff; outline-offset: 3px; }
+.submit:disabled { cursor: wait; opacity: .76; }
 .submit svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
 .formTrust { margin-top: 12px; display: flex; justify-content: center; gap: 7px; color: #7d889b; font-size: 9px; }
 .consent { margin: 16px auto 0; max-width: 350px; color: #a6afbf; font-size: 12px; line-height: 1.65; text-align: left; }
 .consent a { color: #8fa5e8; text-underline-offset: 2px; }
 .footer { position: relative; z-index: 1; width: min(1180px, calc(100% - 48px)); margin: auto; padding: 24px 0 34px; display: flex; justify-content: space-between; border-top: 1px solid var(--demo-line); color: #596274; font-size: 9px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 980px) {
   .main { column-gap: 38px; grid-template-columns: minmax(0, 1fr) minmax(340px, .8fr); }
   .copy h1 { font-size: 52px; }
@@ -142,5 +149,5 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .page * { scroll-behavior: auto; transition: none !important; }
+  .spinner { animation: none; }
 }
-
