@@ -299,28 +299,6 @@ html.js-motion .live-dot {
   animation: pulse 2.4s ease-in-out infinite;
 }
 
-/* Delta chip */
-.delta {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-mono), monospace;
-  font-size: 12px;
-  font-weight: 600;
-}
-.delta--up {
-  color: var(--money);
-}
-.delta--down {
-  color: var(--loss);
-}
-.delta__tri--down {
-  transform: rotate(180deg);
-}
-.delta__sign {
-  margin-right: -3px;
-}
-
 /* Exhibit figure */
 .exhibit {
   margin: 0;
@@ -526,7 +504,15 @@ html.js-motion .live-dot {
 .hero__ctas {
   display: flex;
   gap: var(--sp-4);
+  margin-bottom: var(--sp-2);
+}
+.hero__cta-note {
   margin-bottom: var(--sp-6);
+  color: var(--text-3);
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
 /* ---------- 6. Dashboard mockup ---------- */
@@ -686,6 +672,26 @@ html.js-motion .tape__track {
   color: var(--text-3);
   white-space: nowrap;
 }
+.tape__context {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-right: var(--sp-7);
+  padding: 3px 9px;
+  border: var(--border-1);
+  border-radius: var(--r-pill);
+  color: var(--text-2);
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tape__context .live-dot {
+  width: 6px;
+  height: 6px;
+}
 .tape__pause {
   position: absolute;
   top: 50%;
@@ -708,17 +714,6 @@ html.js-motion .tape__track {
 }
 .tape__value {
   color: var(--text-2);
-}
-.tape__delta {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-.tape__delta--up {
-  color: var(--money);
-}
-.tape__delta--down {
-  color: var(--loss);
 }
 .tape__diamond {
   color: var(--text-3);
@@ -1071,21 +1066,8 @@ html.js-motion .oldnew__arrow-dot {
 }
 .feature {
   margin-top: var(--sp-9);
-}
-.feature__rule {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
   border-top: var(--border-1);
-  padding-top: var(--sp-4);
-  margin-bottom: var(--sp-6);
-}
-.feature__index {
-  font-family: var(--font-mono), monospace;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--text-3);
+  padding-top: var(--sp-7);
 }
 .feature__grid {
   display: grid;
@@ -1919,6 +1901,9 @@ html.js-motion .oldnew__arrow-dot {
 }
 .book__accent {
   color: var(--accent-text);
+}
+.book__accent--line {
+  display: block;
 }
 .book__body {
   color: var(--text-2);

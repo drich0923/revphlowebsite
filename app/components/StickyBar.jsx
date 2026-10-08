@@ -31,9 +31,9 @@ export default function StickyBar() {
 
   return (
     <div className={`stickybar ${pastHero && !bookVisible ? "stickybar--on" : ""}`}>
-      <span className="stickybar__text">See everything.</span>
+      <span className="stickybar__text">Find the leaks.</span>
       <a href="#book" className="btn btn--primary btn--compact">
-        Talk to us
+        Start the Audit
         <Icon name="arrow-right" size={15} className="btn__arrow" />
       </a>
     </div>

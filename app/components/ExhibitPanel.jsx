@@ -1,8 +1,6 @@
 import { Icon } from "./Icons";
 
-export default function ExhibitPanel({ index, before, after, beforeSummary }) {
-  const id = index.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-
+export default function ExhibitPanel({ id, before, after, beforeSummary }) {
   return (
     <figure className="exhibit comparison-figure">
       <div className="comparison">
@@ -35,8 +33,8 @@ export default function ExhibitPanel({ index, before, after, beforeSummary }) {
       </div>
 
       <figcaption className="exhibit__caption comparison__caption">
-        <span>FIG. {index}-A &mdash; THE OLD WAY</span>
-        <span>FIG. {index}-B &mdash; WITH REVPHLO</span>
+        <span>THE OLD WAY</span>
+        <span>WITH REVPHLO</span>
       </figcaption>
     </figure>
   );

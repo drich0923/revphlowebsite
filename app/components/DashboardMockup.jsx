@@ -1,4 +1,4 @@
-import { Icon, DeltaChip } from "./Icons";
+import { Icon } from "./Icons";
 import { KPIS } from "./kpi-data";
 
 function Sparkline() {
@@ -38,7 +38,6 @@ function KpiCell({ kpi, countable }) {
       <div className="kpi__value" {...valueProps}>
         {kpi.value}
       </div>
-      <DeltaChip dir={kpi.dir} value={kpi.change} />
       {kpi.anchor && <Sparkline />}
     </div>
   );

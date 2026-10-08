@@ -35,13 +35,13 @@ export default function BookDemo() {
       <div className="book__glow" aria-hidden="true" />
       <div className="container book__inner">
         <h2 className="h2 book__h2" data-reveal>
-          Ditch the EOD form.
-          <br />
-          <span className="book__accent">See everything.</span>
+          <span>Find the leaks in your</span>{" "}
+          <span className="book__accent book__accent--line">post-booking pipeline.</span>
         </h2>
         <p className="book__body" data-reveal>
-          Book a 20-minute demo and we&rsquo;ll show you exactly how RevPhlo replaces your broken
-          reporting with real-time sales intelligence.
+          Bring your current GoHighLevel and Stripe setup. In 20 minutes, we&rsquo;ll map your
+          post-booking pipeline and show you exactly where leads and attribution are falling
+          through the cracks. No pitch decks.
         </p>
         <div className="book__card" data-reveal>
           <div data-tf-live="01KAT373J0V85ZJSJANAS65PEP" className="book__form">
@@ -50,7 +50,7 @@ export default function BookDemo() {
         </div>
         <p className="book__trust">
           <Icon name="lock" size={13} />
-          Guided setup &middot; Clear setup checks
+          20-minute diagnostic &middot; No pitch decks
         </p>
       </div>
     </section>

@@ -23,18 +23,19 @@ export default function Hero() {
           </span>
         </h1>
         <p className="hero__sub">
-          Watch how high-ticket teams replace broken spreadsheets and manual EOD reports with
-          real-time sales intelligence &mdash; without changing a single tool.
+          RevPhlo pulls directly from Fathom, GoHighLevel, and Stripe so you get true attribution,
+          auto-generated post-call notes, and zero rep guessing &mdash; without changing your stack.
         </p>
         <div className="hero__ctas">
           <a href="#book" className="btn btn--primary">
-            Talk to us
+            Find Your Team&rsquo;s Data Leaks
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
           <a href="/demo" className="btn btn--ghost">
             See it in action
           </a>
         </div>
+        <p className="hero__cta-note">20-minute pipeline diagnostic &middot; No pitch decks</p>
         <VslPlayer />
       </div>
     </section>

@@ -13,11 +13,11 @@ import {
 
 const FEATURES = [
   {
-    index: "F.01",
+    id: "post-call-notes",
     icon: "bolt",
-    tag: "AI Post-Call Notes",
-    title: "From sloppy EODs to auto-generated post-call notes",
-    desc: "No more Slack messages at 11pm with guessed numbers. RevPhlo pulls from Fathom recordings and writes the report for your reps.",
+    tag: "No More Guessed EODs",
+    title: "No more 11 PM Slack messages with guessed numbers",
+    desc: "RevPhlo listens to every Fathom recording, captures the real outcome and objections, and logs the deal automatically. Your reps stop typing EODs. You stop chasing them.",
     bullets: [
       "Captures outcome, objections, and next steps automatically",
       "One-click link to full recording for coaching",
@@ -28,12 +28,12 @@ const FEATURES = [
     beforeSummary: "Example of a Google Form end-of-day report with validation errors and numbers that do not match Stripe.",
   },
   {
-    index: "F.02",
+    id: "attribution",
     flipped: true,
     icon: "bar-chart",
-    tag: "Full Attribution",
-    title: 'From "I think it was Facebook" to full revenue attribution',
-    desc: "Slice revenue by closer, traffic source, funnel, setter — any combination. Every dollar traced to where it actually came from.",
+    tag: "Know What Converts",
+    title: "Stop guessing which closer is bleeding your paid leads",
+    desc: "See revenue by closer, traffic source, and setter. Know whether your top rep is actually converting or simply getting the warmest calls.",
     bullets: [
       "Revenue by closer × source × funnel",
       "See which setters book highest-converting leads",
@@ -44,11 +44,11 @@ const FEATURES = [
     beforeSummary: "Example of a broken sales-tracking spreadsheet with formula errors and unknown lead sources.",
   },
   {
-    index: "F.03",
+    id: "rep-portal",
     icon: "trophy",
-    tag: "Rep Portal",
-    title: "From spreadsheet chaos to live leaderboards",
-    desc: "Kill the Google Sheet that breaks every month. Every rep gets their own portal with KPIs, tasks, and shareable wins.",
+    tag: "Live Rep Accountability",
+    title: "Know who’s winning before the EOD report arrives",
+    desc: "Every rep gets a live portal with KPIs, tasks, and shareable wins. No spreadsheet repairs and no waiting until tomorrow.",
     bullets: [
       "Personal dashboard with pending PCNs",
       "Leaderboards by cash, closes, close rate",
@@ -59,12 +59,12 @@ const FEATURES = [
     beforeSummary: "Example of a broken end-of-day leaderboard spreadsheet with duplicate ranks and a note to recount.",
   },
   {
-    index: "F.04",
+    id: "payment-matching",
     flipped: true,
     icon: "credit-card",
-    tag: "Payment Matching",
-    title: 'From "who paid with that email?" to instant match',
-    desc: "The appointment email and the payment email are almost never the same. RevPhlo lets you match any payment to the correct call in seconds.",
+    tag: "Every Payment Matched",
+    title: 'End the "who paid with that email?" mystery',
+    desc: "Appointment and checkout emails rarely match. Link any Stripe payment to the exact call, closer, setter, and source in seconds.",
     bullets: [
       "Search by name, email, or date",
       "Auto-syncs setter, closer, and source",
@@ -92,10 +92,7 @@ export default function Features() {
         </h2>
 
         {FEATURES.map((f) => (
-          <article key={f.index} className={`feature ${f.flipped ? "feature--flipped" : ""}`} data-reveal-group>
-            <div className="feature__rule" data-reveal>
-              <span className="feature__index">{f.index}</span>
-            </div>
+          <article key={f.id} className={`feature ${f.flipped ? "feature--flipped" : ""}`} data-reveal-group>
             <div className="feature__grid">
               <div className="feature__text" data-reveal>
                 <span className="feature__tag">
@@ -116,7 +113,7 @@ export default function Features() {
                 </ul>
               </div>
               <div className="feature__visual" data-reveal>
-                <ExhibitPanel index={f.index} before={f.before} after={f.after} beforeSummary={f.beforeSummary} />
+                <ExhibitPanel id={f.id} before={f.before} after={f.after} beforeSummary={f.beforeSummary} />
               </div>
             </div>
           </article>

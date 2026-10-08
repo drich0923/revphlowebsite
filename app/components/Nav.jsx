@@ -65,7 +65,7 @@ export default function Nav() {
             Login
           </a>
           <a href="#book" className="btn btn--primary btn--compact">
-            Talk to us
+            Find Your Data Leaks
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
           <button
