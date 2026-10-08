@@ -7,7 +7,7 @@ const LINKS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#howitworks" },
   { label: "FAQ", href: "#faq" },
-  { label: "Try the demo", href: "/demo" },
+  { label: "See it in action", href: "/demo" },
 ];
 
 export default function Nav() {
@@ -65,7 +65,7 @@ export default function Nav() {
             Login
           </a>
           <a href="#book" className="btn btn--primary btn--compact">
-            Book a Demo
+            Talk to us
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
           <button

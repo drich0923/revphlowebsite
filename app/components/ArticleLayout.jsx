@@ -40,7 +40,7 @@ function Nav() {
           <a href="https://revphlo.com/#howitworks" style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>How It Works</a>
           <a href="https://revphlo.com/#faq" style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>FAQ</a>
           <a href="https://revphlo.com/#book" className="btn-primary" style={{ padding: "10px 22px", fontSize: 14 }}>
-            Book a Demo <span className="arrow-icon">→</span>
+            Talk to us <span className="arrow-icon">→</span>
           </a>
         </div>
       </div>
@@ -157,7 +157,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
             Book a 20-minute demo. We'll connect to your CRM and payment processor live on the call.
           </p>
           <a href="https://revphlo.com/#book" className="btn-primary">
-            Book a Demo <span className="arrow-icon">→</span>
+            Talk to us <span className="arrow-icon">→</span>
           </a>
         </div>
       </section>

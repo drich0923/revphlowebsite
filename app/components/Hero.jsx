@@ -28,11 +28,11 @@ export default function Hero() {
         </p>
         <div className="hero__ctas">
           <a href="#book" className="btn btn--primary">
-            Book a Demo
+            Talk to us
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </a>
           <a href="/demo" className="btn btn--ghost">
-            Try the demo
+            See it in action
           </a>
         </div>
         <VslPlayer />

@@ -33,7 +33,7 @@ export default function StickyBar() {
     <div className={`stickybar ${pastHero && !bookVisible ? "stickybar--on" : ""}`}>
       <span className="stickybar__text">See everything.</span>
       <a href="#book" className="btn btn--primary btn--compact">
-        Book a Demo
+        Talk to us
         <Icon name="arrow-right" size={15} className="btn__arrow" />
       </a>
     </div>

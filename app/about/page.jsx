@@ -170,7 +170,7 @@ export default function About() {
             background: T.blue, color: T.white, fontSize: 15, fontWeight: 600,
             textDecoration: "none", boxShadow: "0 2px 10px rgba(51,97,255,0.2)",
           }}>
-            Book a Demo
+            Talk to us
           </a>
         </div>
       </main>
