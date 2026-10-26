@@ -1,26 +1,32 @@
 import { posts } from "../blog-data";
+import { POST_META, pageMeta } from "../../seo";
 
 export async function generateMetadata({ params }) {
-  const post = posts.find((p) => p.slug === params.slug);
+  const post = posts.find((entry) => entry.slug === params.slug);
 
   if (!post) {
-    return { title: "Post Not Found" };
+    return pageMeta({
+      title: "Post Not Found | RevPhlo",
+      description: "This RevPhlo article could not be found.",
+      path: `/blog/${params.slug}`,
+      noindex: true,
+    });
   }
 
-  return {
-    title: post.title,
-    description: post.description,
-    alternates: {
-      canonical: `https://revphlo.com/blog/${post.slug}`,
-    },
+  const meta = POST_META[post.slug];
+  if (!meta) {
+    throw new Error(`Missing SEO metadata for blog post ${post.slug}`);
+  }
+
+  return pageMeta({
+    title: meta.title,
+    description: meta.description,
+    path: `/blog/${post.slug}`,
     openGraph: {
-      title: `${post.title} | RevPhlo`,
-      description: post.description,
-      url: `https://revphlo.com/blog/${post.slug}`,
       type: "article",
       publishedTime: post.date,
     },
-  };
+  });
 }
 
 export async function generateStaticParams() {

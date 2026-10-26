@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { SITE_HOST } from "../seo";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -48,7 +49,7 @@ export async function GET() {
             <span style={{ color: "#3361ff" }}>•</span>
             <span>Live leaderboards</span>
           </div>
-          <div style={{ display: "flex", fontSize: 22, color: "#93acff" }}>revphlo.com</div>
+          <div style={{ display: "flex", fontSize: 22, color: "#93acff" }}>{SITE_HOST}</div>
         </div>
       </div>
     ),

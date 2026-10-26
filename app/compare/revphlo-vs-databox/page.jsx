@@ -1,19 +1,18 @@
 import ArticleLayout from "../../components/ArticleLayout";
+import { SITE_URL, pageMeta } from "../../seo";
 
-export const metadata = {
-  title: { absolute: "RevPhlo vs Databox for Sales Dashboards | 2026 Comparison" },
+export const metadata = pageMeta({
+  title: "RevPhlo vs Databox Dashboards | RevPhlo",
   description:
-    "Comparing RevPhlo and Databox for sales team dashboards. One is a general-purpose analytics tool. The other is built specifically for high-ticket sales teams.",
-  alternates: {
-    canonical: "/compare/revphlo-vs-databox",
-  },
-};
+    "RevPhlo and Databox compared for sales dashboards. Databox is general purpose analytics. RevPhlo is built for high ticket sales teams.",
+  path: "/compare/revphlo-vs-databox",
+});
 
 export default function RevPhloVsDatabox() {
   return (
     <ArticleLayout>
       <div style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 32 }}>
-        <a href="https://revphlo.com" style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
+        <a href={SITE_URL} style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
         {" → "}
         <span>Compare</span>
         {" → "}

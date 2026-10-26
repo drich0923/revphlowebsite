@@ -1,19 +1,18 @@
 import ArticleLayout from "../../components/ArticleLayout";
+import { SITE_URL, pageMeta } from "../../seo";
 
-export const metadata = {
-  title: { absolute: "RevPhlo vs GoHighLevel Reporting for Sales Teams | 2026 Comparison" },
+export const metadata = pageMeta({
+  title: "RevPhlo vs GoHighLevel Reporting | RevPhlo",
   description:
-    "Comparing RevPhlo and GoHighLevel's built-in reporting for high-ticket sales teams. What GHL covers, where the gaps are, and how RevPhlo adds the post-booking intelligence layer.",
-  alternates: {
-    canonical: "/compare/revphlo-vs-gohighlevel-reporting",
-  },
-};
+    "RevPhlo and GoHighLevel reporting compared for high ticket teams. What GHL covers, where the gaps are, and what RevPhlo adds after the booking.",
+  path: "/compare/revphlo-vs-gohighlevel-reporting",
+});
 
 export default function RevPhloVsGHLReporting() {
   return (
     <ArticleLayout>
       <div style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 32 }}>
-        <a href="https://revphlo.com" style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
+        <a href={SITE_URL} style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
         {" → "}
         <span>Compare</span>
         {" → "}

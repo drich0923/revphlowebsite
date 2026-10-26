@@ -8,6 +8,7 @@
 // ============================================================
 
 import { ImageResponse } from "next/og";
+import { SITE_HOST } from "../seo";
 
 export const runtime = "edge";
 
@@ -141,7 +142,7 @@ export async function GET() {
             fontWeight: 500,
           }}
         >
-          revphlo.com
+          {SITE_HOST}
         </div>
       </div>
     ),

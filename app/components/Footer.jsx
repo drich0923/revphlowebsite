@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { SITE_URL } from "../seo";
 
 export default function Footer() {
   return (
@@ -11,8 +12,8 @@ export default function Footer() {
         <div className="footer__links">
           <a href="https://www.systemizedsales.com">Systemized Sales</a>
           <a href="https://systemizedsales.ai">Systemized Sales AI</a>
-          <a href="https://revphlo.com/privacy-policy">Privacy Policy</a>
-          <a href="https://revphlo.com/terms-of-service">Terms of Service</a>
+          <a href={`${SITE_URL}/privacy-policy`}>Privacy Policy</a>
+          <a href={`${SITE_URL}/terms-of-service`}>Terms of Service</a>
         </div>
       </div>
     </footer>

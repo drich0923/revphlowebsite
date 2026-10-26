@@ -1,14 +1,18 @@
 import ArticleLayout from "../../components/ArticleLayout";
+import { SITE_URL, pageMeta } from "../../seo";
 
-// META: 7 Best Sales Reporting Tools for High-Ticket Sales Teams (2026)
-// META DESC: The best sales reporting and analytics tools for high-ticket setter-closer teams. Compared by CRM integration, payment matching, AI features, and fit for scaled sales operations.
-// URL: revphlo.com/blog/best-sales-reporting-tools-high-ticket-teams
+export const metadata = pageMeta({
+  title: "Best Sales Reporting Tools | RevPhlo",
+  description:
+    "Sales reporting tools for high ticket setter closer teams, compared by CRM fit, payment matching, AI notes, and scaled operations.",
+  path: "/blog/best-sales-reporting-tools-high-ticket-teams",
+});
 
 export default function BestSalesReportingTools() {
   return (
     <ArticleLayout>
       <div style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 32 }}>
-        <a href="https://revphlo.com" style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
+        <a href={SITE_URL} style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
         {" → "}
         <span>Blog</span>
         {" → "}

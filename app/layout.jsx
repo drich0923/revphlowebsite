@@ -1,5 +1,14 @@
 import "./globals.css";
 import { Bricolage_Grotesque, Inter, IBM_Plex_Mono, Caveat, DM_Sans, DM_Serif_Display } from "next/font/google";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  ORGANIZATION_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  SOCIAL_IMAGE_ALT,
+  SOCIAL_IMAGE_URL,
+} from "./seo";
 
 const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-display", display: "swap" });
 const body = Inter({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-body", display: "swap" });
@@ -8,20 +17,13 @@ const hand = Caveat({ subsets: ["latin"], weight: ["600"], variable: "--font-han
 const dmSans = DM_Sans({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-dm-sans", display: "swap" });
 const dmSerif = DM_Serif_Display({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-dm-serif", display: "swap" });
 
-const siteUrl = "https://www.revphlo.com";
-const siteName = "RevPhlo";
-const defaultTitle = "RevPhlo — Post-Booking Sales Intelligence for High-Ticket Teams";
-const defaultDescription =
-  "Post-booking sales intelligence for high-ticket teams. AI call notes, revenue attribution, live leaderboards, payment matching. Built for GoHighLevel + Stripe.";
-const socialImageUrl = "https://www.revphlo.com/og-image.png?v=20260930";
-
 export const metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: defaultTitle,
+    default: DEFAULT_TITLE,
     template: "%s | RevPhlo",
   },
-  description: defaultDescription,
+  description: DEFAULT_DESCRIPTION,
   keywords: [
     "sales analytics",
     "post-booking intelligence",
@@ -53,25 +55,25 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteUrl,
-    siteName,
-    title: defaultTitle,
-    description: defaultDescription,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
     images: [
       {
-        url: socialImageUrl,
+        url: SOCIAL_IMAGE_URL,
         width: 1200,
         height: 630,
         type: "image/png",
-        alt: "RevPhlo — Post-Booking Sales Intelligence Platform",
+        alt: SOCIAL_IMAGE_ALT,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: defaultTitle,
-    description: defaultDescription,
-    images: [{ url: socialImageUrl, alt: "RevPhlo — Post-Booking Sales Intelligence Platform" }],
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [{ url: SOCIAL_IMAGE_URL, alt: SOCIAL_IMAGE_ALT }],
   },
   robots: {
     index: true,
@@ -96,64 +98,38 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      name: "RevPhlo",
-      url: siteUrl,
-      description: defaultDescription,
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: DEFAULT_DESCRIPTION,
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       featureList: [
-        "AI-powered post-call notes from Fathom recordings",
-        "Full revenue attribution by source, funnel, and closer",
+        "AI post call notes from Fathom recordings",
+        "Revenue attribution by source, funnel, and closer",
         "Live leaderboards and rep portals",
         "Stripe payment matching",
         "GoHighLevel, Zoom, Stripe, Fathom, Zapier, Slack, and Whop integrations",
-        "Real-time sales analytics dashboard",
+        "Sales analytics dashboard",
       ],
-      screenshot: socialImageUrl,
+      screenshot: SOCIAL_IMAGE_URL,
     },
     {
       "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
-      name: "RevPhlo",
-      url: siteUrl,
-      logo: `${siteUrl}/logo.png`,
-      description:
-        "RevPhlo is a unified post-booking sales analytics platform built for high-ticket sales teams.",
-      founder: [
-        { "@type": "Person", name: "Dylan Rich" },
-        { "@type": "Person", name: "Jake Tacher" },
-        { "@type": "Person", name: "Ben Crabb" },
-      ],
-      parentOrganization: {
-        "@type": "Organization",
-        "@id": "https://www.systemizedsales.com/#organization",
-        name: "Systemized Sales",
-        url: "https://www.systemizedsales.com",
+      "@id": `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo.png`,
+      description: ORGANIZATION_DESCRIPTION,
+      contactPoint: {
+        "@type": "ContactPoint",
+        email: "support@revphlo.com",
+        contactType: "customer support",
       },
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          email: "support@revphlo.com",
-          contactType: "sales",
-        },
-        {
-          "@type": "ContactPoint",
-          telephone: "+1-747-946-7242",
-          contactType: "customer support",
-          areaServed: "US",
-          availableLanguage: "English",
-        },
-      ],
-      sameAs: [
-        "https://www.linkedin.com/company/revphlo",
-        "https://x.com/revphlo",
-        "https://www.crunchbase.com/organization/revphlo",
-      ],
     },
     {
       "@type": "WebSite",
-      name: siteName,
-      url: siteUrl,
+      name: SITE_NAME,
+      url: SITE_URL,
     },
   ],
 };

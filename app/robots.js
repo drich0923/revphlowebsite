@@ -1,3 +1,5 @@
+import { pageUrl } from "./seo";
+
 export default function robots() {
   return {
     rules: [
@@ -7,6 +9,6 @@ export default function robots() {
         disallow: ["/api/"],
       },
     ],
-    sitemap: "https://revphlo.com/sitemap.xml",
+    sitemap: pageUrl("/sitemap.xml"),
   };
 }
