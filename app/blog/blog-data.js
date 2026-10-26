@@ -1,4 +1,7 @@
+import { postsAddedOn20261026 } from "./posts-20261026";
+
 export const posts = [
+  ...postsAddedOn20261026,
   {
     slug: "eod-reports-killing-sales-performance",
     title: "Why EOD Reports Are Killing Your Sales Team's Performance",

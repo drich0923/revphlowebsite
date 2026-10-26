@@ -60,6 +60,26 @@ export function pageMeta({ title, description, path, noindex = false, openGraph 
 }
 
 export const POST_META = {
+  "close-rate-tracking-software": {
+    title: "Close Rate Tracking Software for Sales Calls | RevPhlo",
+    description:
+      "How to track show rate and close rate on sales calls accurately, what close rate tracking software should do, and how RevPhlo calculates both.",
+  },
+  "fathom-call-notes-to-gohighlevel": {
+    title: "Fathom Sales Call Notes to GoHighLevel: 3 Ways",
+    description:
+      "Three ways to get Fathom sales call notes into GoHighLevel: native GHL workflows, Zapier or webhooks, and RevPhlo. What each one does and misses.",
+  },
+  "stripe-payment-attribution-to-sales-rep": {
+    title: "Stripe Payment Attribution to Sales Reps | RevPhlo",
+    description:
+      "How to attribute Stripe payments to the right closer, setter and lead source, why emails rarely match, and how to keep commissions accurate.",
+  },
+  "sales-leaderboard-for-closers": {
+    title: "Sales Leaderboard for Closers: What to Rank | RevPhlo",
+    description:
+      "What a sales leaderboard for high-ticket closers should rank, how to keep it live without a spreadsheet, and how to avoid a board reps can game.",
+  },
   "eod-reports-killing-sales-performance": {
     title: "Why EOD Reports Hurt Sales Performance | RevPhlo",
     description:

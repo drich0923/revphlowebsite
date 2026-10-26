@@ -14,13 +14,83 @@ const T = {
   bg: "#FAFBFC", border: "#E5E7EB", white: "#FFFFFF",
 };
 
+function renderInline(text, keyBase) {
+  if (!text) return null;
+  const nodes = [];
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
+  let last = 0;
+  let match;
+  let n = 0;
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > last) nodes.push(text.slice(last, match.index));
+    const key = `${keyBase}-${n++}`;
+    if (match[1] !== undefined) {
+      nodes.push(
+        <a key={key} href={match[2]} style={{ color: T.blue, textDecoration: "underline" }}>
+          {match[1]}
+        </a>
+      );
+    } else if (match[3] !== undefined) {
+      nodes.push(
+        <strong key={key} style={{ color: T.dark }}>{renderInline(match[3], key)}</strong>
+      );
+    } else {
+      nodes.push(<em key={key}>{match[4]}</em>);
+    }
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
+
+function renderRichText(text, keyBase) {
+  if (!text || !text.includes("](")) {
+    const parts = (text || "").split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    return parts.map((part, j) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={`${keyBase}-${j}`} style={{ color: T.dark }}>{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith("*") && part.endsWith("*") && !part.startsWith("**")) {
+        return <em key={`${keyBase}-${j}`}>{part.slice(1, -1)}</em>;
+      }
+      return part;
+    });
+  }
+  return renderInline(text, keyBase);
+}
+
+function renderList(lines, i, ordered) {
+  const items = lines.map((line) => line.trim().replace(ordered ? /^\d+\.\s+/ : /^\*\s+/, ""));
+  const Tag = ordered ? "ol" : "ul";
+  return (
+    <Tag key={i} style={{ fontSize: 16, color: T.text2, lineHeight: 1.8, margin: "0 0 20px", paddingLeft: 24 }}>
+      {items.map((item, j) => (
+        <li key={j} style={{ marginBottom: 8 }}>
+          {renderInline(item, `${i}-${j}`)}
+        </li>
+      ))}
+    </Tag>
+  );
+}
+
 function renderContent(content) {
   const blocks = content.split("\n\n");
   return blocks.map((block, i) => {
     const trimmed = block.trim();
     if (!trimmed) return null;
 
-    // H2
+    if (trimmed.startsWith("### ")) {
+      return (
+        <h3 key={i} style={{
+          fontFamily: "var(--font-dm-serif),Georgia,serif",
+          fontSize: 22, color: T.dark, lineHeight: 1.35,
+          marginTop: 32, marginBottom: 12,
+        }}>
+          {trimmed.slice(4)}
+        </h3>
+      );
+    }
+
     if (trimmed.startsWith("## ")) {
       return (
         <h2 key={i} style={{
@@ -28,22 +98,24 @@ function renderContent(content) {
           fontSize: 28, color: T.dark, lineHeight: 1.3,
           marginTop: 48, marginBottom: 16,
         }}>
-          {trimmed.replace("## ", "")}
+          {trimmed.slice(3)}
         </h2>
       );
     }
 
-    // Bold-lead paragraph (like **Revenue attribution.**)
+    const lines = trimmed.split("\n").map((line) => line.trim()).filter(Boolean);
+    if (lines.every((line) => /^\*\s+/.test(line))) return renderList(lines, i, false);
+    if (lines.every((line) => /^\d+\.\s+/.test(line))) return renderList(lines, i, true);
+
     const boldMatch = trimmed.match(/^\*\*(.+?)\*\*\s*(.*)$/);
     if (boldMatch) {
       return (
         <p key={i} style={{ fontSize: 16, color: T.text2, lineHeight: 1.8, marginBottom: 20 }}>
-          <strong style={{ color: T.dark }}>{boldMatch[1]}</strong> {boldMatch[2]}
+          <strong style={{ color: T.dark }}>{boldMatch[1].includes("](") ? renderInline(boldMatch[1], `${i}-lead`) : boldMatch[1]}</strong> {boldMatch[2].includes("](") ? renderInline(boldMatch[2], `${i}-rest`) : boldMatch[2]}
         </p>
       );
     }
 
-    // Quoted question lines
     if (trimmed.startsWith('"') || trimmed.startsWith('\u201C')) {
       return (
         <blockquote key={i} style={{
@@ -56,19 +128,9 @@ function renderContent(content) {
       );
     }
 
-    // Regular paragraph — handle inline bold and italic
-    const parts = trimmed.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
     return (
       <p key={i} style={{ fontSize: 16, color: T.text2, lineHeight: 1.8, marginBottom: 20 }}>
-        {parts.map((part, j) => {
-          if (part.startsWith("**") && part.endsWith("**")) {
-            return <strong key={j} style={{ color: T.dark }}>{part.slice(2, -2)}</strong>;
-          }
-          if (part.startsWith("*") && part.endsWith("*") && !part.startsWith("**")) {
-            return <em key={j}>{part.slice(1, -1)}</em>;
-          }
-          return part;
-        })}
+        {renderRichText(trimmed, `p-${i}`)}
       </p>
     );
   });
@@ -119,9 +181,27 @@ export default function BlogPost() {
     "image": pageUrl("/og-image.png")
   };
 
+  const faqSchema = post.faq?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: post.faq.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.answer,
+          },
+        })),
+      }
+    : null;
+
   return (
     <div style={{ background: T.bg, minHeight: "100vh", fontFamily: "var(--font-dm-sans),sans-serif" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {faqSchema ? (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      ) : null}
       <style>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
         .related-card { transition: transform 0.25s ease, box-shadow 0.25s ease; text-decoration: none; color: inherit; }
