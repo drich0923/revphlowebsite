@@ -9,9 +9,19 @@ export const metadata = {
     description:
       "Explore sample sales results with a guided tour. Compare team performance, review calls and applications, and book a walkthrough.",
     path: "/demo",
-    noindex: true,
   }),
   referrer: "strict-origin-when-cross-origin",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 const FEATURES = [
