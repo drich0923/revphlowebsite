@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { SITE_URL } from "../seo";
 
 // ── DESIGN TOKENS (matches main site) ──
 export const T = {
@@ -32,14 +33,14 @@ function Nav() {
       }}
     >
       <div style={{ maxWidth: 1140, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="https://revphlo.com" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+        <a href={SITE_URL} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
           <img src={LOGO_SRC} alt="RevPhlo" style={{ height: 30, width: "auto" }} />
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 32 }} className="nav-links">
-          <a href="https://revphlo.com/#features" style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>Features</a>
-          <a href="https://revphlo.com/#howitworks" style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>How It Works</a>
-          <a href="https://revphlo.com/#faq" style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>FAQ</a>
-          <a href="https://revphlo.com/#book" className="btn-primary" style={{ padding: "10px 22px", fontSize: 14 }}>
+          <a href={`${SITE_URL}/#features`} style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>Features</a>
+          <a href={`${SITE_URL}/#howitworks`} style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>How It Works</a>
+          <a href={`${SITE_URL}/#faq`} style={{ fontSize: 14, fontWeight: 500, color: T.text2, textDecoration: "none" }}>FAQ</a>
+          <a href={`${SITE_URL}/#book`} className="btn-primary" style={{ padding: "10px 22px", fontSize: 14 }}>
             Talk to us <span className="arrow-icon">→</span>
           </a>
         </div>
@@ -156,7 +157,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
           <p style={{ fontSize: 16, color: T.text2, marginBottom: 32, lineHeight: 1.65 }}>
             Book a 20-minute demo. We'll connect to your CRM and payment processor live on the call.
           </p>
-          <a href="https://revphlo.com/#book" className="btn-primary">
+          <a href={`${SITE_URL}/#book`} className="btn-primary">
             Talk to us <span className="arrow-icon">→</span>
           </a>
         </div>
@@ -165,10 +166,10 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
       {/* Footer */}
       <footer style={{ padding: "48px 32px 36px", textAlign: "center", borderTop: `1px solid ${T.border}` }}>
         <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16, flexWrap: "wrap" }}>
-          <a href="https://revphlo.com" style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Home</a>
-          <a href="https://revphlo.com/#features" style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Features</a>
-          <a href="https://revphlo.com/privacy-policy" style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Privacy Policy</a>
-          <a href="https://revphlo.com/terms-of-service" style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Terms of Service</a>
+          <a href={SITE_URL} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Home</a>
+          <a href={`${SITE_URL}/#features`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Features</a>
+          <a href={`${SITE_URL}/privacy-policy`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Privacy Policy</a>
+          <a href={`${SITE_URL}/terms-of-service`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Terms of Service</a>
         </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>

@@ -1,20 +1,19 @@
 import ArticleLayout from "../../components/ArticleLayout";
+import { SITE_URL, pageMeta } from "../../seo";
 
-export const metadata = {
-  title: { absolute: "RevPhlo vs Spreadsheets for Sales Reporting | 2026 Comparison" },
+export const metadata = pageMeta({
+  title: "RevPhlo vs Spreadsheets for Sales Reporting",
   description:
-    "Comparing RevPhlo's automated sales intelligence dashboard to spreadsheet-based reporting for high-ticket sales teams. Feature comparison, time savings, and data accuracy breakdown.",
-  alternates: {
-    canonical: "/compare/revphlo-vs-spreadsheets",
-  },
-};
+    "RevPhlo and spreadsheet reporting compared for high ticket sales teams, including data entry, accuracy, and how current the numbers stay.",
+  path: "/compare/revphlo-vs-spreadsheets",
+});
 
 export default function RevPhloVsSpreadsheets() {
   return (
     <ArticleLayout>
       {/* Breadcrumb */}
       <div style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 32 }}>
-        <a href="https://revphlo.com" style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
+        <a href={SITE_URL} style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
         {" → "}
         <span>Compare</span>
         {" → "}

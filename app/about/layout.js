@@ -1,8 +1,11 @@
-export const metadata = {
-  title: "About RevPhlo | Built by a Sales Operator, for Sales Operators",
+import { pageMeta } from "../seo";
+
+export const metadata = pageMeta({
+  title: "About RevPhlo | Built by Sales Operators",
   description:
-    "RevPhlo was built by someone who lived the sales reporting problem. Learn why we're building purpose-built sales intelligence for high-ticket teams.",
-};
+    "RevPhlo was built by someone who lived the sales reporting problem. Learn why we're building purpose built sales intelligence for high ticket teams.",
+  path: "/about",
+});
 
 export default function AboutLayout({ children }) {
   return children;

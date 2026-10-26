@@ -1,19 +1,18 @@
 import ArticleLayout from "../../components/ArticleLayout";
+import { SITE_URL, pageMeta } from "../../seo";
 
-export const metadata = {
-  title: { absolute: "RevPhlo vs HubSpot Reporting for High-Ticket Sales | 2026 Comparison" },
+export const metadata = pageMeta({
+  title: "RevPhlo vs HubSpot Reporting | RevPhlo",
   description:
-    "Comparing RevPhlo and HubSpot for sales reporting in high-ticket setter-closer teams. Feature differences and which is better for post-booking sales intelligence.",
-  alternates: {
-    canonical: "/compare/revphlo-vs-hubspot-reporting",
-  },
-};
+    "RevPhlo and HubSpot reporting compared for high ticket setter closer teams, including where each one fits after the call is booked.",
+  path: "/compare/revphlo-vs-hubspot-reporting",
+});
 
 export default function RevPhloVsHubSpot() {
   return (
     <ArticleLayout>
       <div style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 32 }}>
-        <a href="https://revphlo.com" style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
+        <a href={SITE_URL} style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
         {" → "}
         <span>Compare</span>
         {" → "}

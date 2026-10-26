@@ -1,14 +1,27 @@
 import Image from "next/image";
 import DemoOptInForm from "./DemoOptInForm";
 import styles from "./demo.module.css";
+import { pageMeta } from "../seo";
 
 export const metadata = {
-  title: "Interactive RevPhlo Demo",
-  description:
-    "Explore sample sales results with a guided tour. Compare team performance, review calls and applications, and book a walkthrough.",
+  ...pageMeta({
+    title: "Interactive RevPhlo Demo",
+    description:
+      "Explore sample sales results with a guided tour. Compare team performance, review calls and applications, and book a walkthrough.",
+    path: "/demo",
+  }),
   referrer: "strict-origin-when-cross-origin",
-  alternates: { canonical: "https://www.revphlo.com/demo" },
-  robots: { index: false, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 const FEATURES = [

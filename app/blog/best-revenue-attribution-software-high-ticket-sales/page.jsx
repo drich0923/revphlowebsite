@@ -1,14 +1,18 @@
 import ArticleLayout from "../../components/ArticleLayout";
+import { SITE_URL, pageMeta } from "../../seo";
 
-// META: 5 Best Revenue Attribution Tools for High-Ticket Sales Teams (2026)
-// META DESC: The best revenue attribution tools for high-ticket sales teams. Compared by ability to trace cash collected from ad click through closer to payment processor.
-// URL: revphlo.com/blog/best-revenue-attribution-software-high-ticket-sales
+export const metadata = pageMeta({
+  title: "Best Revenue Attribution Tools | RevPhlo",
+  description:
+    "Revenue attribution tools for high ticket sales teams, compared by how they trace cash collected from the ad click through the closer to the payment.",
+  path: "/blog/best-revenue-attribution-software-high-ticket-sales",
+});
 
 export default function BestRevenueAttributionSoftware() {
   return (
     <ArticleLayout>
       <div style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 32 }}>
-        <a href="https://revphlo.com" style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
+        <a href={SITE_URL} style={{ color: "#9CA3AF", textDecoration: "none" }}>Home</a>
         {" → "}
         <span>Blog</span>
         {" → "}

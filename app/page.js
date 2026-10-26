@@ -13,12 +13,13 @@ import Footer from "./components/Footer";
 import StickyBar from "./components/StickyBar";
 import RevealManager from "./components/RevealManager";
 import { FAQ_ITEMS } from "./components/faq-data";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, pageMeta } from "./seo";
 
-export const metadata = {
-  alternates: {
-    canonical: "/",
-  },
-};
+export const metadata = pageMeta({
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
+  path: "/",
+});
 
 const faqJsonLd = {
   "@context": "https://schema.org",

@@ -1,65 +1,67 @@
 import { posts } from "./blog/blog-data";
+import { pageUrl } from "./seo";
+
+const CONTENT_UPDATED = "2026-09-30";
+
+const COMPARE_SLUGS = [
+  "revphlo-vs-databox",
+  "revphlo-vs-hubspot-reporting",
+  "revphlo-vs-gohighlevel-reporting",
+  "revphlo-vs-spreadsheets",
+];
+
+const GUIDE_SLUGS = [
+  "best-revenue-attribution-software-high-ticket-sales",
+  "best-sales-reporting-tools-high-ticket-teams",
+];
+
+function entry(path, { lastModified, changeFrequency, priority }) {
+  return {
+    url: pageUrl(path),
+    lastModified,
+    changeFrequency,
+    priority,
+  };
+}
 
 export default function sitemap() {
-  const baseUrl = "https://revphlo.com";
+  const latestPostDate = posts.reduce(
+    (latest, post) => (post.date > latest ? post.date : latest),
+    posts[0]?.date || CONTENT_UPDATED
+  );
 
   const staticPages = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/privacy-policy`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/terms-of-service`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/confirmed`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
+    entry("/", { lastModified: CONTENT_UPDATED, changeFrequency: "weekly", priority: 1 }),
+    entry("/about", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.6 }),
+    entry("/demo", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.8 }),
+    entry("/blog", { lastModified: latestPostDate, changeFrequency: "weekly", priority: 0.8 }),
+    entry("/privacy-policy", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.3 }),
+    entry("/terms-of-service", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.3 }),
   ];
 
-  const comparePages = [
-    "revphlo-vs-databox",
-    "revphlo-vs-hubspot-reporting",
-    "revphlo-vs-gohighlevel-reporting",
-    "revphlo-vs-spreadsheets",
-  ].map((slug) => ({
-    url: `${baseUrl}/compare/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
+  const comparePages = COMPARE_SLUGS.map((slug) =>
+    entry(`/compare/${slug}`, {
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    })
+  );
 
-  const blogPages = posts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
+  const guidePages = GUIDE_SLUGS.map((slug) =>
+    entry(`/blog/${slug}`, {
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    })
+  );
 
-  return [...staticPages, ...comparePages, ...blogPages];
+  const blogPages = posts.map((post) =>
+    entry(`/blog/${post.slug}`, {
+      lastModified: post.date,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    })
+  );
+
+  return [...staticPages, ...comparePages, ...guidePages, ...blogPages];
 }
