@@ -166,6 +166,9 @@ gtag('js', new Date());
 gtag('config', 'AW-17985869159');`,
           }}
         />
+        {/* FirstPromoter referral tracking. fprmain.js must run before fpr.js. */}
+        <script src="/fprmain.js" />
+        <script src="https://cdn.firstpromoter.com/fpr.js" async />
       </head>
       <body>{children}</body>
     </html>
