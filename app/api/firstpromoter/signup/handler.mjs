@@ -100,49 +100,41 @@ function apiKey() {
   return value.trim();
 }
 
-let loggedMissingSlackWebhook = false;
-let loggedInvalidSlackWebhook = false;
+let loggedMissingN8nReferral = false;
+let loggedInvalidN8nReferral = false;
 
-export function resetSlackReferralNoticeForTests() {
-  loggedMissingSlackWebhook = false;
-  loggedInvalidSlackWebhook = false;
+export function resetN8nReferralNoticeForTests() {
+  loggedMissingN8nReferral = false;
+  loggedInvalidN8nReferral = false;
 }
 
-function slackWebhookUrl() {
-  const value = process.env.SLACK_REFERRAL_WEBHOOK_URL;
-  if (typeof value !== "string" || !value.trim()) {
-    if (!loggedMissingSlackWebhook) {
-      loggedMissingSlackWebhook = true;
-      console.error("Referral Slack notification skipped: SLACK_REFERRAL_WEBHOOK_URL is not set.");
+function n8nWebhook() {
+  const urlValue = process.env.N8N_REFERRAL_WEBHOOK_URL;
+  const secretValue = process.env.N8N_REFERRAL_WEBHOOK_SECRET;
+  const rawUrl = typeof urlValue === "string" ? urlValue.trim() : "";
+  const secret = typeof secretValue === "string" ? secretValue.trim() : "";
+  if (!rawUrl || !secret) {
+    if (!loggedMissingN8nReferral) {
+      loggedMissingN8nReferral = true;
+      console.error("Referral n8n notification skipped: N8N_REFERRAL_WEBHOOK_URL or N8N_REFERRAL_WEBHOOK_SECRET is not set.");
     }
-    return "";
+    return null;
   }
 
-  const url = value.trim();
   let parsed = null;
   try {
-    parsed = new URL(url);
+    parsed = new URL(rawUrl);
   } catch {
     parsed = null;
   }
-  const allowed = parsed
-    && parsed.protocol === "https:"
-    && parsed.hostname === "hooks.slack.com"
-    && !parsed.username
-    && !parsed.password
-    && url.startsWith("https://hooks.slack.com/");
-  if (!allowed) {
-    if (!loggedInvalidSlackWebhook) {
-      loggedInvalidSlackWebhook = true;
-      console.error("Referral Slack notification skipped: SLACK_REFERRAL_WEBHOOK_URL must start with https://hooks.slack.com/.");
+  if (!parsed || parsed.protocol !== "https:" || parsed.username || parsed.password) {
+    if (!loggedInvalidN8nReferral) {
+      loggedInvalidN8nReferral = true;
+      console.error("Referral n8n notification skipped: N8N_REFERRAL_WEBHOOK_URL must be an https URL.");
     }
-    return "";
+    return null;
   }
-  return url;
-}
-
-function escapeSlack(value) {
-  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  return { url: rawUrl, secret };
 }
 
 function asRecord(value) {
@@ -165,34 +157,7 @@ function referralDetails(payload) {
   return {
     promoterName: pickString(promoter.name, promoter.full_name, nestedPromoter.name, root.promoter_name),
     promoterEmail: pickString(promoter.email, nestedPromoter.email, root.promoter_email),
-    referralId: pickString(referral.id, referral.referral_id, root.referral_id),
   };
-}
-
-function newYorkTimestamp(date = new Date()) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/New_York",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
-  }).format(date);
-}
-
-function signupSlackText({ email, tid, refId, status, details, timestamp }) {
-  const lines = [
-    ":tada: New referral signup",
-    `Email: ${escapeSlack(email)}`,
-    tid ? `Tracking id: ${escapeSlack(tid)}` : `Referral code: ${escapeSlack(refId)}`,
-    `FirstPromoter status: ${status}`,
-    `Time: ${escapeSlack(timestamp)}`,
-  ];
-  if (details.promoterName) lines.push(`Promoter: ${escapeSlack(details.promoterName)}`);
-  if (details.promoterEmail) lines.push(`Promoter email: ${escapeSlack(details.promoterEmail)}`);
-  if (details.referralId) lines.push(`Referral id: ${escapeSlack(details.referralId)}`);
-  return lines.join("\n");
 }
 
 async function readReferralDetails(response) {
@@ -205,28 +170,49 @@ async function readReferralDetails(response) {
   }
 }
 
-async function notifyReferralSignup({ email, tid, refId, status, details }) {
-  const webhook = slackWebhookUrl();
+function referralEventBody({ email, tid, refId, sessionId, status, details, occurredAt }) {
+  const body = {
+    event: "referral_signup",
+    email,
+    firstpromoterStatus: status,
+    occurredAt,
+  };
+  if (tid) body.tid = tid;
+  if (refId) body.refId = refId;
+  if (sessionId) body.sessionId = sessionId;
+  const promoter = {};
+  if (details.promoterName) promoter.name = details.promoterName;
+  if (details.promoterEmail) promoter.email = details.promoterEmail;
+  if (promoter.name || promoter.email) body.promoter = promoter;
+  return body;
+}
+
+async function notifyReferralSignup({ email, tid, refId, sessionId, status, details }) {
+  const webhook = n8nWebhook();
   if (!webhook) return;
-  const text = signupSlackText({
+  const body = referralEventBody({
     email,
     tid,
     refId,
+    sessionId,
     status,
     details,
-    timestamp: newYorkTimestamp(),
+    occurredAt: new Date().toISOString(),
   });
   try {
-    const response = await fetch(webhook, {
+    const response = await fetch(webhook.url, {
       method: "POST",
       redirect: "manual",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Revphlo-Webhook-Secret": webhook.secret,
+      },
+      body: JSON.stringify(body),
       cache: "no-store",
       signal: AbortSignal.timeout(3_000),
     });
     if (response.status < 200 || response.status >= 300) {
-      console.error("Referral Slack notification was not accepted.", response.status);
+      console.error("Referral n8n notification was not accepted.", response.status);
     }
     try {
       await response.body?.cancel?.();
@@ -234,7 +220,7 @@ async function notifyReferralSignup({ email, tid, refId, status, details }) {
       // Closing the unused response body must not change the signup result.
     }
   } catch (error) {
-    console.error("Referral Slack notification failed.", error instanceof Error ? error.name : "UnknownError");
+    console.error("Referral n8n notification failed.", error instanceof Error ? error.name : "UnknownError");
   }
 }
 
@@ -329,6 +315,7 @@ export async function POST(request) {
       email,
       tid: trackingTid,
       refId: trackingRef,
+      sessionId: sessionId.value,
       status: trackedStatus,
       details,
     });
