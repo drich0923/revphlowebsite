@@ -100,6 +100,144 @@ function apiKey() {
   return value.trim();
 }
 
+let loggedMissingSlackWebhook = false;
+let loggedInvalidSlackWebhook = false;
+
+export function resetSlackReferralNoticeForTests() {
+  loggedMissingSlackWebhook = false;
+  loggedInvalidSlackWebhook = false;
+}
+
+function slackWebhookUrl() {
+  const value = process.env.SLACK_REFERRAL_WEBHOOK_URL;
+  if (typeof value !== "string" || !value.trim()) {
+    if (!loggedMissingSlackWebhook) {
+      loggedMissingSlackWebhook = true;
+      console.error("Referral Slack notification skipped: SLACK_REFERRAL_WEBHOOK_URL is not set.");
+    }
+    return "";
+  }
+
+  const url = value.trim();
+  let parsed = null;
+  try {
+    parsed = new URL(url);
+  } catch {
+    parsed = null;
+  }
+  const allowed = parsed
+    && parsed.protocol === "https:"
+    && parsed.hostname === "hooks.slack.com"
+    && !parsed.username
+    && !parsed.password
+    && url.startsWith("https://hooks.slack.com/");
+  if (!allowed) {
+    if (!loggedInvalidSlackWebhook) {
+      loggedInvalidSlackWebhook = true;
+      console.error("Referral Slack notification skipped: SLACK_REFERRAL_WEBHOOK_URL must start with https://hooks.slack.com/.");
+    }
+    return "";
+  }
+  return url;
+}
+
+function escapeSlack(value) {
+  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
+function asRecord(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+}
+
+function pickString(...values) {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) return String(value).slice(0, 200);
+    if (typeof value === "string" && value.trim()) return value.trim().slice(0, 200);
+  }
+  return "";
+}
+
+function referralDetails(payload) {
+  const root = asRecord(payload) || {};
+  const promoter = asRecord(root.promoter) || asRecord(root.affiliate) || {};
+  const referral = asRecord(root.referral) || {};
+  const nestedPromoter = asRecord(referral.promoter) || {};
+  return {
+    promoterName: pickString(promoter.name, promoter.full_name, nestedPromoter.name, root.promoter_name),
+    promoterEmail: pickString(promoter.email, nestedPromoter.email, root.promoter_email),
+    referralId: pickString(referral.id, referral.referral_id, root.referral_id),
+  };
+}
+
+function newYorkTimestamp(date = new Date()) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  }).format(date);
+}
+
+function signupSlackText({ email, tid, refId, status, details, timestamp }) {
+  const lines = [
+    ":tada: New referral signup",
+    `Email: ${escapeSlack(email)}`,
+    tid ? `Tracking id: ${escapeSlack(tid)}` : `Referral code: ${escapeSlack(refId)}`,
+    `FirstPromoter status: ${status}`,
+    `Time: ${escapeSlack(timestamp)}`,
+  ];
+  if (details.promoterName) lines.push(`Promoter: ${escapeSlack(details.promoterName)}`);
+  if (details.promoterEmail) lines.push(`Promoter email: ${escapeSlack(details.promoterEmail)}`);
+  if (details.referralId) lines.push(`Referral id: ${escapeSlack(details.referralId)}`);
+  return lines.join("\n");
+}
+
+async function readReferralDetails(response) {
+  try {
+    const text = await response.text();
+    if (!text || text.length > 100_000) return referralDetails(null);
+    return referralDetails(JSON.parse(text));
+  } catch {
+    return referralDetails(null);
+  }
+}
+
+async function notifyReferralSignup({ email, tid, refId, status, details }) {
+  const webhook = slackWebhookUrl();
+  if (!webhook) return;
+  const text = signupSlackText({
+    email,
+    tid,
+    refId,
+    status,
+    details,
+    timestamp: newYorkTimestamp(),
+  });
+  try {
+    const response = await fetch(webhook, {
+      method: "POST",
+      redirect: "manual",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(3_000),
+    });
+    if (response.status < 200 || response.status >= 300) {
+      console.error("Referral Slack notification was not accepted.", response.status);
+    }
+    try {
+      await response.body?.cancel?.();
+    } catch {
+      // Closing the unused response body must not change the signup result.
+    }
+  } catch (error) {
+    console.error("Referral Slack notification failed.", error instanceof Error ? error.name : "UnknownError");
+  }
+}
+
 export async function POST(request) {
   if (!hasTrustedOrigin(request)) {
     return json({ ok: false }, 403);
@@ -156,6 +294,8 @@ export async function POST(request) {
   const ip = clientIp(request.headers.get("x-forwarded-for"));
   if (ip) payload.ip = ip;
 
+  let trackedStatus = 0;
+  let details = referralDetails(null);
   try {
     const upstream = await fetch(SIGNUP_URL, {
       method: "POST",
@@ -169,16 +309,29 @@ export async function POST(request) {
       cache: "no-store",
       signal: AbortSignal.timeout(5_000),
     });
-    if (upstream.status < 200 || upstream.status >= 300) {
+    if (upstream.status >= 200 && upstream.status < 300) {
+      trackedStatus = upstream.status;
+      details = await readReferralDetails(upstream);
+    } else {
       console.error("FirstPromoter signup tracking was not accepted.", upstream.status);
-    }
-    try {
-      await upstream.body?.cancel?.();
-    } catch {
-      // Closing the unused response body must not change the checkout result.
+      try {
+        await upstream.body?.cancel?.();
+      } catch {
+        // Closing the unused response body must not change the checkout result.
+      }
     }
   } catch (error) {
     console.error("FirstPromoter signup tracking failed.", error instanceof Error ? error.name : "UnknownError");
+  }
+
+  if (trackedStatus) {
+    await notifyReferralSignup({
+      email,
+      tid: trackingTid,
+      refId: trackingRef,
+      status: trackedStatus,
+      details,
+    });
   }
 
   return empty();
