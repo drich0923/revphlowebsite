@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isCheckoutClientSession, getCheckoutAvailability } from "./checkout-contract.mjs";
+import { CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isCheckoutClientSession, getCheckoutAvailability, checkoutSessionId, checkoutReferralBody, queueCheckoutReferral } from "./checkout-contract.mjs";
 
 test("custom checkout requires the app to advertise support", () => {
   const data = { enabled: true, embeddedEnabled: true, publishableKey: "pk_test_example", plan: CHECKOUT_PLAN };
@@ -53,6 +53,81 @@ test("Stripe checkout secrets accept an opaque encoded suffix without changing i
     assert.equal(session.clientSecret, clientSecret);
     assert.equal(isCheckoutClientSession({ ...session, publishableKey: `pk_${mode === "live" ? "test" : "live"}_example` }), false);
   }
+});
+
+test("a checkout session id is the client secret prefix before _secret_", () => {
+  assert.equal(checkoutSessionId("cs_test_example_secret_example"), "cs_test_example");
+  assert.equal(checkoutSessionId("cs_live_Example123_secret_opaque%2Fvalue"), "cs_live_Example123");
+  assert.equal(checkoutSessionId("cs_test_example_secret_"), null);
+  assert.equal(checkoutSessionId("https://other.example"), null);
+  assert.equal(checkoutSessionId(""), null);
+  assert.equal(checkoutSessionId(null), null);
+});
+
+test("checkout referral uses tid, then refId, and skips when neither cookie exists", () => {
+  const base = { sessionId: "cs_live_example", email: "buyer@example.com" };
+  assert.deepEqual(checkoutReferralBody({ ...base, cookie: "_fprom_tid=click123; _fprom_ref=partner" }), { ...base, tid: "click123" });
+  assert.deepEqual(checkoutReferralBody({ ...base, cookie: "_fprom_tid=; _fprom_ref=partner" }), { ...base, refId: "partner" });
+  assert.deepEqual(checkoutReferralBody({ ...base, cookie: "other=1; _fprom_ref=code%2F1" }), { ...base, refId: "code/1" });
+  assert.equal(checkoutReferralBody({ ...base, cookie: "theme=dark" }), null);
+  assert.equal(checkoutReferralBody({ ...base, cookie: "" }), null);
+  assert.equal(checkoutReferralBody({ sessionId: "", email: "buyer@example.com", cookie: "_fprom_tid=click123" }), null);
+  assert.deepEqual(checkoutReferralBody({ ...base, cookie: "_fprom_tid_extra=no; _fprom_ref=yes" }), { ...base, refId: "yes" });
+});
+
+test("checkout referral posts once and never throws", async () => {
+  const sent = new Set();
+  const calls = [];
+  const fetchImpl = (url, init) => {
+    calls.push({ url, init });
+    return Promise.resolve({ ok: true });
+  };
+  const input = {
+    appOrigin: "https://app.revphlo.com",
+    sessionId: "cs_live_example",
+    email: "buyer@example.com",
+    cookie: "_fprom_tid=click123; _fprom_ref=partner",
+    sent,
+    fetchImpl,
+  };
+  queueCheckoutReferral(input);
+  queueCheckoutReferral(input);
+  queueCheckoutReferral({ ...input, cookie: "" });
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, "https://app.revphlo.com/api/checkout/referral");
+  assert.equal(calls[0].init.credentials, "omit");
+  assert.deepEqual(JSON.parse(calls[0].init.body), { sessionId: "cs_live_example", email: "buyer@example.com", tid: "click123" });
+  assert.equal(calls[0].init.body.includes("refId"), false);
+
+  const failing = [];
+  const errors = [];
+  const originalError = console.error;
+  console.error = (...args) => { errors.push(args); };
+  try {
+    queueCheckoutReferral({
+      ...input,
+      email: "other@example.com",
+      cookie: "_fprom_ref=partner",
+      fetchImpl: () => {
+        failing.push("called");
+        return Promise.reject(new Error("offline"));
+      },
+    });
+    queueCheckoutReferral({
+      ...input,
+      email: "third@example.com",
+      cookie: "_fprom_tid=click",
+      fetchImpl: () => { throw new Error("blocked"); },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  } finally {
+    console.error = originalError;
+  }
+  assert.deepEqual(failing, ["called"]);
+  assert.equal(calls.length, 1);
+  assert.equal(errors.length, 2);
+  queueCheckoutReferral({ ...input, email: "other@example.com", fetchImpl });
+  assert.equal(calls.length, 1);
 });
 
 test("Stripe checkout secrets reject missing, whitespace, control and oversized values", () => {
