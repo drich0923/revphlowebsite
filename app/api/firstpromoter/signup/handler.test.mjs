@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { POST } from "./handler.mjs";
+import { POST, resetSlackReferralNoticeForTests } from "./handler.mjs";
 
 const ROUTE_URL = "https://www.revphlo.com/api/firstpromoter/signup";
 const SIGNUP_URL = "https://v2.firstpromoter.com/api/v2/track/signup";
@@ -22,6 +22,11 @@ test("firstpromoter signup route", async (t) => {
   const originalKey = process.env.FIRSTPROMOTER_API_KEY;
   const originalAccount = process.env.FIRSTPROMOTER_ACCOUNT_ID;
   const originalPublicKey = process.env.NEXT_PUBLIC_FIRSTPROMOTER_API_KEY;
+  const originalSlack = process.env.SLACK_REFERRAL_WEBHOOK_URL;
+  const originalPublicSlack = process.env.NEXT_PUBLIC_SLACK_REFERRAL_WEBHOOK_URL;
+  delete process.env.SLACK_REFERRAL_WEBHOOK_URL;
+  delete process.env.NEXT_PUBLIC_SLACK_REFERRAL_WEBHOOK_URL;
+  resetSlackReferralNoticeForTests();
 
   t.after(() => {
     globalThis.fetch = originalFetch;
@@ -31,6 +36,11 @@ test("firstpromoter signup route", async (t) => {
     else process.env.FIRSTPROMOTER_ACCOUNT_ID = originalAccount;
     if (originalPublicKey === undefined) delete process.env.NEXT_PUBLIC_FIRSTPROMOTER_API_KEY;
     else process.env.NEXT_PUBLIC_FIRSTPROMOTER_API_KEY = originalPublicKey;
+    if (originalSlack === undefined) delete process.env.SLACK_REFERRAL_WEBHOOK_URL;
+    else process.env.SLACK_REFERRAL_WEBHOOK_URL = originalSlack;
+    if (originalPublicSlack === undefined) delete process.env.NEXT_PUBLIC_SLACK_REFERRAL_WEBHOOK_URL;
+    else process.env.NEXT_PUBLIC_SLACK_REFERRAL_WEBHOOK_URL = originalPublicSlack;
+    resetSlackReferralNoticeForTests();
   });
 
   await t.test("posts the click id, session uid, and client ip to FirstPromoter", async () => {
@@ -172,5 +182,98 @@ test("firstpromoter signup route", async (t) => {
     assert.equal(bodies[0].ip, undefined);
     assert.equal(errors.length, 2);
     assert.equal(errors.some((line) => line.includes("secret-key")), false);
+    assert.equal(bodies.length, 2);
+  });
+
+  await t.test("notifies Slack only after a tracked signup and escapes promoter text", async () => {
+    process.env.FIRSTPROMOTER_API_KEY = "secret-key";
+    process.env.SLACK_REFERRAL_WEBHOOK_URL = "https://hooks.slack.com/services/T00/B00/secret";
+    process.env.NEXT_PUBLIC_SLACK_REFERRAL_WEBHOOK_URL = "https://hooks.slack.com/services/T00/B00/public";
+    const calls = [];
+    globalThis.fetch = async (url, options) => {
+      calls.push({ url: String(url), options });
+      if (String(url) === SIGNUP_URL) {
+        return Response.json({
+          promoter: { name: "Ada & <Bob>", email: "ada@partners.example" },
+          referral: { id: 42 },
+        });
+      }
+      return new Response("ok", { status: 200 });
+    };
+
+    const response = await POST(makeRequest({
+      email: "buyer@example.com",
+      tid: "click123",
+      sessionId: "cs_live_example",
+    }));
+    const text = JSON.parse(calls[1].options.body).text;
+
+    assert.equal(response.status, 204);
+    assert.equal(calls.length, 2);
+    assert.equal(calls[1].url, process.env.SLACK_REFERRAL_WEBHOOK_URL);
+    assert.equal(calls[1].options.method, "POST");
+    assert.equal(calls[1].options.redirect, "manual");
+    assert.equal(calls[1].options.headers["Content-Type"], "application/json");
+    assert.equal(calls[1].options.signal.aborted, false);
+    assert.match(text, /^:tada: New referral signup/);
+    assert.match(text, /Email: buyer@example\.com/);
+    assert.match(text, /Tracking id: click123/);
+    assert.match(text, /FirstPromoter status: 200/);
+    assert.match(text, /Time: [A-Z][a-z]{2} \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M (EDT|EST)/);
+    assert.match(text, /Promoter: Ada &amp; &lt;Bob&gt;/);
+    assert.match(text, /Promoter email: ada@partners\.example/);
+    assert.match(text, /Referral id: 42/);
+    assert.equal(text.includes("secret-key"), false);
+    assert.equal(text.includes(process.env.SLACK_REFERRAL_WEBHOOK_URL), false);
+  });
+
+  await t.test("skips Slack when the webhook is missing or not a Slack hook, and still returns 204 if Slack fails", async () => {
+    process.env.FIRSTPROMOTER_API_KEY = "secret-key";
+    const errors = [];
+    const originalError = console.error;
+    console.error = (...args) => { errors.push(args.join(" ")); };
+    const calls = [];
+    globalThis.fetch = async (url, options) => {
+      calls.push({ url: String(url), body: options.body });
+      if (String(url) === SIGNUP_URL) return Response.json({ ok: true });
+      throw new DOMException("The operation was aborted", "TimeoutError");
+    };
+
+    try {
+      resetSlackReferralNoticeForTests();
+      delete process.env.SLACK_REFERRAL_WEBHOOK_URL;
+      process.env.NEXT_PUBLIC_SLACK_REFERRAL_WEBHOOK_URL = "https://hooks.slack.com/services/T00/B00/public";
+      const first = await POST(makeRequest({ email: "buyer@example.com", tid: "click123" }));
+      const second = await POST(makeRequest({ email: "buyer@example.com", refId: "partner" }));
+      process.env.SLACK_REFERRAL_WEBHOOK_URL = "https://example.com/hooks.slack.com/services/T/B/x";
+      const invalid = await POST(makeRequest({ email: "buyer@example.com", tid: "click123" }));
+      process.env.SLACK_REFERRAL_WEBHOOK_URL = "http://hooks.slack.com/services/T/B/x";
+      const insecure = await POST(makeRequest({ email: "buyer@example.com", tid: "click123" }));
+      process.env.SLACK_REFERRAL_WEBHOOK_URL = "https://hooks.slack.com/services/T00/B00/secret";
+      const rejected = await POST(makeRequest({ email: "buyer@example.com", tid: "click<>" }));
+      const timedOut = await POST(makeRequest({ email: "buyer@example.com", tid: "click123" }));
+
+      assert.equal(first.status, 204);
+      assert.equal(second.status, 204);
+      assert.equal(invalid.status, 204);
+      assert.equal(insecure.status, 204);
+      assert.equal(rejected.status, 400);
+      assert.equal(timedOut.status, 204);
+    } finally {
+      console.error = originalError;
+    }
+
+    assert.deepEqual(calls.map((call) => call.url), [
+      SIGNUP_URL,
+      SIGNUP_URL,
+      SIGNUP_URL,
+      SIGNUP_URL,
+      SIGNUP_URL,
+      "https://hooks.slack.com/services/T00/B00/secret",
+    ]);
+    assert.equal(errors.filter((line) => line.includes("is not set")).length, 1);
+    assert.equal(errors.filter((line) => line.includes("must start with")).length, 1);
+    assert.equal(errors.some((line) => line.includes("https://hooks.slack.com/services")), false);
+    assert.equal(JSON.parse(calls.at(-1).body).text.includes("click123"), true);
   });
 });
