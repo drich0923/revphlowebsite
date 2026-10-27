@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { getCheckoutAvailability, isCheckoutClientSession } from "./checkout-contract.mjs";
+import { checkoutSessionId, getCheckoutAvailability, isCheckoutClientSession, queueCheckoutReferral } from "./checkout-contract.mjs";
 import { loadStripeScript } from "./stripe-loader";
 import styles from "./checkout.module.css";
 
@@ -14,7 +14,7 @@ function Lock() {
   return <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.8" /></svg>;
 }
 
-function StripePayment({ session }) {
+function StripePayment({ session, appOrigin }) {
   const container = useRef(null);
   const actions = useRef(null);
   const emailInput = useRef(null);
@@ -22,6 +22,7 @@ function StripePayment({ session }) {
   const emailValue = useRef("");
   const emailRequest = useRef(0);
   const emailUpdate = useRef(Promise.resolve());
+  const reportedReferrals = useRef(new Set());
   const [attempt, setAttempt] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -114,6 +115,7 @@ function StripePayment({ session }) {
         if (result.error) throw new Error(result.error.message);
         setValidatedEmail(value);
         setCanConfirm(Boolean(currentActions.getSession().canConfirm));
+        reportReferral(value);
         return true;
       } catch (cause) {
         if (request === emailRequest.current && currentActions === actions.current) {
@@ -126,6 +128,20 @@ function StripePayment({ session }) {
     })();
     emailUpdate.current = update;
     return update;
+  }
+
+  function reportReferral(email) {
+    try {
+      queueCheckoutReferral({
+        appOrigin,
+        sessionId: session.sessionId,
+        email,
+        cookie: document.cookie,
+        sent: reportedReferrals.current,
+      });
+    } catch (error) {
+      console.error("Could not attach the referral to checkout.", error);
+    }
   }
 
   async function confirmPayment(event) {
@@ -236,7 +252,11 @@ export default function Checkout({ appOrigin }) {
         throw new Error("We could not open checkout. Please try again.");
       }
       if (!mounted.current) return;
-      setSession({ clientSecret: body.data.clientSecret, publishableKey: body.data.publishableKey });
+      setSession({
+        clientSecret: body.data.clientSecret,
+        publishableKey: body.data.publishableKey,
+        sessionId: checkoutSessionId(body.data.clientSecret),
+      });
     } catch {
       if (!mounted.current) return;
       setError("We could not open checkout. Please try again.");
@@ -278,7 +298,7 @@ export default function Checkout({ appOrigin }) {
             <p className={styles.sectionLabel}>STEP 1 OF 3</p>
             <h2 id="payment-heading" ref={paymentHeading} tabIndex={-1}>Complete your payment</h2>
             <p className={styles.description}>Use the email for your new Revphlo account. You will add your company details after payment.</p>
-            <StripePayment session={session} />
+            <StripePayment session={session} appOrigin={appOrigin} />
             <p className={styles.paymentNote}>After payment, you will open RevPhlo to verify your email and add your company details.</p>
           </div> : <form onSubmit={submit} className={styles.form}>
             <div>
