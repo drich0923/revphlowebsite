@@ -14,7 +14,7 @@ function Lock() {
   return <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.8" /></svg>;
 }
 
-function StripePayment({ session, appOrigin }) {
+function StripePayment({ session }) {
   const container = useRef(null);
   const actions = useRef(null);
   const emailInput = useRef(null);
@@ -133,7 +133,6 @@ function StripePayment({ session, appOrigin }) {
   function reportReferral(email) {
     try {
       queueCheckoutReferral({
-        appOrigin,
         sessionId: session.sessionId,
         email,
         cookie: document.cookie,
@@ -298,7 +297,7 @@ export default function Checkout({ appOrigin }) {
             <p className={styles.sectionLabel}>STEP 1 OF 3</p>
             <h2 id="payment-heading" ref={paymentHeading} tabIndex={-1}>Complete your payment</h2>
             <p className={styles.description}>Use the email for your new Revphlo account. You will add your company details after payment.</p>
-            <StripePayment session={session} appOrigin={appOrigin} />
+            <StripePayment session={session} />
             <p className={styles.paymentNote}>After payment, you will open RevPhlo to verify your email and add your company details.</p>
           </div> : <form onSubmit={submit} className={styles.form}>
             <div>

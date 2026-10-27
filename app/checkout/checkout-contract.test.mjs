@@ -83,7 +83,6 @@ test("checkout referral posts once and never throws", async () => {
     return Promise.resolve({ ok: true });
   };
   const input = {
-    appOrigin: "https://app.revphlo.com",
     sessionId: "cs_live_example",
     email: "buyer@example.com",
     cookie: "_fprom_tid=click123; _fprom_ref=partner",
@@ -94,8 +93,8 @@ test("checkout referral posts once and never throws", async () => {
   queueCheckoutReferral(input);
   queueCheckoutReferral({ ...input, cookie: "" });
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, "https://app.revphlo.com/api/checkout/referral");
-  assert.equal(calls[0].init.credentials, "omit");
+  assert.equal(calls[0].url, "/api/firstpromoter/signup");
+  assert.equal(calls[0].init.credentials, "same-origin");
   assert.deepEqual(JSON.parse(calls[0].init.body), { sessionId: "cs_live_example", email: "buyer@example.com", tid: "click123" });
   assert.equal(calls[0].init.body.includes("refId"), false);
 

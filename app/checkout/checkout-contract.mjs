@@ -88,16 +88,16 @@ export function checkoutReferralBody({ sessionId, email, cookie }) {
   return null;
 }
 
-/** Fire-and-forget. Never throws, and sends at most once for the same session and email. */
-export function queueCheckoutReferral({ appOrigin, sessionId, email, cookie, sent, fetchImpl = fetch }) {
+/** Fire-and-forget to this site. Never throws, and sends at most once for the same session and email. */
+export function queueCheckoutReferral({ sessionId, email, cookie, sent, fetchImpl = fetch }) {
   try {
-    if (!appOrigin || !sessionId || !email || !sent || sent.has(`${sessionId}\n${email}`)) return;
+    if (!sessionId || !email || !sent || sent.has(`${sessionId}\n${email}`)) return;
     const body = checkoutReferralBody({ sessionId, email, cookie });
     if (!body) return;
     sent.add(`${sessionId}\n${email}`);
-    Promise.resolve(fetchImpl(`${appOrigin}/api/checkout/referral`, {
+    Promise.resolve(fetchImpl("/api/firstpromoter/signup", {
       method: "POST",
-      credentials: "omit",
+      credentials: "same-origin",
       keepalive: true,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
