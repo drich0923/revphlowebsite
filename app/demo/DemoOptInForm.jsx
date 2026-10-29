@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { smsConsentStatement } from "./demo-contract.mjs";
 import styles from "./demo.module.css";
 
 const APP_DEMO_START_URL = "https://app.revphlo.com/api/demo/start";
@@ -40,6 +41,8 @@ export default function DemoOptInForm() {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState(EMPTY_ERRORS);
+  const [phone, setPhone] = useState("");
+  const [smsConsent, setSmsConsent] = useState(false);
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -51,6 +54,7 @@ export default function DemoOptInForm() {
 
     const formData = new FormData(event.currentTarget);
     const payload = Object.fromEntries(formData.entries());
+    payload.smsConsent = smsConsent;
 
     try {
       const response = await fetch("/api/demo-lead", {
@@ -139,6 +143,8 @@ export default function DemoOptInForm() {
           autoComplete="tel"
           inputMode="tel"
           placeholder="(212) 555-0199"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
           aria-invalid={Boolean(fieldErrors.phone)}
           aria-describedby={fieldErrors.phone ? "demo-phone-error" : undefined}
           required
@@ -168,8 +174,25 @@ export default function DemoOptInForm() {
 
       {error && <div className={styles.formError} role="alert">{error}</div>}
 
+      <div className={styles.smsConsent}>
+        <input
+          id="demo-sms"
+          type="checkbox"
+          name="smsConsent"
+          value="true"
+          checked={smsConsent}
+          onChange={(event) => setSmsConsent(event.target.checked)}
+        />
+        <span>
+          <label htmlFor="demo-sms">{smsConsentStatement(phone)}</label>{" "}
+          <a href="/privacy-policy">Privacy Policy</a>
+          {" · "}
+          <a href="/terms-of-service">Terms</a>.
+        </span>
+      </div>
+
       <p className={styles.consent}>
-        By submitting, you agree that Revphlo may contact you by email or phone about this demo and a product walkthrough.{" "}
+        By submitting, you agree that RevPhlo may contact you by email or phone about this demo and a product walkthrough.{" "}
         See our <a href="/privacy-policy">Privacy Policy</a> and <a href="/terms-of-service">Terms</a>.
       </p>
       <button className={styles.submit} type="submit" disabled={status === "submitting" || status === "success"}>

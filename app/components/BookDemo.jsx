@@ -1,15 +1,26 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { CONSENT_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../consent/consent.mjs";
+import { currentChoice } from "./consent-storage";
 import { Icon } from "./Icons";
 
 const TF_SCRIPT = "https://embed.typeform.com/next/embed.js";
 
 export default function BookDemo() {
   const sectionRef = useRef(null);
+  const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
+    const sync = () => setAllowed(currentChoice() === "accepted");
+    sync();
+    window.addEventListener(CONSENT_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(CONSENT_CHANGE_EVENT, sync);
+  }, []);
+
+  useEffect(() => {
+    if (!allowed) return undefined;
     const el = sectionRef.current;
-    if (!el) return;
+    if (!el) return undefined;
     let script;
     const io = new IntersectionObserver(
       (entries) => {
@@ -28,7 +39,7 @@ export default function BookDemo() {
       io.disconnect();
       if (script) script.remove();
     };
-  }, []);
+  }, [allowed]);
 
   return (
     <section className="book" id="book" ref={sectionRef}>
@@ -44,9 +55,18 @@ export default function BookDemo() {
           through the cracks. No pitch decks.
         </p>
         <div className="book__card" data-reveal>
-          <div data-tf-live="01KAT373J0V85ZJSJANAS65PEP" className="book__form">
-            <span className="book__skeleton" aria-hidden="true" />
-          </div>
+          {allowed ? (
+            <div data-tf-live="01KAT373J0V85ZJSJANAS65PEP" className="book__form">
+              <span className="book__skeleton" aria-hidden="true" />
+            </div>
+          ) : (
+            <div className="book__form book__form--held">
+              <p>The booking form is hosted by Typeform and sets cookies. Accept cookies to load it.</p>
+              <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_SETTINGS_EVENT))}>
+                Cookie settings
+              </button>
+            </div>
+          )}
         </div>
         <p className="book__trust">
           <Icon name="lock" size={13} />

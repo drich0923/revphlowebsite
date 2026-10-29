@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import LegalLinks from "./LegalLinks";
 import { SITE_URL } from "../seo";
 
 // ── DESIGN TOKENS (matches main site) ──
@@ -168,8 +169,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
         <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16, flexWrap: "wrap" }}>
           <a href={SITE_URL} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Home</a>
           <a href={`${SITE_URL}/#features`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Features</a>
-          <a href={`${SITE_URL}/privacy-policy`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Privacy Policy</a>
-          <a href={`${SITE_URL}/terms-of-service`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Terms of Service</a>
+          <LegalLinks style={{ color: T.text3 }} />
         </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>

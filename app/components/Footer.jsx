@@ -1,4 +1,5 @@
 import Image from "next/image";
+import CookieSettingsLink from "./CookieSettingsLink";
 import { SITE_URL } from "../seo";
 
 export default function Footer() {
@@ -14,6 +15,9 @@ export default function Footer() {
           <a href="https://systemizedsales.ai">Systemized Sales AI</a>
           <a href={`${SITE_URL}/privacy-policy`}>Privacy Policy</a>
           <a href={`${SITE_URL}/terms-of-service`}>Terms of Service</a>
+          <a href={`${SITE_URL}/cookie-policy`}>Cookie Policy</a>
+          <a href={`${SITE_URL}/privacy-policy#do-not-sell-or-share`}>Do Not Sell or Share My Personal Information</a>
+          <CookieSettingsLink />
         </div>
       </div>
     </footer>

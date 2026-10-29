@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import CookieSettingsLink from "../components/CookieSettingsLink";
 import { useEffect, useRef, useState } from "react";
 import { checkoutSessionId, getCheckoutAvailability, isCheckoutClientSession, queueCheckoutReferral } from "./checkout-contract.mjs";
 import { loadStripeScript } from "./stripe-loader";
@@ -336,7 +337,7 @@ export default function Checkout({ appOrigin }) {
           </div>
         </aside>
       </div>
-      <footer className={styles.footer}><span>© {new Date().getFullYear()} RevPhlo</span><nav aria-label="Legal"><a href="/privacy-policy">Privacy</a><a href="/terms-of-service">Terms</a><a href="mailto:support@revphlo.com">Support</a></nav></footer>
+      <footer className={styles.footer}><span>© {new Date().getFullYear()} RevPhlo</span><nav aria-label="Legal"><a href="/privacy-policy">Privacy</a><a href="/terms-of-service">Terms</a><a href="/cookie-policy">Cookies</a><CookieSettingsLink /> <a href="mailto:support@revphlo.com">Support</a></nav></footer>
     </main>
   </div>;
 }

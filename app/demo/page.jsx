@@ -1,4 +1,5 @@
 import Image from "next/image";
+import CookieSettingsLink from "../components/CookieSettingsLink";
 import DemoOptInForm from "./DemoOptInForm";
 import styles from "./demo.module.css";
 import { pageMeta } from "../seo";
@@ -123,8 +124,13 @@ export default function DemoPage() {
       </main>
 
       <footer className={styles.footer}>
-        <span>&copy; {new Date().getFullYear()} RevPhlo</span>
-        <span>Built for high-performing sales teams.</span>
+        <span>&copy; {new Date().getFullYear()} RevPhlo. Built for high-performing sales teams.</span>
+        <nav aria-label="Legal">
+          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/terms-of-service">Terms</a>
+          <a href="/cookie-policy">Cookie Policy</a>
+          <CookieSettingsLink />
+        </nav>
       </footer>
     </div>
   );

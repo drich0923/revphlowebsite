@@ -1,16 +1,18 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CONSENT_CHANGE_EVENT, OPEN_SETTINGS_EVENT } from "../consent/consent.mjs";
+import { currentChoice } from "./consent-storage";
 
 const EMBED_ID = "vidalytics_embed_qY0sZQMIwMDYGr3T";
 const BASE_URL = "https://fast.vidalytics.com/embeds/Xbxuo1Sw/qY0sZQMIwMDYGr3T/";
 const THUMBNAIL_URL =
   "https://fast.vidalytics.com/video/Xbxuo1Sw/LzYTPTpF4cp5hL_m/232535/216354__FFMPEG/thumb/thumbnail-5_0.jpg";
 
-// Load the real player as soon as the hero mounts. The thumbnail keeps the
-// video visually useful while Vidalytics initializes and remains as a
-// fallback if the third-party embed is blocked.
+// Load the Vidalytics player and its thumbnail only after cookie consent.
+// Until then the poster is a local placeholder and a click opens cookie settings.
 export default function VslPlayer() {
   const [posterGone, setPosterGone] = useState(false);
+  const [allowed, setAllowed] = useState(false);
   const injected = useRef(false);
   const embedRef = useRef(null);
   const posterRef = useRef(null);
@@ -62,6 +64,14 @@ export default function VslPlayer() {
   }, []);
 
   useEffect(() => {
+    const sync = () => setAllowed(currentChoice() === "accepted");
+    sync();
+    window.addEventListener(CONSENT_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(CONSENT_CHANGE_EVENT, sync);
+  }, []);
+
+  useEffect(() => {
+    if (!allowed) return undefined;
     inject();
     maybeReveal();
 
@@ -69,9 +79,13 @@ export default function VslPlayer() {
       if (scriptRef.current) scriptRef.current.remove();
       if (observerRef.current) observerRef.current.disconnect();
     };
-  }, [inject, maybeReveal]);
+  }, [allowed, inject, maybeReveal]);
 
   const onPosterClick = () => {
+    if (!allowed) {
+      window.dispatchEvent(new Event(OPEN_SETTINGS_EVENT));
+      return;
+    }
     inject();
     maybeReveal();
   };
@@ -82,19 +96,21 @@ export default function VslPlayer() {
       <button
         ref={posterRef}
         className={`vsl__poster ${posterGone ? "vsl__poster--gone" : ""}`}
-        aria-label="Play the 3-minute demo video"
+        aria-label={allowed ? "Play the 3-minute demo video" : "Accept cookies to play the 3-minute demo video"}
         aria-hidden={posterGone}
         tabIndex={posterGone ? -1 : 0}
         onClick={onPosterClick}
       >
-        <img
-          className="vsl__poster-image"
-          src={THUMBNAIL_URL}
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          fetchPriority="high"
-        />
+        {allowed ? (
+          <img
+            className="vsl__poster-image"
+            src={THUMBNAIL_URL}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            fetchPriority="high"
+          />
+        ) : null}
         <span className="vsl__play">
           <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
             <path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor" />

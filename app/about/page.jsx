@@ -1,5 +1,7 @@
 "use client";
 
+import LegalLinks from "../components/LegalLinks";
+
 export default function About() {
   const T = {
     blue: "#3361FF",
@@ -177,12 +179,11 @@ export default function About() {
 
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${T.border}`, padding: "32px", textAlign: "center" }}>
-        <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16, flexWrap: "wrap" }}>
           <a href="/about" style={{ fontSize: 13, color: T.blue, fontWeight: 600, textDecoration: "none" }}>About</a>
           <a href="https://www.systemizedsales.com" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Systemized Sales</a>
           <a href="https://systemizedsales.ai" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Systemized Sales AI</a>
-          <a href="/privacy-policy" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Privacy Policy</a>
-          <a href="/terms-of-service" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Terms of Service</a>
+          <LegalLinks />
         </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>

@@ -65,7 +65,36 @@ test("demo lead route", async (t) => {
     assert.equal(payload.contact.companyName, "RevPhlo Test Company");
     assert.equal(payload.contact.email, "test@example.com");
     assert.equal(payload.utmSource, "outbound");
+    assert.equal(payload.smsConsent, false);
+    assert.equal(payload.smsConsentStatement, "");
+    assert.equal(payload.contact.smsConsent, false);
     assert.deepEqual(payload.tags, ["revphlo-demo", "outbound-sales"]);
+  });
+
+  await t.test("stores an optional SMS opt-in with the number on the submission", async () => {
+    let delivered;
+    globalThis.fetch = async (url, options) => {
+      delivered = { url: String(url), options };
+      return new Response("ok", { status: 200 });
+    };
+
+    const response = await POST(
+      makeRequest({
+        name: "Jane Doe",
+        email: "jane@example.com",
+        phone: "+1 (212) 555-0199",
+        company: "Acme",
+        website: "",
+        smsConsent: true,
+      })
+    );
+
+    assert.equal(response.status, 200);
+    const payload = JSON.parse(delivered.options.body);
+    assert.equal(payload.smsConsent, true);
+    assert.equal(payload.contact.smsConsent, true);
+    assert.match(payload.smsConsentStatement, /RevPhlo at \+1 \(212\) 555-0199/);
+    assert.match(payload.smsConsentStatement, /not a condition of purchase/);
   });
 
   await t.test("does not unlock the demo when the CRM rejects delivery", async () => {

@@ -24,12 +24,15 @@ The website form collects these visible fields:
 | `phone` | Phone number; 7 to 30 characters, with 7 to 15 digits |
 | `company` | Company name; 2 to 120 characters |
 | `website` | Hidden honeypot; leave empty |
+| `smsConsent` | Optional checkbox; unchecked by default. `true` only when the visitor ticks it |
 
-Show this exact notice beside the submit button:
+Show this notice beside the submit button:
 
-> By submitting, you agree that Revphlo may contact you by email or phone about this demo and a product walkthrough.
+> By submitting, you agree that RevPhlo may contact you by email or phone about this demo and a product walkthrough.
 
-There is no consent checkbox or `consent` field. The browser sends the form as JSON to the website's same-origin `/api/demo-lead` route. That server route validates the four contact fields and sends a GoHighLevel-friendly payload containing top-level contact fields, a nested `contact` object, source tags, and supported UTM values. It determines delivery from the webhook HTTP status and never parses the provider response body, because LeadConnector may return HTML.
+Also show an optional, unchecked SMS checkbox. Its label is built by `smsConsentStatement(phone)` and then links to the privacy policy and the terms. The sentence names RevPhlo and the number entered, and says consent is not a condition of purchase, message frequency varies, message and data rates may apply, and the recipient can reply STOP to opt out and HELP for help.
+
+The browser sends the form as JSON to the website's same-origin `/api/demo-lead` route. That server route validates the four contact fields and sends a GoHighLevel-friendly payload containing top-level contact fields, `smsConsent`, `smsConsentStatement` when the box was ticked, a nested `contact` object, source tags, and supported UTM values. It determines delivery from the webhook HTTP status and never parses the provider response body, because LeadConnector may return HTML.
 
 Only after GoHighLevel accepts the webhook does the browser make a native same-tab form POST to `https://app.revphlo.com/api/demo/start`. That second request contains only `name`, `email`, `phone`, and an empty `website` honeypot, matching the app's strict guest-session contract. The app creates its own HTTP-only guest cookie and returns `303 See Other` to `/demo/dashboard`. There is no email verification, password, account signup, or invitation.
 

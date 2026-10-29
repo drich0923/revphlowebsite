@@ -1,5 +1,7 @@
 import "./globals.css";
 import { Bricolage_Grotesque, Inter, IBM_Plex_Mono, Caveat, DM_Sans, DM_Serif_Display } from "next/font/google";
+import ConsentManager from "./components/ConsentManager";
+import { consentDefaultSnippet } from "./consent/consent.mjs";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_TITLE,
@@ -144,8 +146,6 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="preconnect" href="https://fast.vidalytics.com" />
-        <link rel="dns-prefetch" href="https://fast.vidalytics.com" />
         <script
           dangerouslySetInnerHTML={{
             __html:
@@ -156,23 +156,13 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17985869159" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'AW-17985869159');`,
-          }}
-        />
-        {/* FirstPromoter referral tracking. fprmain.js must run before fpr.js.
-            Leave both scripts blocking: this Next.js version hoists async
-            scripts to the top of <head>, ahead of in-place scripts. */}
-        <script src="/fprmain.js" />
-        <script src="https://cdn.firstpromoter.com/fpr.js" />
+        {/* Consent Mode v2 defaults. This does not load Google's tag. */}
+        <script dangerouslySetInnerHTML={{ __html: consentDefaultSnippet() }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ConsentManager />
+      </body>
     </html>
   );
 }
