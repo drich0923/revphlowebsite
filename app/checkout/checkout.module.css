@@ -73,7 +73,7 @@
 .nextSteps p { font-size: 11px; color: #68758b; margin-top: 3px; }
 .footer { padding: 36px 0 0; display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: #748097; }
 .footer nav { display: flex; gap: 20px; }
-.footer a { color: #647188; text-decoration: none; }
+.footer a, .footer button { background: none; border: 0; padding: 0; color: #647188; font: inherit; font-size: inherit; cursor: pointer; text-decoration: none; }
 .notice, .error { padding: 14px 16px; border-radius: 8px; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
 .notice { background: #f1f5ff; border: 1px solid #dce5ff; color: #375079; }
 .error { background: #fff4f3; border: 1px solid #ffd5d2; color: #9b3434; }

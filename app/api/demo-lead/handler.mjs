@@ -3,6 +3,8 @@ import {
   cleanString,
   cleanTracking,
   getWebhookUrl,
+  readSmsConsent,
+  smsConsentStatement,
   splitName,
   validateDemoLead,
 } from "../../demo/demo-contract.mjs";
@@ -81,6 +83,7 @@ export async function POST(request) {
   const { name, email, phone, company } = validation.data;
   const { firstName, lastName } = splitName(name);
   const tracking = cleanTracking(body);
+  const smsConsent = readSmsConsent(body?.smsConsent);
   const submissionId = randomUUID();
   const source = "RevPhlo Demo Sandbox";
   const tags = ["revphlo-demo", "outbound-sales"];
@@ -98,6 +101,8 @@ export async function POST(request) {
     phone,
     company,
     companyName: company,
+    smsConsent,
+    smsConsentStatement: smsConsent ? smsConsentStatement(phone) : "",
     pagePath: "/demo",
     submittedAt: new Date().toISOString(),
     ...tracking,
@@ -108,6 +113,7 @@ export async function POST(request) {
       email,
       phone,
       companyName: company,
+      smsConsent,
       source,
       tags,
     },

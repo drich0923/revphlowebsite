@@ -47,6 +47,15 @@ export function validateDemoLead(input) {
   };
 }
 
+export function readSmsConsent(value) {
+  return value === true || value === "true" || value === "on";
+}
+
+export function smsConsentStatement(phone) {
+  const number = cleanString(phone, FIELD_LIMITS.phone) || "the phone number entered above";
+  return `I agree to receive text messages from RevPhlo at ${number}. Consent is not a condition of purchase. Message frequency varies. Message and data rates may apply. Reply STOP to opt out and HELP for help.`;
+}
+
 export function cleanTracking(input) {
   return TRACKING_FIELDS.reduce((tracking, field) => {
     const value = cleanString(input?.[field], FIELD_LIMITS.tracking);

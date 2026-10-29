@@ -4,6 +4,8 @@ import {
   cleanTracking,
   getConfiguredUrl,
   getWebhookUrl,
+  readSmsConsent,
+  smsConsentStatement,
   splitName,
   validateDemoLead,
 } from "./demo-contract.mjs";
@@ -34,6 +36,23 @@ test("returns field-specific errors for incomplete leads", () => {
 
 test("splits first and last names for GoHighLevel mapping", () => {
   assert.deepEqual(splitName("Jane Maria Doe"), { firstName: "Jane", lastName: "Maria Doe" });
+});
+
+test("builds an optional SMS statement for the number entered", () => {
+  const statement = smsConsentStatement("+1 (212) 555-0199");
+  assert.match(statement, /RevPhlo/);
+  assert.match(statement, /\+1 \(212\) 555-0199/);
+  assert.match(statement, /not a condition of purchase/);
+  assert.match(statement, /Message frequency varies/);
+  assert.match(statement, /Message and data rates may apply/);
+  assert.match(statement, /STOP/);
+  assert.match(statement, /HELP/);
+  assert.equal(readSmsConsent(true), true);
+  assert.equal(readSmsConsent("true"), true);
+  assert.equal(readSmsConsent("on"), true);
+  assert.equal(readSmsConsent(false), false);
+  assert.equal(readSmsConsent(undefined), false);
+  assert.equal(readSmsConsent("false"), false);
 });
 
 test("keeps only supported tracking fields", () => {

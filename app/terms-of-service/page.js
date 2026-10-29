@@ -1,5 +1,7 @@
 "use client";
 
+import LegalLinks from "../components/LegalLinks";
+
 export default function TermsOfService() {
   const T = {
     blue: "#3361FF",
@@ -191,9 +193,8 @@ export default function TermsOfService() {
 
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${T.border}`, padding: "32px", textAlign: "center" }}>
-        <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 }}>
-          <a href="/privacy-policy" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Privacy Policy</a>
-          <a href="/terms-of-service" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Terms of Service</a>
+        <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16, flexWrap: "wrap" }}>
+          <LegalLinks />
         </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>

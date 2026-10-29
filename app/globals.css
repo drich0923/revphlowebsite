@@ -1924,6 +1924,38 @@ html.js-motion .oldnew__arrow-dot {
   position: relative;
   height: 780px;
 }
+.book__form--held {
+  height: auto;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  color: var(--text-2);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.book__form--held p {
+  margin: 0;
+  max-width: 46ch;
+}
+.book__form--held button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: transparent;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.book__form--held button:focus-visible {
+  outline: 3px solid #91a8ff;
+  outline-offset: 2px;
+}
 .book__form > div,
 .book__form iframe {
   height: 100% !important;
@@ -1987,16 +2019,30 @@ html.js-motion .book__skeleton::after {
 }
 .footer__links {
   display: flex;
-  gap: var(--sp-5);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sp-4) var(--sp-5);
 }
-.footer__links a {
+.footer__links a,
+.footer__links button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
   font-size: 14px;
   color: var(--text-2);
+  cursor: pointer;
   transition: color 0.15s;
 }
-.footer__links a:hover {
+.footer__links a:hover,
+.footer__links button:hover {
   color: var(--text-1);
   text-decoration: underline;
+}
+.footer__links button:focus-visible,
+.footer__links a:focus-visible {
+  outline: 2px solid #91a8ff;
+  outline-offset: 3px;
 }
 
 /* ---------- 18. Sticky mobile bar ---------- */
