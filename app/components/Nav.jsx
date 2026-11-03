@@ -1,20 +1,28 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Icon } from "./Icons";
 import { MotionLink } from "./motion-ui";
 
 const LINKS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#howitworks" },
+  { label: "Integrations", href: "/integrations" },
   { label: "FAQ", href: "#faq" },
   { label: "See it in action", href: "/demo" },
 ];
+
+function resolveHref(href, pathname) {
+  if (href.startsWith("#") && pathname !== "/") return `/${href}`;
+  return href;
+}
 
 export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const triggerRef = useRef(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 24);
@@ -55,17 +63,21 @@ export default function Nav() {
           <Image src="/logo.png" alt="RevPhlo" width={132} height={26} className="nav__logo-img" priority />
         </a>
         <nav aria-label="Main" className="nav__links">
-          {LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="nav__link">
-              {l.label}
-            </a>
-          ))}
+          {LINKS.map((l) => {
+            const href = resolveHref(l.href, pathname);
+            const current = pathname === l.href;
+            return (
+              <a key={l.href} href={href} className={`nav__link${current ? " nav__link--current" : ""}`} aria-current={current ? "page" : undefined}>
+                {l.label}
+              </a>
+            );
+          })}
         </nav>
         <div className="nav__right">
           <MotionLink href="https://app.revphlo.com" className="btn btn--ghost btn--compact nav__login">
             Login
           </MotionLink>
-          <MotionLink href="#book" className="btn btn--primary btn--compact">
+          <MotionLink href={resolveHref("#book", pathname)} className="btn btn--primary btn--compact">
             Find Your Data Leaks
             <Icon name="arrow-right" size={16} className="btn__arrow" />
           </MotionLink>
@@ -83,7 +95,7 @@ export default function Nav() {
       </div>
       <nav id="mobile-menu" aria-label="Main" className="nav__menu" hidden={!open}>
         {LINKS.map((l) => (
-          <a key={l.href} href={l.href} className="nav__menu-link" onClick={() => setOpen(false)}>
+          <a key={l.href} href={resolveHref(l.href, pathname)} className="nav__menu-link" onClick={() => setOpen(false)}>
             {l.label}
           </a>
         ))}

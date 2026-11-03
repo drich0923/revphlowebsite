@@ -32,6 +32,9 @@ export default function Integrations() {
             className="works__track"
           />
         </Reveal>
+        <p className="integrations__more">
+          <a href="/integrations">How each tool connects</a>
+        </p>
         <div className="lattice">
           {NAMES.map((name, i) => (
             <Reveal key={name} className="lattice__cell" delay={i * 0.04}>
