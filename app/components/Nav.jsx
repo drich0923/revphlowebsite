@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "./Icons";
+import { MotionLink } from "./motion-ui";
 
 const LINKS = [
   { label: "Features", href: "#features" },
@@ -61,13 +62,13 @@ export default function Nav() {
           ))}
         </nav>
         <div className="nav__right">
-          <a href="https://app.revphlo.com" className="btn btn--ghost btn--compact nav__login">
+          <MotionLink href="https://app.revphlo.com" className="btn btn--ghost btn--compact nav__login">
             Login
-          </a>
-          <a href="#book" className="btn btn--primary btn--compact">
+          </MotionLink>
+          <MotionLink href="#book" className="btn btn--primary btn--compact">
             Find Your Data Leaks
             <Icon name="arrow-right" size={16} className="btn__arrow" />
-          </a>
+          </MotionLink>
           <button
             ref={triggerRef}
             className="nav__burger"

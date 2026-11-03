@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Icon } from "./Icons";
 import { FAQ_ITEMS } from "./faq-data";
+import { KineticTextReveal } from "@/components/ui/kinetic-text-reveal";
+import { Reveal } from "./motion-ui";
 
 export default function Faq() {
   const [open, setOpen] = useState(-1);
@@ -9,15 +11,24 @@ export default function Faq() {
   return (
     <section className="faq" id="faq">
       <div className="container faq__grid">
-        <div className="faq__left">
+        <Reveal className="faq__left">
           <div className="protocol">
             <span className="protocol__index">05</span>
             <span className="protocol__eyebrow">Questions</span>
             <span className="protocol__tick" aria-hidden="true" />
           </div>
-          <h2 className="h2">Everything you need to know</h2>
-        </div>
-        <div className="faq__list">
+          <h2 className="h2">
+            <KineticTextReveal
+              text="Everything you need to know"
+              playInView
+              splitBy="words"
+              stagger={0.045}
+              distance={14}
+              className="kinetic-heading"
+            />
+          </h2>
+        </Reveal>
+        <Reveal className="faq__list" delay={0.06}>
           {FAQ_ITEMS.map((item, i) => {
             const isOpen = open === i;
             return (
@@ -44,7 +55,7 @@ export default function Faq() {
               </div>
             );
           })}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

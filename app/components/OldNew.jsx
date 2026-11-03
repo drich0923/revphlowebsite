@@ -1,6 +1,7 @@
 import { RedDoubleUnderline, RedCircle } from "./RedPen";
 import DashboardMockup from "./DashboardMockup";
 import Counters from "./Counters";
+import { Reveal } from "./motion-ui";
 
 export function PaperNote({ compact = false }) {
   return (
@@ -64,30 +65,30 @@ export default function OldNew() {
   return (
     <section className="oldnew">
       <div className="container">
-        <div className="protocol" data-reveal>
+        <Reveal className="protocol">
           <span className="protocol__index">01</span>
           <h2 className="protocol__eyebrow">The Old Way vs. The New Way with RevPhlo</h2>
           <span className="protocol__tick" aria-hidden="true" />
-        </div>
-        <div className="oldnew__grid" data-reveal-group>
-          <figure className="exhibit oldnew__before" data-reveal>
+        </Reveal>
+        <div className="oldnew__grid">
+          <Reveal as="figure" className="exhibit oldnew__before">
             <PaperNote />
             <p className="sr-only">
               Example of a handwritten end-of-day report with guessed numbers and corrections.
             </p>
             <figcaption className="exhibit__caption">FIG. 01-A — THE OLD WAY</figcaption>
-          </figure>
+          </Reveal>
           <div className="oldnew__arrow" aria-hidden="true">
             <svg viewBox="0 0 48 24" width="48" height="24">
               <path d="M2 12h40M34 4l9 8-9 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <circle className="oldnew__arrow-dot" cx="6" cy="12" r="3" fill="currentColor" stroke="none" />
             </svg>
           </div>
-          <div className="oldnew__after" data-reveal>
+          <Reveal className="oldnew__after" delay={0.1}>
             <Counters>
               <DashboardMockup variant="excerpt" caption="FIG. 01-B — WITH REVPHLO" />
             </Counters>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
