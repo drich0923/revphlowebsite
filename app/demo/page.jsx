@@ -124,6 +124,7 @@ export default function DemoPage() {
 
       <footer className={styles.footer}>
         <span>&copy; {new Date().getFullYear()} RevPhlo</span>
+        <a href="https://revphlo.firstpromoter.com/" target="_blank" rel="noopener">Become an Affiliate</a>
         <span>Built for high-performing sales teams.</span>
       </footer>
     </div>

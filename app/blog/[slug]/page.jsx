@@ -296,6 +296,7 @@ export default function BlogPost() {
         <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 }}>
           <Link href="/privacy-policy" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Privacy Policy</Link>
           <Link href="/terms-of-service" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Terms of Service</Link>
+          <a href="https://revphlo.firstpromoter.com/" target="_blank" rel="noopener" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Become an Affiliate</a>
         </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>

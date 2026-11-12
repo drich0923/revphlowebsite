@@ -177,6 +177,7 @@ export default function PrivacyPolicy() {
         <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 16 }}>
           <a href="/privacy-policy" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Privacy Policy</a>
           <a href="/terms-of-service" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Terms of Service</a>
+          <a href="https://revphlo.firstpromoter.com/" target="_blank" rel="noopener" style={{ fontSize: 13, color: T.text2, textDecoration: "none" }}>Become an Affiliate</a>
         </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>

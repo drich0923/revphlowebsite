@@ -170,6 +170,7 @@ export default function ArticleLayout({ metaTitle, metaDescription, children }) 
           <a href={`${SITE_URL}/#features`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Features</a>
           <a href={`${SITE_URL}/privacy-policy`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Privacy Policy</a>
           <a href={`${SITE_URL}/terms-of-service`} style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Terms of Service</a>
+          <a href="https://revphlo.firstpromoter.com/" target="_blank" rel="noopener" style={{ fontSize: 13, color: T.text3, textDecoration: "none" }}>Become an Affiliate</a>
         </div>
         <p style={{ fontSize: 13, color: T.text3 }}>© {new Date().getFullYear()} RevPhlo. All rights reserved.</p>
       </footer>

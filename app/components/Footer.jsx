@@ -14,6 +14,7 @@ export default function Footer() {
           <a href="https://systemizedsales.ai">Systemized Sales AI</a>
           <a href={`${SITE_URL}/privacy-policy`}>Privacy Policy</a>
           <a href={`${SITE_URL}/terms-of-service`}>Terms of Service</a>
+          <a href="https://revphlo.firstpromoter.com/" target="_blank" rel="noopener">Become an Affiliate</a>
         </div>
       </div>
     </footer>
