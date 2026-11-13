@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Icon } from "./Icons";
+import { MotionLink } from "./motion-ui";
 
 // Mobile-only bottom CTA: appears once the hero has scrolled away, hides
 // while the #book section is on screen. CSS hides it while the mobile menu
@@ -32,10 +33,10 @@ export default function StickyBar() {
   return (
     <div className={`stickybar ${pastHero && !bookVisible ? "stickybar--on" : ""}`}>
       <span className="stickybar__text">Find the leaks.</span>
-      <a href="#book" className="btn btn--primary btn--compact">
+      <MotionLink href="#book" className="btn btn--mint btn--compact">
         Start the Audit
         <Icon name="arrow-right" size={15} className="btn__arrow" />
-      </a>
+      </MotionLink>
     </div>
   );
 }
