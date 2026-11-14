@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "80px 24px 120px" }}>
         <p style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.blue, fontWeight: 600, marginBottom: 16 }}>Legal</p>
         <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(32px,4vw,44px)", lineHeight: 1.15, letterSpacing: -0.5, color: T.dark, marginBottom: 12 }}>Privacy Policy</h1>
-        <p style={{ fontSize: 14, color: T.text3, marginBottom: 48 }}>Last updated: March 1, 2026</p>
+        <p style={{ fontSize: 14, color: T.text3, marginBottom: 48 }}>Last updated: November 14, 2026</p>
 
         <div style={sectionStyle}>
           <p style={pStyle}>RevPhlo ("we," "our," or "us") operates the RevPhlo platform at revphlo.com. This Privacy Policy describes how we collect, use, store, and share information when you use our website, platform, and related services (collectively, the "Service").</p>
@@ -72,6 +72,7 @@ export default function PrivacyPolicy() {
             <li style={liStyle}>Stripe: Transaction data, payment amounts, customer email addresses, payment status</li>
             <li style={liStyle}>Fathom: Call recordings, AI-generated transcripts and summaries</li>
             <li style={liStyle}>Zoom: Meeting metadata and recording data</li>
+            <li style={liStyle}>Google Meet and Google Calendar: Account email address, meeting and attendance data, transcript entries, and calendar event attendees</li>
             <li style={liStyle}>Slack: Notification delivery (we do not read or store message history)</li>
             <li style={liStyle}>Zapier: Workflow trigger and action data as configured by you</li>
             <li style={liStyle}>Whop: Product delivery and membership data</li>
@@ -99,13 +100,16 @@ export default function PrivacyPolicy() {
             <li style={liStyle}>Detect and prevent fraud, abuse, or security incidents</li>
             <li style={liStyle}>Comply with legal obligations</li>
           </ul>
+          <h3 style={{ ...h2Style, fontSize: 20 }}>Google API data and Limited Use</h3>
+          <p style={pStyle}>When you connect Google Meet and Google Calendar, we use data from those services to match sales calls to appointments, record prospect attendance, store call transcripts, and generate AI post-call notes.</p>
+          <p style={pStyle}>RevPhlo's use and transfer of data received from Google APIs follow the <a href="https://developers.google.com/terms/api-services-user-data-policy" style={{ color: T.blue }}>Google API Services User Data Policy</a>, including its Limited Use requirements.</p>
         </div>
 
         <div style={sectionStyle}>
           <h2 style={h2Style}>3. How We Share Your Information</h2>
           <p style={pStyle}>We do not sell your personal information. We may share information with:</p>
           <ul style={ulStyle}>
-            <li style={liStyle}><strong>Service providers:</strong> Third parties that help us operate the Service (hosting, payment processing, analytics). These providers are contractually obligated to protect your data.</li>
+            <li style={liStyle}><strong>Service providers:</strong> Third parties that help us operate the Service (hosting, payment processing, analytics, AI note generation). These providers are contractually obligated to protect your data.</li>
             <li style={liStyle}><strong>Connected integrations:</strong> When you authorize a third-party integration, data flows between RevPhlo and that service as necessary to provide functionality.</li>
             <li style={liStyle}><strong>Legal compliance:</strong> When required by law, subpoena, or legal process, or to protect our rights, safety, or property.</li>
             <li style={liStyle}><strong>Business transfers:</strong> In connection with a merger, acquisition, or sale of assets.</li>

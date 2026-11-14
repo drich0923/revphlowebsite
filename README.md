@@ -9,6 +9,12 @@ npm run dev
 
 Open http://localhost:3000
 
+## Legal pages
+
+The website serves `/terms-of-service` and `/privacy-policy`. The privacy policy explains the Google Meet and Google Calendar data used for call matching, attendance, transcripts, and AI post-call notes. It includes the Google API Services User Data Policy Limited Use disclosure.
+
+The public app URL `https://app.revphlo.com/terms` redirects to `https://www.revphlo.com/terms-of-service`. This alias is a project-level Vercel route on `ben-crabbs-projects/revphlo`, named `Revphlo public terms`. It matches only the `app.revphlo.com` host and `/terms` or `/terms/`. Project-level routes persist across app deployments and do not need an app database migration.
+
 ## Interactive demo opt-in
 
 - `GET /api/health` - website health check
