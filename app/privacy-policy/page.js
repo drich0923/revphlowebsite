@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "80px 24px 120px" }}>
         <p style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: 2.5, color: T.blue, fontWeight: 600, marginBottom: 16 }}>Legal</p>
         <h1 style={{ fontFamily: "var(--font-dm-serif),Georgia,serif", fontSize: "clamp(32px,4vw,44px)", lineHeight: 1.15, letterSpacing: -0.5, color: T.dark, marginBottom: 12 }}>Privacy Policy</h1>
-        <p style={{ fontSize: 14, color: T.text3, marginBottom: 48 }}>Last updated: November 14, 2026</p>
+        <p style={{ fontSize: 14, color: T.text3, marginBottom: 48 }}>Last updated: November 17, 2026</p>
 
         <div style={sectionStyle}>
           <p style={pStyle}>RevPhlo ("we," "our," or "us") operates the RevPhlo platform at revphlo.com. This Privacy Policy describes how we collect, use, store, and share information when you use our website, platform, and related services (collectively, the "Service").</p>
@@ -119,7 +119,7 @@ export default function PrivacyPolicy() {
         <div style={sectionStyle}>
           <h2 style={h2Style}>4. Data Retention</h2>
           <p style={pStyle}>We retain your data for as long as your account is active or as needed to provide the Service. When you close your account, we will delete or anonymize your data within 90 days, except where retention is required by law or for legitimate business purposes (e.g., resolving disputes, enforcing agreements).</p>
-          <p style={pStyle}>Integration data (call recordings, transaction history, appointment data) is retained only while your integrations are active and your account is in good standing.</p>
+          <p style={pStyle}>Integration data, including call records and post-call notes, follows the account retention policy above. Disconnecting Google Meet stops future imports and removes its Google access. Call records and notes already received can remain in your company after you disconnect. To request deletion, contact privacy@revphlo.com.</p>
         </div>
 
         <div style={sectionStyle}>
