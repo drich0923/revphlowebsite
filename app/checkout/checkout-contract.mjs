@@ -8,6 +8,12 @@ export const CHECKOUT_PLAN = Object.freeze({
   includedDays: 30,
 });
 
+export const AGENCY_CHECKOUT_PLAN = Object.freeze({
+  ...CHECKOUT_PLAN,
+  accountType: "agency",
+  amount: 59700,
+});
+
 /** Only build configuration can select the application that receives form data. */
 export function getAppOrigin(value, production = true) {
   if (!value) return null;
@@ -24,8 +30,11 @@ export function getAppOrigin(value, production = true) {
   }
 }
 
-export function isExpectedPlan(plan) {
-  return !!plan && Object.entries(CHECKOUT_PLAN).every(([key, value]) => plan[key] === value);
+export function isExpectedPlan(plan, accountType = "standard") {
+  if (accountType !== "standard" && accountType !== "agency") return false;
+  const expected = accountType === "agency" ? AGENCY_CHECKOUT_PLAN : CHECKOUT_PLAN;
+  return !!plan && (accountType !== "standard" || !plan.accountType || plan.accountType === "standard") &&
+    Object.entries(expected).every(([key, value]) => plan[key] === value);
 }
 
 export function isPublishableKey(value) {
@@ -33,13 +42,14 @@ export function isPublishableKey(value) {
 }
 
 /** An older app can accept hosted checkout without supporting the Payment Element. */
-export function getCheckoutAvailability(data) {
-  if (!data?.enabled || !isExpectedPlan(data.plan)) return { state: "unavailable" };
+export function getCheckoutAvailability(data, accountType = "standard") {
+  if (!data?.enabled || !isExpectedPlan(data.plan, accountType)) return { state: "unavailable" };
   const modes = data.supportedUiModes;
   if (Array.isArray(modes) && modes.includes("custom") && data.embeddedEnabled && isPublishableKey(data.publishableKey)) {
     return { state: "ready" };
   }
-  if (modes === undefined || (Array.isArray(modes) && modes.includes("hosted"))) {
+  // The app's hosted entry is for standard accounts. Never send an agency buyer there.
+  if (accountType === "standard" && (modes === undefined || (Array.isArray(modes) && modes.includes("hosted")))) {
     return { state: "hosted" };
   }
   return { state: "unavailable" };
