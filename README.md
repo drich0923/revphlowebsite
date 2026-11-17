@@ -100,3 +100,13 @@ This feature needs releases in both the app and this website. The website Vercel
 The app's `/get-started` page remains available for the Stripe-hosted checkout flow. If website checkout is unavailable, the website can link there. A customer who already paid must use the return page or their invitation instead of making another payment.
 
 Run the checkout contract checks with `node --test app/checkout/checkout-contract.test.mjs`.
+
+### Agency checkout
+
+`/agency-checkout` uses the same payment form and layout as `/checkout`. It creates an agency account after payment, email verification, and agency details are complete. The agency price is $2,000 USD for setup and the first 30 days, then $597 USD each month. The same six-month minimum term applies. The page is a direct purchase link and is not indexed by search engines.
+
+See the [agency checkout guide](docs/agency-checkout.md) for buyer steps, app configuration, and release checks.
+
+Agency availability uses `GET /api/checkout/start?accountType=agency`. The plan must contain `accountType: "agency"`, $2,000 setup, $597 monthly, 30 included days, and the six-month term. The app must also advertise `custom` checkout support and a valid public Stripe key. The agency start request is `{ termsAccepted: true, uiMode: "custom", accountType: "agency" }`. The session response must also contain `accountType: "agency"` before the payment form opens. This prevents a standard purchase if the backend changes between requests. The app selects prices and retains the account type. The website does not send Stripe price IDs or company details.
+
+The agency page stays unavailable if the app returns the standard plan or lacks agency support. It does not link to the standard `/get-started` flow. Standard checkout requests and prices remain the same.

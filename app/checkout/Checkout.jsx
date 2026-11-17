@@ -14,7 +14,7 @@ function Lock() {
   return <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.8" /></svg>;
 }
 
-function StripePayment({ session }) {
+function StripePayment({ session, agency }) {
   const container = useRef(null);
   const actions = useRef(null);
   const emailInput = useRef(null);
@@ -164,7 +164,7 @@ function StripePayment({ session }) {
   }
 
   return <form className={styles.paymentArea} onSubmit={confirmPayment}>
-    <label className={styles.emailLabel} htmlFor="checkout-email">Email for your new Revphlo account</label>
+    <label className={styles.emailLabel} htmlFor="checkout-email">Email for your new Revphlo {agency ? "agency " : ""}account</label>
     <input ref={emailInput} id="checkout-email" className={styles.emailInput} type="email" autoComplete="email" required value={fixedEmail || email} readOnly={Boolean(fixedEmail)} disabled={loading || submitting} aria-describedby={emailError ? "checkout-email-help checkout-email-error" : "checkout-email-help"} aria-invalid={Boolean(emailError)} onBlur={() => { if (!fixedEmail) void validateEmail(); }} onChange={(event) => {
       emailValue.current = event.target.value;
       emailRequest.current += 1;
@@ -184,7 +184,9 @@ function StripePayment({ session }) {
   </form>;
 }
 
-export default function Checkout({ appOrigin }) {
+export default function Checkout({ appOrigin, accountType = "standard" }) {
+  const agency = accountType === "agency";
+  const monthlyPrice = agency ? "$597" : "$397";
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [availability, setAvailability] = useState({ state: "loading" });
   const [loadAttempt, setLoadAttempt] = useState(0);
@@ -208,18 +210,18 @@ export default function Checkout({ appOrigin }) {
     const timer = setTimeout(() => controller.abort(), 15000);
     let disposed = false;
     setAvailability({ state: "loading" });
-    fetch(`${appOrigin}/api/checkout/start`, { credentials: "omit", cache: "no-store", signal: controller.signal })
+    fetch(`${appOrigin}/api/checkout/start${agency ? "?accountType=agency" : ""}`, { credentials: "omit", cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         const body = await response.json();
         if (!response.ok || !body.success) throw new Error("unavailable");
         if (!disposed) {
-          setAvailability(getCheckoutAvailability(body.data));
+          setAvailability(getCheckoutAvailability(body.data, accountType));
         }
       })
       .catch(() => { if (!disposed) setAvailability({ state: "unavailable" }); })
       .finally(() => clearTimeout(timer));
     return () => { disposed = true; clearTimeout(timer); controller.abort(); };
-  }, [appOrigin, loadAttempt]);
+  }, [appOrigin, accountType, agency, loadAttempt]);
 
   useEffect(() => { if (error) errorRef.current?.focus(); }, [error]);
   useEffect(() => { if (session) paymentHeading.current?.focus(); }, [session]);
@@ -244,10 +246,10 @@ export default function Checkout({ appOrigin }) {
         credentials: "omit",
         signal: controller.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ termsAccepted: true, uiMode: "custom" }),
+        body: JSON.stringify({ termsAccepted: true, uiMode: "custom", ...(agency ? { accountType: "agency" } : {}) }),
       });
       const body = await response.json();
-      if (!response.ok || !body.success || !isCheckoutClientSession(body.data)) {
+      if (!response.ok || !body.success || !isCheckoutClientSession(body.data, accountType)) {
         throw new Error("We could not open checkout. Please try again.");
       }
       if (!mounted.current) return;
@@ -280,38 +282,39 @@ export default function Checkout({ appOrigin }) {
 
     <main id="checkout-main" className={styles.main}>
       <div className={styles.intro}>
-        <p className={styles.eyebrow}>YOUR NEXT CHAPTER STARTS HERE</p>
-        <h1>Your sales team.<br /><span>One clear picture.</span></h1>
-        <p>Pay securely, then add your company details and connect your tools.</p>
+        <p className={styles.eyebrow}>{agency ? "REVPHLO FOR AGENCIES" : "YOUR NEXT CHAPTER STARTS HERE"}</p>
+        <h1>{agency ? "Your agency." : "Your sales team."}<br /><span>One clear picture.</span></h1>
+        <p>{agency ? "Create your agency account and manage your client companies in one place." : "Pay securely, then add your company details and connect your tools."}</p>
+        {agency ? <div className={styles.agencyPricing} aria-label="Agency pricing"><div><strong>$2,000</strong><span>Setup + first 30 days</span></div><div><strong>$597<span> / month</span></strong><span>Starts after 30 days</span></div></div> : null}
       </div>
 
       <div className={styles.grid}>
         <section className={styles.card} aria-labelledby="payment-heading">
           <ol className={styles.steps} aria-label="Account setup progress">
             <li className={styles.currentStep} aria-current="step"><span>1</span>Payment</li>
-            <li><span>2</span>Company</li>
+            <li><span>2</span>{agency ? "Agency" : "Company"}</li>
             <li><span>3</span>Set up</li>
           </ol>
 
           {session ? <div className={styles.paymentSection}>
             <p className={styles.sectionLabel}>STEP 1 OF 3</p>
             <h2 id="payment-heading" ref={paymentHeading} tabIndex={-1}>Complete your payment</h2>
-            <p className={styles.description}>Use the email for your new Revphlo account. You will add your company details after payment.</p>
-            <StripePayment session={session} />
-            <p className={styles.paymentNote}>After payment, you will open RevPhlo to verify your email and add your company details.</p>
+            <p className={styles.description}>Use the email for your new Revphlo {agency ? "agency " : ""}account. You will add your {agency ? "agency" : "company"} details after payment.</p>
+            <StripePayment session={session} agency={agency} />
+            <p className={styles.paymentNote}>After payment, you will open RevPhlo to verify your email and add your {agency ? "agency" : "company"} details.</p>
           </div> : <form onSubmit={submit} className={styles.form}>
             <div>
               <p className={styles.sectionLabel}>STEP 1 OF 3</p>
-              <h2 id="payment-heading">Secure checkout</h2>
-              <p className={styles.description}>Complete your payment first. Your company details come next.</p>
+              <h2 id="payment-heading">{agency ? "Agency checkout" : "Secure checkout"}</h2>
+              <p className={styles.description}>Complete your payment first. Your {agency ? "agency" : "company"} details come next.</p>
             </div>
 
             {availability.state === "loading" ? <p className={styles.notice} role="status">Checking checkout availability…</p> : null}
             {availability.state === "hosted" ? <div className={styles.notice} role="status"><strong>Continue with secure hosted checkout.</strong><p>Open checkout in RevPhlo to review the same plan and payment terms, then pay through Stripe.</p><div className={styles.noticeActions}><a href={`${appOrigin}/get-started`}>Continue to hosted checkout <Arrow /></a></div></div> : null}
-            {availability.state === "unavailable" ? <div className={styles.notice} role="status"><strong>Checkout is not available right now.</strong><p>You can contact us for help, or try again in a moment.</p><div className={styles.noticeActions}>{appOrigin ? <><button type="button" className={styles.textButton} onClick={() => setLoadAttempt((value) => value + 1)}>Check again</button><a href={`${appOrigin}/get-started`}>Open checkout in RevPhlo <Arrow /></a></> : null}<a href="mailto:support@revphlo.com">Contact support</a></div></div> : null}
+            {availability.state === "unavailable" ? <div className={styles.notice} role="status"><strong>{agency ? "Agency checkout" : "Checkout"} is not available right now.</strong><p>You can contact us for help, or try again in a moment.</p><div className={styles.noticeActions}>{appOrigin ? <><button type="button" className={styles.textButton} onClick={() => setLoadAttempt((value) => value + 1)}>Check again</button>{!agency ? <a href={`${appOrigin}/get-started`}>Open checkout in RevPhlo <Arrow /></a> : null}</> : null}<a href="mailto:support@revphlo.com">Contact support</a></div></div> : null}
 
             {availability.state !== "hosted" ? <div className={styles.termsBlock}>
-              <label className={styles.terms}><input type="checkbox" required checked={termsAccepted} disabled={busy} onChange={(event) => setTermsAccepted(event.target.checked)} /><span>I agree to pay <strong>$2,000 today</strong> for setup and the first 30 days, then <strong>$397 each month</strong>. I agree to a <strong>six-month minimum term</strong>. The plan continues monthly after that until canceled. Cancellation takes effect after the minimum term or current billing period, whichever is later.</span></label>
+              <label className={styles.terms}><input type="checkbox" required checked={termsAccepted} disabled={busy} onChange={(event) => setTermsAccepted(event.target.checked)} /><span>I agree to pay <strong>$2,000 today</strong> for setup and the first 30 days, then <strong>{monthlyPrice} each month</strong>. I agree to a <strong>six-month minimum term</strong>. The plan continues monthly after that until canceled. Cancellation takes effect after the minimum term or current billing period, whichever is later.</span></label>
               <p className={styles.legal}>By continuing, I accept the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a> and acknowledge the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
             </div> : null}
             {error ? <div ref={errorRef} tabIndex={-1} className={styles.error} role="alert"><p>{error}</p></div> : null}
@@ -322,17 +325,17 @@ export default function Checkout({ appOrigin }) {
 
         <aside className={styles.summary} aria-labelledby="plan-heading">
           <div className={styles.orderCard}>
-            <p className={styles.sectionLabel}>YOUR REVPHLO PLAN</p>
-            <h2 id="plan-heading">Built for your team.<br />Ready for your tools.</h2>
+            <p className={styles.sectionLabel}>{agency ? "YOUR AGENCY PLAN" : "YOUR REVPHLO PLAN"}</p>
+            <h2 id="plan-heading">{agency ? <>Your clients.<br />One agency account.</> : <>Built for your team.<br />Ready for your tools.</>}</h2>
             <div className={styles.price}><span>$2,000</span><span>due today</span></div>
             <p className={styles.priceHint}>One-time setup + your first 30 days</p>
-            <div className={styles.billingTimeline}><div><span className={styles.timelineDot} /><div><strong>Today</strong><p>Set up your account and get started.</p></div></div><div><span className={styles.timelineDot} /><div><strong>After 30 days</strong><p>$397 USD per month.</p></div></div></div>
+            <div className={styles.billingTimeline}><div><span className={styles.timelineDot} /><div><strong>Today</strong><p>Set up your {agency ? "agency " : ""}account and get started.</p></div></div><div><span className={styles.timelineDot} /><div><strong>After 30 days</strong><p>{monthlyPrice} USD per month.</p></div></div></div>
             <div className={styles.minimum}><span>Minimum term</span><strong>6 months</strong></div>
             <p className={styles.smallPrint}>The plan continues monthly after the minimum term until canceled.</p>
           </div>
           <div className={styles.nextSteps}>
             <h3>What happens after payment</h3>
-            <ol><li><span>1</span><div><strong>Create your login</strong><p>Use and verify the email from checkout.</p></div></li><li><span>2</span><div><strong>Add your company details</strong><p>Name your company and invite your first team members.</p></div></li><li><span>3</span><div><strong>Complete your setup</strong><p>Follow the questions and actions to connect your tools. Share setup tasks with a teammate when you need their access or knowledge. The full dashboard opens after all required setup checks pass.</p></div></li></ol>
+            <ol><li><span>1</span><div><strong>Create your login</strong><p>Use and verify the email from checkout.</p></div></li><li><span>2</span><div><strong>{agency ? "Create your agency account" : "Add your company details"}</strong><p>{agency ? "Name your agency and invite your first team members." : "Name your company and invite your first team members."}</p></div></li><li><span>3</span><div><strong>{agency ? "Add your client companies" : "Complete your setup"}</strong><p>{agency ? "Open your agency workspace to add clients and manage your team." : "Follow the questions and actions to connect your tools. Share setup tasks with a teammate when you need their access or knowledge. The full dashboard opens after all required setup checks pass."}</p></div></li></ol>
           </div>
         </aside>
       </div>

@@ -1,6 +1,31 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isCheckoutClientSession, getCheckoutAvailability, checkoutSessionId, checkoutReferralBody, queueCheckoutReferral } from "./checkout-contract.mjs";
+import { CHECKOUT_PLAN, AGENCY_CHECKOUT_PLAN, getAppOrigin, isExpectedPlan, isCheckoutClientSession, getCheckoutAvailability, checkoutSessionId, checkoutReferralBody, queueCheckoutReferral } from "./checkout-contract.mjs";
+
+test("agency checkout requires the agency account type and the exact agency agreement", () => {
+  assert.equal(isExpectedPlan(AGENCY_CHECKOUT_PLAN, "agency"), true);
+  assert.equal(isExpectedPlan(CHECKOUT_PLAN, "agency"), false);
+  assert.equal(isExpectedPlan({ ...AGENCY_CHECKOUT_PLAN, accountType: undefined }, "agency"), false);
+  assert.equal(isExpectedPlan({ ...AGENCY_CHECKOUT_PLAN, accountType: "standard" }, "agency"), false);
+  assert.equal(isExpectedPlan({ ...CHECKOUT_PLAN, accountType: "agency" }), false);
+  assert.equal(isExpectedPlan(AGENCY_CHECKOUT_PLAN), false);
+  assert.equal(isExpectedPlan(CHECKOUT_PLAN, "other"), false);
+  for (const field of ["setupAmount", "amount", "minimumMonths", "includedDays", "intervalCount"]) {
+    assert.equal(isExpectedPlan({ ...AGENCY_CHECKOUT_PLAN, [field]: AGENCY_CHECKOUT_PLAN[field] + 1 }, "agency"), false, field);
+  }
+  assert.equal(isExpectedPlan({ ...AGENCY_CHECKOUT_PLAN, currency: "eur" }, "agency"), false);
+});
+
+test("agency checkout never falls back to the standard hosted signup", () => {
+  const data = { enabled: true, embeddedEnabled: true, publishableKey: "pk_test_example", plan: AGENCY_CHECKOUT_PLAN };
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: ["custom"] }, "agency"), { state: "ready" });
+  for (const supportedUiModes of [undefined, ["hosted"], ["embedded"], "custom"]) {
+    assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes }, "agency"), { state: "unavailable" });
+  }
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: ["custom"], embeddedEnabled: false }, "agency"), { state: "unavailable" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: ["custom"], publishableKey: "sk_test_example" }, "agency"), { state: "unavailable" });
+  assert.deepEqual(getCheckoutAvailability({ ...data, supportedUiModes: ["custom"], plan: CHECKOUT_PLAN }, "agency"), { state: "unavailable" });
+});
 
 test("custom checkout requires the app to advertise support", () => {
   const data = { enabled: true, embeddedEnabled: true, publishableKey: "pk_test_example", plan: CHECKOUT_PLAN };
@@ -43,6 +68,15 @@ test("a checkout session must use the same Stripe mode as its public key", () =>
   assert.equal(isCheckoutClientSession({ publishableKey: "pk_live_example", clientSecret: "cs_test_example_secret_example" }), false);
   assert.equal(isCheckoutClientSession({ publishableKey: "sk_test_example", clientSecret: "cs_test_example_secret_example" }), false);
   assert.equal(isCheckoutClientSession({ publishableKey: "pk_test_example", clientSecret: "https://other.example" }), false);
+});
+
+test("agency payment rejects a standard session even after a valid agency availability check", () => {
+  const session = { publishableKey: "pk_test_example", clientSecret: "cs_test_example_secret_example" };
+  assert.equal(isCheckoutClientSession({ ...session, accountType: "agency" }, "agency"), true);
+  assert.equal(isCheckoutClientSession(session, "agency"), false);
+  assert.equal(isCheckoutClientSession({ ...session, accountType: "standard" }, "agency"), false);
+  assert.equal(isCheckoutClientSession({ ...session, accountType: "agency" }), false);
+  assert.equal(isCheckoutClientSession(session, "other"), false);
 });
 
 test("Stripe checkout secrets accept an opaque encoded suffix without changing it", () => {
