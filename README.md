@@ -107,6 +107,6 @@ Run the checkout contract checks with `node --test app/checkout/checkout-contrac
 
 See the [agency checkout guide](docs/agency-checkout.md) for buyer steps, app configuration, and release checks.
 
-Agency availability uses `GET /api/checkout/start?accountType=agency`. The plan must contain `accountType: "agency"`, $2,000 setup, $597 monthly, 30 included days, and the six-month term. The app must also advertise `custom` checkout support and a valid public Stripe key. The agency start request is `{ termsAccepted: true, uiMode: "custom", accountType: "agency" }`. The app selects prices and retains the account type. The website does not send Stripe price IDs or company details.
+Agency availability uses `GET /api/checkout/start?accountType=agency`. The plan must contain `accountType: "agency"`, $2,000 setup, $597 monthly, 30 included days, and the six-month term. The app must also advertise `custom` checkout support and a valid public Stripe key. The agency start request is `{ termsAccepted: true, uiMode: "custom", accountType: "agency" }`. The session response must also contain `accountType: "agency"` before the payment form opens. This prevents a standard purchase if the backend changes between requests. The app selects prices and retains the account type. The website does not send Stripe price IDs or company details.
 
 The agency page stays unavailable if the app returns the standard plan or lacks agency support. It does not link to the standard `/get-started` flow. Standard checkout requests and prices remain the same.

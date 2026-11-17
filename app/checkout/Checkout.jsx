@@ -249,7 +249,7 @@ export default function Checkout({ appOrigin, accountType = "standard" }) {
         body: JSON.stringify({ termsAccepted: true, uiMode: "custom", ...(agency ? { accountType: "agency" } : {}) }),
       });
       const body = await response.json();
-      if (!response.ok || !body.success || !isCheckoutClientSession(body.data)) {
+      if (!response.ok || !body.success || !isCheckoutClientSession(body.data, accountType)) {
         throw new Error("We could not open checkout. Please try again.");
       }
       if (!mounted.current) return;

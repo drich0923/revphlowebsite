@@ -70,6 +70,15 @@ test("a checkout session must use the same Stripe mode as its public key", () =>
   assert.equal(isCheckoutClientSession({ publishableKey: "pk_test_example", clientSecret: "https://other.example" }), false);
 });
 
+test("agency payment rejects a standard session even after a valid agency availability check", () => {
+  const session = { publishableKey: "pk_test_example", clientSecret: "cs_test_example_secret_example" };
+  assert.equal(isCheckoutClientSession({ ...session, accountType: "agency" }, "agency"), true);
+  assert.equal(isCheckoutClientSession(session, "agency"), false);
+  assert.equal(isCheckoutClientSession({ ...session, accountType: "standard" }, "agency"), false);
+  assert.equal(isCheckoutClientSession({ ...session, accountType: "agency" }), false);
+  assert.equal(isCheckoutClientSession(session, "other"), false);
+});
+
 test("Stripe checkout secrets accept an opaque encoded suffix without changing it", () => {
   for (const mode of ["test", "live"]) {
     const clientSecret = `cs_${mode}_Example123_secret_${"fake%2Fencoded%3Dvalue_-.".repeat(20)}`;
