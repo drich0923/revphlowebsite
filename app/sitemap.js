@@ -34,6 +34,7 @@ export default function sitemap() {
     entry("/", { lastModified: CONTENT_UPDATED, changeFrequency: "weekly", priority: 1 }),
     entry("/about", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.6 }),
     entry("/demo", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.8 }),
+    entry("/integrations", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.8 }),
     entry("/blog", { lastModified: latestPostDate, changeFrequency: "weekly", priority: 0.8 }),
     entry("/privacy-policy", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.3 }),
     entry("/terms-of-service", { lastModified: CONTENT_UPDATED, changeFrequency: "monthly", priority: 0.3 }),

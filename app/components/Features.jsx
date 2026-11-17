@@ -1,5 +1,7 @@
 import { Icon } from "./Icons";
 import ExhibitPanel from "./ExhibitPanel";
+import { KineticTextReveal } from "@/components/ui/kinetic-text-reveal";
+import { Reveal } from "./motion-ui";
 import {
   FormMockup,
   AttributionSheet,
@@ -80,21 +82,28 @@ export default function Features() {
   return (
     <section className="features" id="features">
       <div className="container">
-        <div className="protocol" data-reveal>
+        <Reveal className="protocol">
           <span className="protocol__index">02</span>
           <span className="protocol__eyebrow">
             Before <Icon name="arrow-right" size={12} /> After
           </span>
           <span className="protocol__tick" aria-hidden="true" />
-        </div>
-        <h2 className="h2" data-reveal>
-          Replace every broken process with a system that scales
+        </Reveal>
+        <h2 className="h2">
+          <KineticTextReveal
+            text="Replace every broken process with a system that scales"
+            playInView
+            splitBy="words"
+            stagger={0.04}
+            distance={14}
+            className="kinetic-heading"
+          />
         </h2>
 
-        {FEATURES.map((f) => (
-          <article key={f.id} className={`feature ${f.flipped ? "feature--flipped" : ""}`} data-reveal-group>
+        {FEATURES.map((f, i) => (
+          <article key={f.id} className={`feature ${f.flipped ? "feature--flipped" : ""}`}>
             <div className="feature__grid">
-              <div className="feature__text" data-reveal>
+              <Reveal className="feature__text" delay={i * 0.02}>
                 <span className="feature__tag">
                   <Icon name={f.icon} size={14} />
                   {f.tag}
@@ -111,10 +120,10 @@ export default function Features() {
                     </li>
                   ))}
                 </ul>
-              </div>
-              <div className="feature__visual" data-reveal>
+              </Reveal>
+              <Reveal className="feature__visual" delay={0.08} lift>
                 <ExhibitPanel id={f.id} before={f.before} after={f.after} beforeSummary={f.beforeSummary} />
-              </div>
+              </Reveal>
             </div>
           </article>
         ))}

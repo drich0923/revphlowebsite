@@ -1,5 +1,6 @@
 import { Icon } from "./Icons";
 import Tape from "./Tape";
+import { MotionLink } from "./motion-ui";
 
 export default function CtaRail({ ghostLabel = "See How It Works", ghostHref = "#features" }) {
   return (
@@ -8,13 +9,13 @@ export default function CtaRail({ ghostLabel = "See How It Works", ghostHref = "
         <Tape inline />
       </div>
       <div className="ctarail__actions">
-        <a href="#book" className="btn btn--primary">
+        <MotionLink href="#book" className="btn btn--primary">
           Find Your Data Leaks
           <Icon name="arrow-right" size={16} className="btn__arrow" />
-        </a>
-        <a href={ghostHref} className="btn btn--ghost">
+        </MotionLink>
+        <MotionLink href={ghostHref} className="btn btn--ghost">
           {ghostLabel}
-        </a>
+        </MotionLink>
       </div>
     </div>
   );

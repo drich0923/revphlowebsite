@@ -1,11 +1,14 @@
 import { Icon } from "./Icons";
 import { RedUnderline } from "./RedPen";
 import VslPlayer from "./Vsl";
+import DashboardMockup from "./DashboardMockup";
+import Counters from "./Counters";
+import { HeroGlow, MotionLink } from "./motion-ui";
 
 export default function Hero() {
   return (
     <section className="hero">
-      <div className="hero__glow" aria-hidden="true" />
+      <HeroGlow />
       <div className="container hero__inner">
         <div className="hero__badge">
           <span className="live-dot" aria-hidden="true" />
@@ -27,15 +30,18 @@ export default function Hero() {
           auto-generated post-call notes, and zero rep guessing &mdash; without changing your stack.
         </p>
         <div className="hero__ctas">
-          <a href="#book" className="btn btn--primary">
+          <MotionLink href="#book" className="btn btn--mint">
             Find Your Team&rsquo;s Data Leaks
             <Icon name="arrow-right" size={16} className="btn__arrow" />
-          </a>
-          <a href="/demo" className="btn btn--ghost">
+          </MotionLink>
+          <MotionLink href="/demo" className="btn btn--ghost">
             See it in action
-          </a>
+          </MotionLink>
         </div>
         <p className="hero__cta-note">20-minute pipeline diagnostic &middot; No pitch decks</p>
+        <Counters className="hero__stage">
+          <DashboardMockup variant="full" />
+        </Counters>
         <VslPlayer />
       </div>
     </section>

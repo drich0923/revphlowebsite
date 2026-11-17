@@ -1,5 +1,8 @@
 import { Icon } from "./Icons";
 import { KPIS } from "./kpi-data";
+import CashChart from "./CashChart";
+
+const SIDE_NAV = ["Dashboard", "Calls", "Attribution", "Leaderboard", "Payments"];
 
 function Sparkline() {
   return (
@@ -22,16 +25,18 @@ function Sparkline() {
   );
 }
 
+function counterProps(kpi) {
+  return {
+    "data-counter": "",
+    "data-target": kpi.target,
+    "data-prefix": kpi.prefix || "",
+    "data-suffix": kpi.suffix || "",
+    "data-decimals": kpi.decimals || 0,
+  };
+}
+
 function KpiCell({ kpi, countable }) {
-  const valueProps = countable
-    ? {
-        "data-counter": "",
-        "data-target": kpi.target,
-        "data-prefix": kpi.prefix || "",
-        "data-suffix": kpi.suffix || "",
-        "data-decimals": kpi.decimals || 0,
-      }
-    : {};
+  const valueProps = countable ? counterProps(kpi) : {};
   return (
     <div className={`kpi ${kpi.anchor ? "kpi--anchor" : ""}`}>
       <div className="kpi__label">{kpi.label}</div>
@@ -66,16 +71,55 @@ function TitleBar() {
   );
 }
 
-// variant: "full" = 3x3 hero dashboard; "excerpt" = compact 1x3 stack (Old vs New right panel)
-export default function DashboardMockup({ variant = "full", caption }) {
-  const kpis = variant === "excerpt" ? KPIS.slice(0, 3) : KPIS;
+function FullDashboard({ caption }) {
+  const [anchor, ...rest] = KPIS;
   return (
-    <figure className={`exhibit dash dash--${variant}`}>
+    <figure className="exhibit dash dash--full" aria-label="Sample RevPhlo dashboard">
       <div className="dash__frame">
         <TitleBar />
-        <div className={`dash__grid ${variant === "excerpt" ? "dash__grid--stack" : ""}`}>
+        <div className="dash__body">
+          <div className="dash__side" aria-hidden="true">
+            {SIDE_NAV.map((item) => (
+              <span key={item} className={`dash__side-item ${item === "Dashboard" ? "dash__side-item--on" : ""}`}>
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="dash__main">
+            <div className="dash__spotlight">
+              <div className="dash__spotlight-copy">
+                <div className="kpi__label">{anchor.label}</div>
+                <div className="kpi__value kpi__value--mint" {...counterProps(anchor)}>
+                  {anchor.value}
+                </div>
+              </div>
+              <CashChart />
+            </div>
+            <div className="dash__grid dash__grid--rest">
+              {rest.map((kpi) => (
+                <KpiCell key={kpi.label} kpi={kpi} countable />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {caption && <figcaption className="exhibit__caption">{caption}</figcaption>}
+    </figure>
+  );
+}
+
+// variant: "full" = product dashboard; "excerpt" = compact stack (Old vs New)
+export default function DashboardMockup({ variant = "full", caption }) {
+  if (variant === "full") return <FullDashboard caption={caption} />;
+
+  const kpis = KPIS.slice(0, 3);
+  return (
+    <figure className="exhibit dash dash--excerpt">
+      <div className="dash__frame">
+        <TitleBar />
+        <div className="dash__grid dash__grid--stack">
           {kpis.map((kpi) => (
-            <KpiCell key={kpi.label} kpi={kpi} countable={variant === "excerpt"} />
+            <KpiCell key={kpi.label} kpi={kpi} countable />
           ))}
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { Icon } from "./Icons";
+import { Reveal } from "./motion-ui";
 
 const TF_SCRIPT = "https://embed.typeform.com/next/embed.js";
 
@@ -34,20 +35,20 @@ export default function BookDemo() {
     <section className="book" id="book" ref={sectionRef}>
       <div className="book__glow" aria-hidden="true" />
       <div className="container book__inner">
-        <h2 className="h2 book__h2" data-reveal>
+        <Reveal as="h2" className="h2 book__h2">
           <span>Find the leaks in your</span>{" "}
           <span className="book__accent book__accent--line">post-booking pipeline.</span>
-        </h2>
-        <p className="book__body" data-reveal>
+        </Reveal>
+        <Reveal as="p" className="book__body">
           Bring your current GoHighLevel and Stripe setup. In 20 minutes, we&rsquo;ll map your
           post-booking pipeline and show you exactly where leads and attribution are falling
           through the cracks. No pitch decks.
-        </p>
-        <div className="book__card" data-reveal>
+        </Reveal>
+        <Reveal className="book__card">
           <div data-tf-live="01KAT373J0V85ZJSJANAS65PEP" className="book__form">
             <span className="book__skeleton" aria-hidden="true" />
           </div>
-        </div>
+        </Reveal>
         <p className="book__trust">
           <Icon name="lock" size={13} />
           20-minute diagnostic &middot; No pitch decks

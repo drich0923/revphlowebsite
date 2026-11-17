@@ -1,3 +1,6 @@
+import { KineticTextReveal } from "@/components/ui/kinetic-text-reveal";
+import { Reveal } from "./motion-ui";
+
 const STEPS = [
   {
     n: "01",
@@ -20,26 +23,37 @@ export default function HowItWorks() {
   return (
     <section className="how" id="howitworks">
       <div className="container">
-        <div className="protocol" data-reveal>
+        <Reveal className="protocol">
           <span className="protocol__index">03</span>
           <span className="protocol__eyebrow">How It Works</span>
           <span className="protocol__tick" aria-hidden="true" />
+        </Reveal>
+        <div className="how__head">
+          <h2 className="h2">
+            <KineticTextReveal
+              text="From checkout to a connected team"
+              playInView
+              splitBy="words"
+              stagger={0.045}
+              distance={14}
+              className="kinetic-heading"
+            />
+          </h2>
+          <Reveal className="how__sub" delay={0.08} as="p">
+            Start your account. Complete your setup. Open your dashboard.
+          </Reveal>
         </div>
-        <div className="how__head" data-reveal>
-          <h2 className="h2">From checkout to a connected team</h2>
-          <p className="how__sub">Start your account. Complete your setup. Open your dashboard.</p>
-        </div>
-        <div className="how__cards" data-reveal-group>
+        <div className="how__cards">
           <div className="how__rail" aria-hidden="true" />
-          {STEPS.map((s) => (
-            <div key={s.n} className="how__card" data-reveal>
+          {STEPS.map((s, i) => (
+            <Reveal key={s.n} className="how__card" delay={i * 0.08} lift>
               <span className="how__node" aria-hidden="true" />
               <span className="how__num" aria-hidden="true">
                 {s.n}
               </span>
               <h3 className="how__title">{s.title}</h3>
               <p className="how__body">{s.body}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

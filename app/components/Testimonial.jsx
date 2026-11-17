@@ -1,9 +1,10 @@
 import { RedUnderline } from "./RedPen";
+import { Reveal } from "./motion-ui";
 
 export default function Testimonial() {
   return (
     <section className="testimonial">
-      <div className="container testimonial__inner" data-reveal>
+      <Reveal className="container testimonial__inner">
         <span className="testimonial__glyph" aria-hidden="true">
           &ldquo;
         </span>
@@ -24,7 +25,7 @@ export default function Testimonial() {
           <span className="testimonial__dash" aria-hidden="true" />
           Sales Director &middot; 8-Figure Sales Organization
         </p>
-      </div>
+      </Reveal>
     </section>
   );
 }
